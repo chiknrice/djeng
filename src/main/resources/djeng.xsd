@@ -1,0 +1,143 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.chiknrice.org/djeng"
+        xmlns:tns="http://www.chiknrice.org/djeng"
+        elementFormDefault="qualified" version="${project.version}">
+    <!--
+
+        Copyright (c) 2016 Ian Bondoc
+
+        This file is part of Djeng
+
+        Djeng is free software: you can redistribute it and/or modify it under the terms of the
+        GNU General Public License as published by the Free Software Foundation, either version 3
+        of the License, or(at your option) any later version.
+
+        Djeng is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+        without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        See the GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License along with this program.
+        If not, see <http://www.gnu.org/licenses/>.
+
+    -->
+    <element name="config">
+        <complexType>
+            <sequence>
+                <element name="codecs" minOccurs="1" maxOccurs="1">
+                    <complexType>
+                        <choice minOccurs="1" maxOccurs="unbounded">
+                            <element name="element-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
+                            <element name="composite-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
+                            <element name="filter-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
+                        </choice>
+                    </complexType>
+                    <unique name="codecs-key">
+                        <selector xpath="tns:codecs/*"></selector>
+                        <field xpath="@id"></field>
+                    </unique>
+                </element>
+                <element name="message-elements" minOccurs="1" maxOccurs="1">
+                    <complexType>
+                        <group ref="tns:composite-elements-group" minOccurs="1" maxOccurs="unbounded"/>
+                        <attribute name="codec" type="tns:non-empty-token" use="required"/>
+                        <anyAttribute/>
+                    </complexType>
+                    <unique name="message-elements-key">
+                        <selector xpath="./*"></selector>
+                        <field xpath="@index"></field>
+                    </unique>
+                </element>
+            </sequence>
+            <attribute name="attr-type-mapper" type="tns:non-empty-token" use="optional"/>
+        </complexType>
+        <key name="element-codec-id">
+            <selector xpath="tns:codecs/tns:element-codec"/>
+            <field xpath="@id"/>
+        </key>
+        <key name="composite-codec-id">
+            <selector xpath="tns:codecs/tns:composite-codec"/>
+            <field xpath="@id"/>
+        </key>
+        <key name="filter-codec-id">
+            <selector xpath="tns:codecs/tns:filter-codec"/>
+            <field xpath="@id"/>
+        </key>
+        <keyref name="element-codec-id-ref" refer="tns:element-codec-id">
+            <selector xpath=".//tns:element"/>
+            <field xpath="@codec"/>
+        </keyref>
+        <keyref name="composite-codec-id-ref" refer="tns:composite-codec-id">
+            <selector xpath="tns:message-elements|.//tns:composite"/>
+            <field xpath="@codec"/>
+        </keyref>
+        <keyref name="filter-codec-id-ref" refer="tns:filter-codec-id">
+            <selector xpath="tns:codecs/*"/>
+            <field xpath="@filter"/>
+        </keyref>
+    </element>
+
+    <!-- Simple type restricting to a format for indexes which is numbers separated with "." -->
+    <simpleType name="index-type">
+        <restriction base="token">
+            <pattern value="[a-z,A-F,0-9,-]+"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting empty token -->
+    <simpleType name="non-empty-token">
+        <restriction base="token">
+            <minLength value="1"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting empty string (difference here is this could include spaces in between characters) -->
+    <simpleType name="non-empty-string">
+        <restriction base="string">
+            <minLength value="1"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="length-prefix-encoding">
+        <restriction base="token">
+            <enumeration value="CHAR"/>
+            <enumeration value="BCD"/>
+            <enumeration value="BINARY"/>
+        </restriction>
+    </simpleType>
+
+    <complexType name="codec-type">
+        <attribute name="id" type="tns:non-empty-token" use="required"/>
+        <attribute name="class" type="tns:non-empty-token" use="required"/>
+        <attribute name="filter" type="tns:non-empty-token" use="optional"/>
+        <attribute name="description" type="tns:non-empty-string" use="optional"/>
+        <anyAttribute/>
+    </complexType>
+
+    <complexType name="element-type">
+        <attribute name="index" type="tns:index-type" use="required"/>
+        <attribute name="codec" type="tns:non-empty-token" use="required"/>
+        <attribute name="description" type="tns:non-empty-string" use="optional"/>
+        <anyAttribute/>
+    </complexType>
+
+    <group name="composite-elements-group">
+        <choice>
+            <element name="element" type="tns:element-type"/>
+            <element name="composite" type="tns:composite-type">
+                <unique name="elements-key">
+                    <selector xpath="./*"></selector>
+                    <field xpath="@index"></field>
+                </unique>
+            </element>
+        </choice>
+    </group>
+
+    <complexType name="composite-type">
+        <group ref="tns:composite-elements-group" minOccurs="1" maxOccurs="unbounded"/>
+        <attribute name="index" type="tns:index-type" use="required"/>
+        <attribute name="codec" type="tns:non-empty-token" use="required"/>
+        <attribute name="description" type="tns:non-empty-string" use="optional"/>
+        <anyAttribute/>
+    </complexType>
+
+</schema>

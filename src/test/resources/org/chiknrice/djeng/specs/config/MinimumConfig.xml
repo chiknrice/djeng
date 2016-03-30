@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.chiknrice.org/djeng" xmlns:f="http://www.chiknrice.org/djeng/financial"
+        attr-type-mapper="org.chiknrice.djeng.fin.FinancialAttributes">
+
+    <codecs>
+        <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
+        <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
+    </codecs>
+    <message-elements codec="message">
+        <element index="1" codec="string" f:length="3"/>
+    </message-elements>
+
+</config>

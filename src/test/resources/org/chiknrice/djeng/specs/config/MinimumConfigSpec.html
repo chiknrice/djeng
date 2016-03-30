@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Minimum Config Specification</title>
+</head>
+<body>
+
+<h1>Minimum Config Specification</h1>
+
+<p>
+    The configuration requires at least 2 codecs, one composite codec and an element codec. A composite represents
+    branches and element represents leaves.
+</p>
+
+<div class="example">
+    <p>
+        <b>Given</b> the configuration template below:
+    <pre i:setResource="#xmlConfigTemplate" i:path="MinimumConfig.xml"/>
+    </p>
+
+    <p>
+        Building <code>MessageCodec</code> with the above configuration where each encoding replaces the
+        <b>MTI_ENCODING</b> placeholder results in:
+    </p>
+
+    <table c:execute="#result=buildCodecWithConfig(#xmlConfigTemplate)">
+        <tr>
+            <th c:assertEquals="#result">Result</th>
+        </tr>
+        <!--<tr>
+            <th c:set="#encoding">Encoding</th>
+            <th c:assertEquals="#result">Result</th>
+        </tr>-->
+        <tr>
+            <td>Success</td>
+        </tr>
+    </table>
+
+</div>
+
+</body>
+</html>
