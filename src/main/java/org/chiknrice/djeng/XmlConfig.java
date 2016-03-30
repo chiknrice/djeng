@@ -26,6 +26,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,21 +37,27 @@ import java.util.Map;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-class XmlConfig {
+class XmlConfig implements Closeable {
 
     static final String CORE_SCHEMA_FILE = "djeng.xsd";
-    static final String FINANCIAL_SCHEMA_FILE = "djeng-financial.xsd";
     static final String NAMESPACE = "http://www.chiknrice.org/djeng";
 
     final Document document;
-    final AttributeTypeMapper customTypeMapper;
+    final List<AttributeTypeMapper> customTypeMappers;
 
-    XmlConfig(InputStream configSource, InputStream... customSchema) {
+    final List<InputStream> inputStreams;
+
+    XmlConfig(InputStream configSource, List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers) {
         try {
-            Source[] schemaSources = new Source[customSchema.length + 1];
-            schemaSources[0] = new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream(CORE_SCHEMA_FILE));
-            for (int i = 0; i < customSchema.length; i++) {
-                schemaSources[i + 1] = new StreamSource(customSchema[i]);
+            this.customTypeMappers = customTypeMappers;
+            Source[] schemaSources = new Source[customSchemas.size() + 1];
+            inputStreams = new ArrayList<>();
+            inputStreams.add(Thread.currentThread().getContextClassLoader().getResourceAsStream(CORE_SCHEMA_FILE));
+            for (String customSchema : customSchemas) {
+                inputStreams.add(Thread.currentThread().getContextClassLoader().getResourceAsStream(customSchema));
+            }
+            for (int i = 0; i < inputStreams.size(); i++) {
+                schemaSources[i] = new StreamSource(inputStreams.get(i));
             }
 
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -62,16 +70,22 @@ class XmlConfig {
             document.getDocumentElement().normalize();
             Validator validator = schema.newValidator();
             validator.validate(new DOMSource(document));
-
-            Class<?> typeMapperClass = this.getElement(ElementName.CONFIG).getOptionalAttribute(CoreAttributes.ATTR_TYPE_MAPPER);
-            this.customTypeMapper = typeMapperClass != null ? (AttributeTypeMapper) typeMapperClass.newInstance() : null;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        for (InputStream inputStream : inputStreams) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+
     enum ElementName {
-        CONFIG,
         CODECS,
         ELEMENT_CODEC,
         COMPOSITE_CODEC,
@@ -117,7 +131,7 @@ class XmlConfig {
         for (int i = 0; i < listSize; i++) {
             Node nodeItem = nodeList.item(i);
             if (nodeItem instanceof Element) {
-                elements.add(new XmlElement((Element) nodeItem, customTypeMapper));
+                elements.add(new XmlElement((Element) nodeItem));
             }
         }
         return elements;
@@ -127,7 +141,7 @@ class XmlConfig {
 
         final Element element;
 
-        XmlElement(Element element, AttributeTypeMapper customTypeMapper) {
+        XmlElement(Element element) {
             this.element = element;
         }
 
@@ -140,7 +154,7 @@ class XmlConfig {
             for (int i = 0; i < length; i++) {
                 Node node = childNodes.item(i);
                 if (node instanceof Element && NAMESPACE.equals(node.getNamespaceURI())) {
-                    children.add(new XmlElement((Element) node, customTypeMapper));
+                    children.add(new XmlElement((Element) node));
                 }
 
             }
@@ -158,7 +172,7 @@ class XmlConfig {
             for (int i = 0; i < length; i++) {
                 Attr xmlAttribute = (Attr) xmlAttributes.item(i);
                 Attribute key = new Attribute(xmlAttribute.getLocalName(), xmlAttribute.getNamespaceURI() != null ? xmlAttribute.getNamespaceURI() : element.getNamespaceURI());
-                attributes.put(key, CoreAttributes.mapType(key, xmlAttribute.getValue(), customTypeMapper));
+                attributes.put(key, CoreAttributes.mapType(key, xmlAttribute.getValue(), customTypeMappers));
             }
             return attributes;
         }
@@ -189,7 +203,7 @@ class XmlConfig {
             if (stringValue == null || stringValue.trim().length() == 0) {
                 return null;
             } else {
-                return (T) CoreAttributes.mapType(attribute, stringValue, customTypeMapper);
+                return (T) CoreAttributes.mapType(attribute, stringValue, customTypeMappers);
             }
         }
 

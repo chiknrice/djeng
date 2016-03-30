@@ -15,6 +15,9 @@
  */
 package org.chiknrice.djeng;
 
+import java.util.Iterator;
+import java.util.List;
+
 import static org.chiknrice.djeng.XmlConfig.*;
 
 /**
@@ -22,7 +25,6 @@ import static org.chiknrice.djeng.XmlConfig.*;
  */
 public final class CoreAttributes {
 
-    public static final Attribute ATTR_TYPE_MAPPER;
     public static final Attribute ID;
     public static final Attribute CODEC;
     public static final Attribute CLASS;
@@ -33,7 +35,6 @@ public final class CoreAttributes {
     public static final Attribute SUB_ELEMENT_CODECS_MAP;
 
     static {
-        ATTR_TYPE_MAPPER = new Attribute("attr-type-mapper", NAMESPACE);
         ID = new Attribute("id", NAMESPACE);
         CODEC = new Attribute("codec", NAMESPACE);
         CLASS = new Attribute("class", NAMESPACE);
@@ -45,17 +46,18 @@ public final class CoreAttributes {
         SUB_ELEMENT_CODECS_MAP = new Attribute("sub-element-codecs-map", NAMESPACE);
     }
 
-    static Object mapType(Attribute attribute, String value, AttributeTypeMapper customTypeMapper) {
+    static Object mapType(Attribute attribute, String value, List<AttributeTypeMapper> customTypeMappers) {
         try {
             Object objectValue = null;
             switch (attribute.getName()) {
                 case "class":
-                case "attr-type-mapper":
                     objectValue = Class.forName(value);
                     break;
                 default:
             }
-            if (objectValue == null && customTypeMapper != null) {
+            Iterator<AttributeTypeMapper> iterator = customTypeMappers.iterator();
+            while (objectValue == null && iterator.hasNext()) {
+                AttributeTypeMapper customTypeMapper = iterator.next();
                 objectValue = customTypeMapper.mapType(attribute, value);
             }
             if (objectValue == null) {

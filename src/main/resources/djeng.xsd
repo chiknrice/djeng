@@ -25,11 +25,11 @@
             <sequence>
                 <element name="codecs" minOccurs="1" maxOccurs="1">
                     <complexType>
-                        <choice minOccurs="1" maxOccurs="unbounded">
+                        <sequence>
+                            <element name="filter-codec" type="tns:codec-type" minOccurs="0" maxOccurs="unbounded"/>
                             <element name="element-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
                             <element name="composite-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
-                            <element name="filter-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
-                        </choice>
+                        </sequence>
                     </complexType>
                     <unique name="codecs-key">
                         <selector xpath="tns:codecs/*"></selector>
@@ -48,7 +48,6 @@
                     </unique>
                 </element>
             </sequence>
-            <attribute name="attr-type-mapper" type="tns:non-empty-token" use="optional"/>
         </complexType>
         <key name="element-codec-id">
             <selector xpath="tns:codecs/tns:element-codec"/>
