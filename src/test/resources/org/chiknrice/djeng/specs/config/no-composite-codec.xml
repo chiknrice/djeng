@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.chiknrice.org/djeng">
+
+    <codecs>
+        <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
+    </codecs>
+    <message-elements codec="string">
+        <element index="1" codec="string"/>
+    </message-elements>
+
+</config>

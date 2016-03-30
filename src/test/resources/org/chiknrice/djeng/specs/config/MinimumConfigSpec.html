@@ -2,41 +2,59 @@
 <html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
 <head>
     <meta charset="UTF-8"/>
-    <title>Minimum Config Specification</title>
+    <title>Minimum Configuration</title>
 </head>
 <body>
 
-<h1>Minimum Config Specification</h1>
+<h1>Minimum Configuration</h1>
 
 <p>
-    The configuration requires at least 2 codecs, one composite codec and an element codec. A composite represents
-    branches and element represents leaves.
+    The configuration requires at least 2 codecs, one composite codec and an element codec. The message elements also
+    requires to be pointing to a composite codec and should have at least one child element.
 </p>
 
 <div class="example">
     <p>
-        <b>Given</b> the configuration template below:
-    <pre i:setResource="#xmlConfigTemplate" i:path="MinimumConfig.xml"/>
+        Building a configuration with no composite codec:
+    <pre i:setResource="#noCompositeCodecConfig" i:path="no-composite-codec.xml"/>
     </p>
 
     <p>
-        Building <code>MessageCodec</code> with the above configuration where each encoding replaces the
-        <b>MTI_ENCODING</b> placeholder results in:
+        Would result in <span c:assertEquals="buildCodecWithConfig(#noCompositeCodecConfig)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+    </p>
+</div>
+
+<div class="example">
+    <p>
+        Building a configuration with no element codec:
+    <pre i:setResource="#noElementCodecConfig" i:path="no-composite-codec.xml"/>
     </p>
 
-    <table c:execute="#result=buildCodecWithConfig(#xmlConfigTemplate)">
-        <tr>
-            <th c:assertEquals="#result">Result</th>
-        </tr>
-        <!--<tr>
-            <th c:set="#encoding">Encoding</th>
-            <th c:assertEquals="#result">Result</th>
-        </tr>-->
-        <tr>
-            <td>Success</td>
-        </tr>
-    </table>
+    <p>
+        Would result in <span c:assertEquals="buildCodecWithConfig(#noElementCodecConfig)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+    </p>
+</div>
 
+<div class="example">
+    <p>
+        Building a configuration with no element:
+    <pre i:setResource="#noElementConfig" i:path="no-element.xml"/>
+    </p>
+
+    <p>
+        Would result in <span c:assertEquals="buildCodecWithConfig(#noElementConfig)">cvc-complex-type.2.4.b: The content of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element, "http://www.chiknrice.org/djeng":composite}' is expected.</span>
+    </p>
+</div>
+
+<div class="example">
+    <p>
+        Building the minimum configuration:
+    <pre i:setResource="#xmlConfigTemplate" i:path="minimum-config.xml"/>
+    </p>
+
+    <p>
+        Should be <span c:assertEquals="buildCodecWithConfig(#xmlConfigTemplate)">successful</span>
+    </p>
 </div>
 
 </body>
