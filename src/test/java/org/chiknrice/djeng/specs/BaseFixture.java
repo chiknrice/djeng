@@ -51,6 +51,7 @@ public abstract class BaseFixture {
             messageCodec = MESSAGE_CODEC_FACTORY.build(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8)));
             return "successful";
         } catch (Exception e) {
+            e.printStackTrace();
             return e.getMessage();
         }
     }
