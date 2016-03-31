@@ -15,9 +15,6 @@ env:
     - secure: GFlQXRWgTHLft6uAC0CPH7TcImzsqSbjM1JcmyTyKcg/sKzOSNsOWVINLrmEEFU+XFHF2DKT82fLHKPUPeV4dUBmcQoYL6x6+mOvKvnGuM5R2iQ5McPwRPJVhfGyD9npmlFhoHZJkJu6vbn6+JHJ6sX9cHmSk9YdYlq1l7O/CIvj/Oet4jc4C9TpgHN1yeOGZIaadeXz3QUJ5G15yGkzoRkcrv0DceVsZmicDCgAD0CMRuStw4Aj194Dfa6uGFyCbhxtiIcsEzcofyLZsDwv+xovukDET0otG9hEnXsFEZIBTsktT2h1nBiLPV8CaK42omDawJ8oMFgKUF5uGCISqyhejFJltADydi3P40Jax1VdZS3QgJtxbj4DW2j55d7oi24L+XCIFLp0+buNlgkKHb79/MKG2AqXGBs1fTD8o3CvjvWkEY17+AQbcwUxHBuWjxPZt5FveYe3lOkIzjda2TmW6l0ohZMs8zGecGknflFFo4gabOgnAXi1FAHCNBDoB1mAiG209tT3zPvSxRXEZZJ3ZWzvz0GiiQ4ALH58+6JdOqRdXDFIl5msSIkwDp663einwQRjfh6/sxgfkYoDADGZbIMehrY1ZVcEmkG6B2DBJAkB36Q/4F4vEX6PuIbxiOjoYFjmSxGmOJYwZmNt5xp+d9k/BmL39Zs+kw36Lu8=
     - secure: l+K2QogQpqKVWJqZKzU9cNsWuCm+A80DfuxIPGIpNNQLe9JipL0lgT/iWfnzmzE0kBjYmOpW3yc2FR704rcN4Bo+LPATBp/SZc9psXl7yL1vjfdzhUfWfF4efVIjgtxDmtfr7KjpkNCaQf/T+PNIc2U/uwzTTdNHEI0rluJ6WLHk/Q6kC9lVD0iCpZVkCPJmC4eL9YIFBHpvhflDKpjfF0nbt1syvaAcCpF2S3Df7+Qh5G2vDTQW+Jw6D/pBe0EAzvCH/8pvRmxfLvsNNQ9F4zrlGmDNiArDPZ5bYkGNiqODWPjORmy1M/Tvor52qXaU7qMCLy1/BKvMWRPrNnLGgmfxmBZ7aFC3OhVmvwzAsVakHPg1Y2ukGL+XL7n/spMcGu4aoWYe1zEiRWWh6uZllAGB1n8/lSfc7/nsxPn+hh5NJ2cKZqOoTgbgBPdQZg5wf56XvQRYPeCqD1e6MPDW3ayuTL3z/5yo+Wsn2EBIAoN1YBjvY4FTM7xonr6Dg6QUDppUIVILc/rOsrj1JEVakI4hfDpz/pMxwqqya/3ZZxzXTPvyZRYSGtRFmDnZO67KsttPi6L7nJfCidOTwTHINx3rKHUN12yxt+Hlc97xQbSs1L+pMqA27mCexJrO5n6vJVuXCRkG2w1l2H9acqhziegHPq15ck5677eMkglDwBs=
 
-script:
-  - ./gradlew build --full-stacktrace
-
 after_success:
   - test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew jacocoTestReport coveralls
   - test "${TRAVIS_TAG}" != "" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew bintrayUpload
