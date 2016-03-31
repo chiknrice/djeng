@@ -1,13 +1,16 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'net.researchgate.release' version '2.3.4'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+    id 'com.jfrog.bintray' version '1.6'
+}
+
 description = 'Dynamic Java Encoder (NextGen)'
 
+// version is moved to gradle.properties where release plugin expects it
 group 'org.chiknrice'
-
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'net.researchgate.release'
-apply plugin: 'jacoco'
-apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'com.jfrog.bintray'
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
@@ -16,34 +19,14 @@ repositories {
     mavenCentral()
 }
 
+// project dependencies
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.10'
     testCompile 'junit:junit:4.11', 'org.concordion:concordion:1.5.1', 'org.chiknrice:concordion-setvar-extension:1.1.4'
     testRuntime 'org.slf4j:slf4j-simple:1.7.10'
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.3.1'
-        classpath 'net.researchgate:gradle-release:2.2.1'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
-    }
-}
-
+// publish to bintray repo
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_API_KEY')
@@ -53,6 +36,40 @@ bintray {
         name = 'djeng'
         licenses = ['GPL-3.0']
         vcsUrl = 'https://github.com/chiknrice/${project.name}.git'
+    }
+}
+
+// to align with tag expected by travis (in .travis.yml)
+release {
+    tagTemplate = 'v${version}'
+}
+
+// to configure concordion to output to spec dir
+test {
+    systemProperties['concordion.output.dir'] = "$reporting.baseDir/spec"
+}
+
+// for publishing jacoco coverage report
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+// for publishing as maven artifact
+publishing {
+    publications {
+        Release(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                asNode().appendNode("description", project.description).plus(pomConfig)
+            }
+        }
     }
 }
 
@@ -81,32 +98,13 @@ def pomConfig = {
     }
 }
 
-publishing {
-    publications {
-        Release(MavenPublication) {
-            from components.java
-
-            artifact sourcesJar
-            artifact javadocJar
-
-            pom.withXml {
-                asNode().appendNode("description", project.description).plus(pomConfig)
-            }
-        }
-    }
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
-release {
-    tagTemplate = 'v${version}'
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
 }
 
-test {
-    systemProperties['concordion.output.dir'] = "$reporting.baseDir/spec"
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-}
