@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Specifications</title>
+</head>
+<body>
+
+<h1>Specifications</h1>
+
+<p>
+    DJENG stands for Dynamic Java Encoder (NextGen). It is the next generation of byte stream codec framework which is a
+    product of another project, Jen8583. Although djeng was originally intended to as a framework for creating codecs to
+    encoding/decoding ISO8583/AS2805 messages, it evolved into a dynamic framework which can be used to easily create a
+    codec for any message format.
+</p>
+
+<p>
+    The key components of djeng are the <a href="config/Config.html" c:run="concordion">xml configuration</a>,
+    the <a href="codec/Codec.html" c:run="concordion">message codec</a> and the
+    <a href="message/Message.html" c:run="concordion">message</a>. Message codecs are built based on the xml
+    configuration defined by the user. These message codec then performs the heavy lifting of encoding/decoding between
+    message and from byte arrays. Lastly, the message provides a way for users to query message elements after decoding
+    a byte array and to build messages prior to encoding to byte arrays.
+</p>
+
+<h3>
+    Quickstart
+</h3>
+
+<p>
+    TODO
+</p>
+
+
+</body>
+</html>
