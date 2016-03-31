@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Unique Codec ID</title>
+</head>
+<body>
+
+<h1>Unique Codec ID</h1>
+
+<p>
+    The <code>id</code> attribute of a codec within the <code>codecs</code> should be unique.
+</p>
+
+<div class="example">
+    <p>
+        If a codec (including filters) has the same <code>id</code> like below:
+    <pre i:setResource="#config" i:path="same-id-codec.xml"/>
+    </p>
+
+    <p>
+        Then building the config would result in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate
+        unique value [x] declared for identity constraint of element "codecs".</code>
+    </p>
+</div>
+
+</body>
+</html>

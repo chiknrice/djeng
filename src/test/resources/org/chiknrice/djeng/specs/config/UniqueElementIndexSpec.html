@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Unique Element Index</title>
+</head>
+<body>
+
+<h1>Unique Element Index</h1>
+
+<p>
+    An sub-element's <code>index</code> attribute should be unique within the <code>message-elements</code> as well as
+    any <code>composite</code>. Both <code>element</code> and <code>composite</code> are considered sub-element.
+</p>
+
+
+<div class="example">
+    <p>
+        Below configuration is an example where two <code>element</code>s under <code>message-elements</code> are having
+        the same <code>index</code> attribute:
+    <pre i:setResource="#config" i:path="same-index1.xml"/>
+    </p>
+
+    <p>
+        Which results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique value [1] declared for
+        identity constraint of element "message-elements".</code>
+    </p>
+
+</div>
+
+<div class="example">
+    <p>
+        Below configuration is an example where an <code>element</code> and a <code>composite</code> under <code>message-elements</code>
+        are having the same <code>index</code> attribute:
+    <pre i:setResource="#config" i:path="same-index2.xml"/>
+    </p>
+
+    <p>
+        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique
+        value [4] declared for identity constraint of element "message-elements".</code>
+    </p>
+</div>
+
+<div class="example">
+
+    <p>
+        Below configuration is an example where two <code>element</code>s under <code>composite</code> are having
+        the same <code>index</code> attribute:
+    <pre i:setResource="#config" i:path="same-index3.xml"/>
+    </p>
+
+    <p>
+        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique value [2]
+        declared for identity constraint of element "composite".</code>
+    </p>
+
+</div>
+
+<div class="example">
+
+    <p>
+        Below configuration is an example where an <code>element</code> and a <code>composite</code> under another
+        <code>composite</code> are having the same <code>index</code> attribute:
+    <pre i:setResource="#config" i:path="same-index4.xml"/>
+    </p>
+
+    <p>
+        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique value [3]
+        declared for identity constraint of element "composite".</code>
+    </p>
+
+</div>
+
+</body>
+</html>

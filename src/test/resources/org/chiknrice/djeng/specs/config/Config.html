@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>XML Configuration</title>
+</head>
+<body>
+
+<h1>XML Configuration</h1>
+
+<p>
+    Djeng uses an xml configuration to define the message structure and codecs <span
+        class="special">(encoder/decoder)</span> to be used for each message element. The config file is then validated
+    against a comprehensive schema <span class="special">(djeng.xsd)</span> which enforces most of the rules that
+    defines a valid message codec configuration.
+</p>
+
+<p>
+    There are just a few elements that comprises the configurations:
+<ul>
+    <li><code>codecs</code></li>
+    <li><code>filter-codec</code></li>
+    <li><code>element-codec</code></li>
+    <li><code>composite-codec</code></li>
+    <li><code>message-elements</code></li>
+    <li><code>element</code></li>
+    <li><code>composite</code></li>
+</ul>
+</p>
+
+<p>
+    Djeng requires at least a <a href="MinimumConfigSpec.html" c:run="concordion">minimum configuration</a> which
+    respects the following rules before any codecs are created:
+<ul>
+    <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Unique Codec ID</a></li>
+    <li><a href="ValidCodecReferenceSpec.html" c:run="concordion">Valid Codec Reference</a></li>
+    <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Unique Element Index</a></li>
+</ul>
+</p>
+
+
+</body>
+</html>

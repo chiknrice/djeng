@@ -16,44 +16,44 @@
 <div class="example">
     <p>
         Building a configuration with no composite codec:
-    <pre i:setResource="#noCompositeCodecConfig" i:path="no-composite-codec.xml"/>
+    <pre i:setResource="#config" i:path="no-composite-codec.xml"/>
     </p>
 
     <p>
-        Would result in <span c:assertEquals="buildCodecWithConfig(#noCompositeCodecConfig)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+        Would result in <code c:assertEquals="buildCodecWithConfig(#config)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</code>
     </p>
 </div>
 
 <div class="example">
     <p>
         Building a configuration with no element codec:
-    <pre i:setResource="#noElementCodecConfig" i:path="no-composite-codec.xml"/>
+    <pre i:setResource="#config" i:path="no-composite-codec.xml"/>
     </p>
 
     <p>
-        Would result in <span c:assertEquals="buildCodecWithConfig(#noElementCodecConfig)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+        Would result in <code c:assertEquals="buildCodecWithConfig(#config)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</code>
     </p>
 </div>
 
 <div class="example">
     <p>
         Building a configuration with no element:
-    <pre i:setResource="#noElementConfig" i:path="no-element.xml"/>
+    <pre i:setResource="#config" i:path="no-element.xml"/>
     </p>
 
     <p>
-        Would result in <span c:assertEquals="buildCodecWithConfig(#noElementConfig)">cvc-complex-type.2.4.b: The content of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element, "http://www.chiknrice.org/djeng":composite}' is expected.</span>
+        Would result in <code c:assertEquals="buildCodecWithConfig(#config)">cvc-complex-type.2.4.b: The content of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element, "http://www.chiknrice.org/djeng":composite}' is expected.</code>
     </p>
 </div>
 
 <div class="example">
     <p>
         Building the minimum configuration:
-    <pre i:setResource="#xmlConfigTemplate" i:path="minimum-config.xml"/>
+    <pre i:setResource="#config" i:path="minimum-config.xml"/>
     </p>
 
     <p>
-        Should be <span c:assertEquals="buildCodecWithConfig(#xmlConfigTemplate)">successful</span>
+        Should be <span c:assertEquals="buildCodecWithConfig(#config)">successful</span>
     </p>
 </div>
 
