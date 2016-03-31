@@ -39,7 +39,7 @@
                 <element name="message-elements" minOccurs="1" maxOccurs="1">
                     <complexType>
                         <group ref="tns:composite-elements-group" minOccurs="1" maxOccurs="unbounded"/>
-                        <attribute name="codec" type="tns:non-empty-token" use="required"/>
+                        <attribute name="codec" type="tns:non-empty-no-space-token" use="required"/>
                         <anyAttribute/>
                     </complexType>
                     <unique name="message-elements-key">
@@ -83,15 +83,15 @@
     </simpleType>
 
     <!-- Simple type restricting empty token -->
-    <simpleType name="non-empty-token">
+    <simpleType name="non-empty-no-space-token">
         <restriction base="token">
-            <minLength value="1"/>
+            <pattern value="[^\s]+"/>
         </restriction>
     </simpleType>
 
     <!-- Simple type restricting empty string (difference here is this could include spaces in between characters) -->
-    <simpleType name="non-empty-string">
-        <restriction base="string">
+    <simpleType name="non-empty-token">
+        <restriction base="token">
             <minLength value="1"/>
         </restriction>
     </simpleType>
@@ -105,17 +105,17 @@
     </simpleType>
 
     <complexType name="codec-type">
-        <attribute name="id" type="tns:non-empty-token" use="required"/>
-        <attribute name="class" type="tns:non-empty-token" use="required"/>
-        <attribute name="filter" type="tns:non-empty-token" use="optional"/>
-        <attribute name="description" type="tns:non-empty-string" use="optional"/>
+        <attribute name="id" type="tns:non-empty-no-space-token" use="required"/>
+        <attribute name="class" type="tns:non-empty-no-space-token" use="required"/>
+        <attribute name="filter" type="tns:non-empty-no-space-token" use="optional"/>
+        <attribute name="description" type="tns:non-empty-token" use="optional"/>
         <anyAttribute/>
     </complexType>
 
     <complexType name="element-type">
         <attribute name="index" type="tns:index-type" use="required"/>
-        <attribute name="codec" type="tns:non-empty-token" use="required"/>
-        <attribute name="description" type="tns:non-empty-string" use="optional"/>
+        <attribute name="codec" type="tns:non-empty-no-space-token" use="required"/>
+        <attribute name="description" type="tns:non-empty-token" use="optional"/>
         <anyAttribute/>
     </complexType>
 
@@ -134,8 +134,8 @@
     <complexType name="composite-type">
         <group ref="tns:composite-elements-group" minOccurs="1" maxOccurs="unbounded"/>
         <attribute name="index" type="tns:index-type" use="required"/>
-        <attribute name="codec" type="tns:non-empty-token" use="required"/>
-        <attribute name="description" type="tns:non-empty-string" use="optional"/>
+        <attribute name="codec" type="tns:non-empty-no-space-token" use="required"/>
+        <attribute name="description" type="tns:non-empty-token" use="optional"/>
         <anyAttribute/>
     </complexType>
 

@@ -56,7 +56,7 @@
     <!-- Simple type restricting a token to characters allowed in defining a java date pattern -->
     <simpleType name="date-pattern-type">
         <restriction base="token">
-            <pattern value="[GyYMwWDdFEuaHkKhmsSzZX]*"/>
+            <pattern value="[GyYMwWDdFEuaHkKhmsSzZX]+"/>
         </restriction>
     </simpleType>
 
@@ -92,12 +92,12 @@
     <attribute name="var-numeric-encoding" type="tns:var-length-numeric-data-encoding"/>
     <attribute name="bitmap-encoding" type="tns:bitmap-encoding"/>
     <attribute name="pattern" type="tns:date-pattern-type"/>
-    <attribute name="timezone" type="d:non-empty-string"/>
+    <attribute name="timezone" type="d:non-empty-token"/>
     <attribute name="padding" type="tns:hexByte"/>
     <attribute name="strip-padding" type="boolean"/>
     <attribute name="left-justified" type="boolean"/>
     <attribute name="packed" type="boolean"/>
     <!-- TODO: Should this be in core attributes?-->
-    <attribute name="mask" type="d:non-empty-token"/>
+    <attribute name="mask" type="d:non-empty-no-space-token"/>
 
 </schema>

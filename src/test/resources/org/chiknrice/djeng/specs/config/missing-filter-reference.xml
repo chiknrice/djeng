@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.chiknrice.org/djeng">
+
+    <codecs>
+        <filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
+        <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec" filter="f"/>
+        <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
+    </codecs>
+    <message-elements codec="message">
+        <element index="1" codec="string"/>
+    </message-elements>
+
+</config>

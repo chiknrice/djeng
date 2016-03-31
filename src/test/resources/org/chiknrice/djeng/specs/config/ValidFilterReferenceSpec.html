@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Valid Filter Reference</title>
+</head>
+<body>
+
+<h1>Valid Filter Reference</h1>
+
+<p>
+    Every codec (or even filter) using a filter should have their <code>filter</code> attribute reference an existing
+    filter.
+</p>
+
+<div class="example">
+    <p>
+        If the reference doesn't exist like below:
+    <pre i:setResource="#config" i:path="missing-filter-reference.xml"/>
+    </p>
+
+    <p>
+        Then building the config would result in <code c:assertEquals="buildCodecWithConfig(#config)">Key
+        'filter-codec-id-ref' with value 'f' not found for identity constraint of element 'config'.</code>
+    </p>
+</div>
+
+</body>
+</html>
