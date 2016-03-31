@@ -22,7 +22,8 @@
     </p>
 
     <p>
-        Which results in <code c:echo="buildCodecWithConfig(#config)"></code>
+        Which results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique value [1] declared for
+        identity constraint of element "message-elements".</code>
     </p>
 
 </div>
@@ -35,7 +36,8 @@
     </p>
 
     <p>
-        Which in turn results in <code c:echo="buildCodecWithConfig(#config)"></code>
+        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique
+        value [4] declared for identity constraint of element "message-elements".</code>
     </p>
 </div>
 
@@ -48,7 +50,8 @@
     </p>
 
     <p>
-        Which in turn results in <code c:echo="buildCodecWithConfig(#config)"></code>
+        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique value [2]
+        declared for identity constraint of element "composite".</code>
     </p>
 
 </div>
@@ -62,7 +65,8 @@
     </p>
 
     <p>
-        Which in turn results in <code c:echo="buildCodecWithConfig(#config)"></code>
+        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)">Duplicate unique value [3]
+        declared for identity constraint of element "composite".</code>
     </p>
 
 </div>
