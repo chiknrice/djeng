@@ -32,7 +32,7 @@
                         </sequence>
                     </complexType>
                     <unique name="codecs-key">
-                        <selector xpath="tns:codecs/*"></selector>
+                        <selector xpath="./*"></selector>
                         <field xpath="@id"></field>
                     </unique>
                 </element>
@@ -49,6 +49,10 @@
                 </element>
             </sequence>
         </complexType>
+        <key name="filter-codec-id">
+            <selector xpath="tns:codecs/tns:filter-codec"/>
+            <field xpath="@id"/>
+        </key>
         <key name="element-codec-id">
             <selector xpath="tns:codecs/tns:element-codec"/>
             <field xpath="@id"/>
@@ -57,10 +61,10 @@
             <selector xpath="tns:codecs/tns:composite-codec"/>
             <field xpath="@id"/>
         </key>
-        <key name="filter-codec-id">
-            <selector xpath="tns:codecs/tns:filter-codec"/>
-            <field xpath="@id"/>
-        </key>
+        <keyref name="filter-codec-id-ref" refer="tns:filter-codec-id">
+            <selector xpath="tns:codecs/*"/>
+            <field xpath="@filter"/>
+        </keyref>
         <keyref name="element-codec-id-ref" refer="tns:element-codec-id">
             <selector xpath=".//tns:element"/>
             <field xpath="@codec"/>
@@ -68,10 +72,6 @@
         <keyref name="composite-codec-id-ref" refer="tns:composite-codec-id">
             <selector xpath="tns:message-elements|.//tns:composite"/>
             <field xpath="@codec"/>
-        </keyref>
-        <keyref name="filter-codec-id-ref" refer="tns:filter-codec-id">
-            <selector xpath="tns:codecs/*"/>
-            <field xpath="@filter"/>
         </keyref>
     </element>
 
