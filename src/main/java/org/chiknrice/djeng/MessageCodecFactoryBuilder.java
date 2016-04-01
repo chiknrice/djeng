@@ -35,6 +35,7 @@ public class MessageCodecFactoryBuilder {
 
     private final List<String> customSchemas = new ArrayList<>();
     private final List<AttributeTypeMapper> customTypeMappers = new ArrayList<>();
+    private int encodeBufferSize = 0x7FFF;
 
     public MessageCodecFactoryBuilder withSchema(String customSchema) {
         customSchemas.add(customSchema);
@@ -54,21 +55,28 @@ public class MessageCodecFactoryBuilder {
         return this;
     }
 
+    public MessageCodecFactoryBuilder withEncodeBufferSize(int encodeBufferSize) {
+        this.encodeBufferSize = encodeBufferSize;
+        return this;
+    }
+
     public MessageCodecFactory build() {
-        return new MessageCodecFactoryImpl(customSchemas, customTypeMappers);
+        return new MessageCodecFactoryImpl(customSchemas, customTypeMappers, encodeBufferSize);
     }
 
     private static class MessageCodecFactoryImpl implements MessageCodecFactory {
 
         final List<String> customSchemas;
         final List<AttributeTypeMapper> customTypeMappers;
+        final int encodeBufferSize;
 
         XmlConfig xmlConfig;
         Map<String, XmlConfig.XmlElement> codecMap;
 
-        MessageCodecFactoryImpl(List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers) {
+        MessageCodecFactoryImpl(List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers, int encodeBufferSize) {
             this.customSchemas = customSchemas;
             this.customTypeMappers = customTypeMappers;
+            this.encodeBufferSize = encodeBufferSize;
         }
 
         @Override
@@ -88,7 +96,7 @@ public class MessageCodecFactoryBuilder {
                 final XmlConfig.XmlElement element = xmlConfig.getElement(MESSAGE_ELEMENTS);
                 Codec<?> codec = buildCodec(element);
                 configureComposite(element, codec);
-                return new MessageCodecImpl((CompositeCodec) codec);
+                return new MessageCodecImpl((CompositeCodec) codec, encodeBufferSize);
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
@@ -204,15 +212,17 @@ public class MessageCodecFactoryBuilder {
     private static class MessageCodecImpl implements MessageCodec {
 
         final CompositeCodec compositeCodec;
+        final int encodeBufferSize;
 
-        MessageCodecImpl(CompositeCodec compositeCodec) {
+        MessageCodecImpl(CompositeCodec compositeCodec, int encodeBufferSize) {
             this.compositeCodec = compositeCodec;
+            this.encodeBufferSize = encodeBufferSize;
         }
 
         @Override
         public byte[] encode(Message message) {
             message.clearMarkers();
-            ByteBuffer buffer = ByteBuffer.allocate(0x7FFF);
+            ByteBuffer buffer = ByteBuffer.allocate(encodeBufferSize);
             compositeCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
             byte[] encoded = new byte[buffer.position()];
             buffer.rewind();
