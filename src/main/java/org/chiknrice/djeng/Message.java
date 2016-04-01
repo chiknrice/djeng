@@ -213,7 +213,7 @@ public final class Message {
     @Override
     public boolean equals(Object obj) {
         try {
-            rwLock.readLock().unlock();
+            rwLock.readLock().lock();
             if (obj != null && obj instanceof Message) {
                 Message other = (Message) obj;
                 if (elements.equals(other.elements)) {
