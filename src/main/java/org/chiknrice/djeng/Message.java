@@ -16,11 +16,13 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,12 +30,17 @@ import static java.lang.String.format;
 import static org.chiknrice.djeng.MessageElement.Section;
 
 /**
- * The main class which represents the structure of a message. Message elements are structured as a CompositeMap which a
- * TreeMap that restricts keys and values to String, MessageElement<?>.  Keys corresponds to the indexes defined in the
- * message config xml.  Elements can be composite which can further have sub elements.  Adding, getting, and removing an
- * element can be done with index path and optionally a value.  The index path is a pattern of indexes separated by a
- * dot (.).  Valid indexes are restricted by the config schema to alpha-numeric characters plus the hyphen (-).  An
- * example index path would be h1.a.b-1 or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583 message).
+ * A class that uses hierarchical model to represent the message elements in a byte stream. Message elements are
+ * organized into a tree-like structure. This class would be the root element which is represented as a collection of
+ * sub elements. The sub elements can either be a value element (leaf) or a composite element (branch). Each
+ * branch/composite element is again a collection of sub elements.
+ * <p>
+ * The underlying collection implement is a {@see CompositeMap} which is a TreeMap that restricts keys and values to
+ * String and MessageElement<?>.  Keys corresponds to the indexes defined in the configuration xml.  Getting, setting
+ * and removing an element can be done with index path, setting would require a non-null value.  The index path is a
+ * pattern of indexes separated by a dot (.).  Valid indexes are restricted by the config schema to alpha-numeric
+ * characters plus the hyphen (-).  An example index path would be h1.a.b-1 or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583
+ * message).  The accessor/mutator methods are all thread-safe.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -42,6 +49,7 @@ public final class Message {
     private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[a-z,A-F,0-9,-]+(\\.[a-z,A-F,0-9,-]+)*");
 
     private final CompositeMap elements;
+    final ReadWriteLock rwLock = new ReentrantReadWriteLock();
     ByteBuffer messageBuffer;
 
     /**
@@ -71,27 +79,32 @@ public final class Message {
         if (!m.matches()) {
             throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
         } else {
-            String[] indexes = indexPath.split("\\.");
+            try {
+                rwLock.readLock().lock();
+                String[] indexes = indexPath.split("\\.");
 
-            if (indexes.length > 1) {
-                CompositeMap currentCompositeMap = elements;
-                for (int i = 0; i < indexes.length; i++) {
-                    if (currentCompositeMap != null) {
-                        if (i == indexes.length - 1) {
-                            return (T) getSubElement(currentCompositeMap, indexes[i], raw);
-                        } else {
-                            MessageElement subElement = currentCompositeMap.get(indexes[i]);
-                            if (subElement != null && subElement.getValue() instanceof CompositeMap) {
-                                currentCompositeMap = (CompositeMap) subElement.getValue();
+                if (indexes.length > 1) {
+                    CompositeMap currentCompositeMap = elements;
+                    for (int i = 0; i < indexes.length; i++) {
+                        if (currentCompositeMap != null) {
+                            if (i == indexes.length - 1) {
+                                return (T) getSubElement(currentCompositeMap, indexes[i], raw);
                             } else {
-                                break;
+                                MessageElement subElement = currentCompositeMap.get(indexes[i]);
+                                if (subElement != null && subElement.getValue() instanceof CompositeMap) {
+                                    currentCompositeMap = (CompositeMap) subElement.getValue();
+                                } else {
+                                    break;
+                                }
                             }
                         }
                     }
+                    return null;
+                } else {
+                    return (T) getSubElement(elements, indexes[0], raw);
                 }
-                return null;
-            } else {
-                return (T) getSubElement(elements, indexes[0], raw);
+            } finally {
+                rwLock.readLock().unlock();
             }
         }
     }
@@ -106,7 +119,7 @@ public final class Message {
      */
     private Object getSubElement(CompositeMap compositeMap, String index, boolean raw) {
         MessageElement<?> messageElement = compositeMap.get(index);
-        if (messageElement.getValue() instanceof CompositeMap) {
+        if (messageElement == null || messageElement.getValue() instanceof CompositeMap) {
             return null;
         } else if (raw) {
             if (messageBuffer == null) {
@@ -135,40 +148,45 @@ public final class Message {
         if (!m.matches()) {
             throw new IllegalArgumentException(format("%s is not a valid index path", indexPath));
         } else {
-            this.messageBuffer = null;
-            String[] indexes = indexPath.split("\\.");
+            try {
+                rwLock.writeLock().lock();
+                resetRawState();
+                String[] indexes = indexPath.split("\\.");
 
-            Stack<CompositeMap> compositeMapStack = new Stack<>();
-            compositeMapStack.push(elements);
+                Stack<CompositeMap> compositeMapStack = new Stack<>();
+                compositeMapStack.push(elements);
 
-            for (int i = 0; i < indexes.length; i++) {
-                String key = indexes[i];
-                if (i == (indexes.length - 1)) {
-                    if (value == null) {
-                        compositeMapStack.peek().remove(key);
-                        // cleanup
-                        while (compositeMapStack.size() > 0 && compositeMapStack.peek().size() == 0) {
-                            compositeMapStack.pop();
-                            compositeMapStack.peek().remove(indexes[--i]);
+                for (int i = 0; i < indexes.length; i++) {
+                    String key = indexes[i];
+                    if (i == (indexes.length - 1)) {
+                        if (value == null) {
+                            compositeMapStack.peek().remove(key);
+                            // cleanup
+                            while (compositeMapStack.size() > 0 && compositeMapStack.peek().size() == 0) {
+                                compositeMapStack.pop();
+                                compositeMapStack.peek().remove(indexes[--i]);
+                            }
+                            break;
+                        } else {
+                            MessageElement subElement = new MessageElement(value);
+                            compositeMapStack.pop().put(key, subElement);
                         }
-                        break;
                     } else {
-                        MessageElement subElement = new MessageElement(value);
-                        compositeMapStack.pop().put(key, subElement);
-                    }
-                } else {
-                    MessageElement subElement = compositeMapStack.peek().get(key);
-                    if (subElement != null && subElement.getValue() instanceof CompositeMap) {
-                        compositeMapStack.push((CompositeMap) subElement.getValue());
-                    } else {
-                        subElement = new MessageElement<>(new CompositeMap());
-                        MessageElement<?> replaced = compositeMapStack.peek().put(key, subElement);
-                        if (replaced != null) {
-                            // TODO log replaced?
+                        MessageElement subElement = compositeMapStack.peek().get(key);
+                        if (subElement != null && subElement.getValue() instanceof CompositeMap) {
+                            compositeMapStack.push((CompositeMap) subElement.getValue());
+                        } else {
+                            subElement = new MessageElement<>(new CompositeMap());
+                            MessageElement<?> replaced = compositeMapStack.peek().put(key, subElement);
+                            if (replaced != null) {
+                                // TODO log replaced?
+                            }
+                            compositeMapStack.push((CompositeMap) subElement.getValue());
                         }
-                        compositeMapStack.push((CompositeMap) subElement.getValue());
                     }
                 }
+            } finally {
+                rwLock.writeLock().unlock();
             }
         }
     }
@@ -184,29 +202,47 @@ public final class Message {
 
     @Override
     public int hashCode() {
-        return elements.hashCode();
+        try {
+            rwLock.readLock().lock();
+            return elements.hashCode();
+        } finally {
+            rwLock.readLock().unlock();
+        }
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof Message) {
-            Message other = (Message) obj;
-            if (elements.equals(other.elements)) {
-                return true;
+        try {
+            rwLock.readLock().unlock();
+            if (obj != null && obj instanceof Message) {
+                Message other = (Message) obj;
+                if (elements.equals(other.elements)) {
+                    return true;
+                }
             }
+            return false;
+        } finally {
+            rwLock.readLock().unlock();
         }
-        return false;
     }
 
     @Override
     public String toString() {
-        // TODO
-        return super.toString();
+        try {
+            rwLock.readLock().lock();
+            // TODO
+            return super.toString();
+        } finally {
+            rwLock.readLock().unlock();
+        }
     }
 
-    void clearMarkers() {
-        for (MessageElement<?> subElement : elements.values()) {
-            subElement.clearMarkers();
+    void resetRawState() {
+        if (messageBuffer != null) {
+            messageBuffer = null;
+            for (MessageElement<?> subElement : elements.values()) {
+                subElement.clearMarkers();
+            }
         }
     }
 
@@ -221,7 +257,7 @@ public final class Message {
             MessageElement<?> element = entry.getValue();
             Object value = element.getValue();
             if (value instanceof CompositeMap) {
-                TreeMap<Section, MessageElement<?>> tmpMap = new TreeMap<>();
+                Map<Section, MessageElement<?>> tmpMap = new HashMap<>();
                 findElements((CompositeMap) value, tmpMap);
                 for (Section section : tmpMap.keySet()) {
                     section.index = entry.getKey().concat(".").concat(section.index);
@@ -248,7 +284,7 @@ public final class Message {
             MessageElement<?> element = entry.getValue();
             Object value = element.getValue();
             if (value instanceof CompositeMap) {
-                Map<String, Object> tmpMap = new LinkedHashMap<>();
+                Map<String, Object> tmpMap = new HashMap<>();
                 findElementValues((CompositeMap) value, tmpMap);
                 for (Entry<String, Object> tmpEntry : tmpMap.entrySet()) {
                     parentMap.put(entry.getKey().concat(".").concat(tmpEntry.getKey()), tmpEntry.getValue());
@@ -266,8 +302,13 @@ public final class Message {
      */
     Map<Section, MessageElement<?>> getElementsInternal() {
         Map<MessageElement.Section, MessageElement<?>> elementMap = new TreeMap<>();
-        findElements(this.elements, elementMap);
-        return elementMap;
+        try {
+            rwLock.readLock().lock();
+            findElements(this.elements, elementMap);
+            return elementMap;
+        } finally {
+            rwLock.readLock().unlock();
+        }
     }
 
     // Public API
@@ -278,9 +319,14 @@ public final class Message {
      * @return
      */
     public Map<String, Object> getElements() {
-        Map<String, Object> elements = new LinkedHashMap<>();
-        findElementValues(this.elements, elements);
-        return elements;
+        Map<String, Object> elements = new HashMap<>();
+        try {
+            rwLock.readLock().lock();
+            findElementValues(this.elements, elements);
+            return elements;
+        } finally {
+            rwLock.readLock().unlock();
+        }
     }
 
     /**

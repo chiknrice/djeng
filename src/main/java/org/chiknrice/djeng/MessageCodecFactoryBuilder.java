@@ -221,15 +221,20 @@ public class MessageCodecFactoryBuilder {
 
         @Override
         public byte[] encode(Message message) {
-            message.clearMarkers();
             ByteBuffer buffer = ByteBuffer.allocate(encodeBufferSize);
-            compositeCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
-            byte[] encoded = new byte[buffer.position()];
-            buffer.rewind();
-            buffer.get(encoded);
-            message.messageBuffer = ByteBuffer.wrap(encoded);
-            logMessage("ENCODE", message);
-            return encoded;
+            try {
+                message.rwLock.writeLock().lock();
+                message.resetRawState();
+                compositeCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
+                byte[] encoded = new byte[buffer.position()];
+                buffer.rewind();
+                buffer.get(encoded);
+                message.messageBuffer = ByteBuffer.wrap(encoded);
+                logMessage("ENCODE", message);
+                return encoded;
+            } finally {
+                message.rwLock.writeLock().unlock();
+            }
         }
 
         @Override
