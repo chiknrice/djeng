@@ -17,6 +17,7 @@ package org.chiknrice.djeng;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 import static java.lang.String.format;
@@ -25,6 +26,9 @@ import static org.chiknrice.djeng.XmlConfig.ElementName.CODECS;
 import static org.chiknrice.djeng.XmlConfig.ElementName.MESSAGE_ELEMENTS;
 
 /**
+ * Builder for a {@see MessageCodecFactory} which provides a fluent API for adding custom schemas and custom type
+ * mappers.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class MessageCodecFactoryBuilder {
@@ -51,10 +55,10 @@ public class MessageCodecFactoryBuilder {
     }
 
     public MessageCodecFactory build() {
-        return new MessageCodecParserInternal(customSchemas, customTypeMappers);
+        return new MessageCodecFactoryImpl(customSchemas, customTypeMappers);
     }
 
-    private static class MessageCodecParserInternal implements MessageCodecFactory {
+    private static class MessageCodecFactoryImpl implements MessageCodecFactory {
 
         final List<String> customSchemas;
         final List<AttributeTypeMapper> customTypeMappers;
@@ -62,7 +66,7 @@ public class MessageCodecFactoryBuilder {
         XmlConfig xmlConfig;
         Map<String, XmlConfig.XmlElement> codecMap;
 
-        MessageCodecParserInternal(List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers) {
+        MessageCodecFactoryImpl(List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers) {
             this.customSchemas = customSchemas;
             this.customTypeMappers = customTypeMappers;
         }
@@ -84,7 +88,7 @@ public class MessageCodecFactoryBuilder {
                 final XmlConfig.XmlElement element = xmlConfig.getElement(MESSAGE_ELEMENTS);
                 Codec<?> codec = buildCodec(element);
                 configureComposite(element, codec);
-                return new MessageCodec((CompositeCodec) codec);
+                return new MessageCodecImpl((CompositeCodec) codec);
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
@@ -195,5 +199,43 @@ public class MessageCodecFactoryBuilder {
                 codec.setAttribute(key, value);
             }
         }
+    }
+
+    private static class MessageCodecImpl implements MessageCodec {
+
+        final CompositeCodec compositeCodec;
+
+        MessageCodecImpl(CompositeCodec compositeCodec) {
+            this.compositeCodec = compositeCodec;
+        }
+
+        @Override
+        public byte[] encode(Message message) {
+            message.clearMarkers();
+            ByteBuffer buffer = ByteBuffer.allocate(0x7FFF);
+            compositeCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
+            byte[] encoded = new byte[buffer.position()];
+            buffer.rewind();
+            buffer.get(encoded);
+            message.messageBuffer = ByteBuffer.wrap(encoded);
+            logMessage("ENCODE", message);
+            return encoded;
+        }
+
+        @Override
+        public Message decode(byte[] messageBytes) {
+            ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
+            MessageElement<CompositeMap> element = compositeCodec.decode(buffer);
+            Message message = new Message(element.getValue());
+            message.messageBuffer = buffer;
+            logMessage("DECODE", message);
+            return message;
+        }
+
+        void logMessage(String operation, Message message) {
+            // TODO: beautify this log
+            // TODO: implement masking!
+        }
+
     }
 }

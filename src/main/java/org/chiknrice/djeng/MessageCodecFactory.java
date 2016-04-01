@@ -18,6 +18,9 @@ package org.chiknrice.djeng;
 import java.io.InputStream;
 
 /**
+ * A factory for creating {@see MessageCodec} implementation based on a supplied xml configuration.  A
+ * MessageCodecFactory is reusable and would have consistent custom schemas and custom type mappers configured.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public interface MessageCodecFactory {

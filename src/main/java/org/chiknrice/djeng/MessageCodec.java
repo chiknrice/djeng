@@ -11,25 +11,16 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
- *
  */
+
 package org.chiknrice.djeng;
 
-import java.nio.ByteBuffer;
-import java.util.Map;
-
-import static org.chiknrice.djeng.MessageElement.*;
-
 /**
+ * Encodes and decodes a {@see Message} to and from a byte[]
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class MessageCodec {
-
-    final CompositeCodec compositeCodec;
-
-    MessageCodec(CompositeCodec compositeCodec) {
-        this.compositeCodec = compositeCodec;
-    }
+public interface MessageCodec {
 
     /**
      * Encodes the Message to bytes based on the rules defined by the config.
@@ -37,17 +28,7 @@ public class MessageCodec {
      * @param message the message to be encoded.
      * @return the encoded bytes.
      */
-    public byte[] encode(Message message) {
-        message.clearMarkers();
-        ByteBuffer buffer = ByteBuffer.allocate(0x7FFF);
-        compositeCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
-        byte[] encoded = new byte[buffer.position()];
-        buffer.rewind();
-        buffer.get(encoded);
-        message.messageBuffer = ByteBuffer.wrap(encoded);
-        logMessage("ENCODE", message);
-        return encoded;
-    }
+    byte[] encode(Message message);
 
     /**
      * Decodes the isoBytes based on the rules defined by the config.
@@ -55,29 +36,5 @@ public class MessageCodec {
      * @param messageBytes the bytes to decode.
      * @return the decoded Message.
      */
-    public Message decode(byte[] messageBytes) {
-        ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
-        MessageElement<CompositeMap> element = compositeCodec.decode(buffer);
-        Message message = new Message(element.getValue());
-        message.messageBuffer = buffer;
-        logMessage("DECODE", message);
-        return message;
-    }
-
-    private void logMessage(String operation, Message message) {
-        // TODO: beautify this log
-        // TODO: implement masking!
-        //sortedMap.putAll(message.getElementsInternal());
-        Map<Section, MessageElement<?>> elementMap = message.getElementsInternal();
-        System.out.println(operation);
-        for (Map.Entry<Section, MessageElement<?>> entry : elementMap.entrySet()) {
-            System.out.println(String.format("%10s : %s", entry.getKey().index, entry.getValue()));
-        }
-
-        //for (Map.Entry<String, Object> elementEntry : sortedMap.entrySet()) {
-            //System.out.println(String.format("%10s : %s", elementEntry.getKey(), elementEntry.getValue()));
-            //System.out.println(String.format("%10s : %s", "%h", rawElementsMap.get(elementEntry.getKey())));
-        //}
-    }
-
+    Message decode(byte[] messageBytes);
 }
