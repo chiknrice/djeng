@@ -16,13 +16,16 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Stack;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static org.chiknrice.djeng.MessageElement.*;
+import static org.chiknrice.djeng.MessageElement.Section;
 
 /**
  * The main class which represents the structure of a message. Message elements are structured as a CompositeMap which a
@@ -63,16 +66,60 @@ public final class Message {
         this.elements = elements;
     }
 
+    private <T> T getElement(String indexPath, boolean raw) {
+        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
+        if (!m.matches()) {
+            throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
+        } else {
+            String[] indexes = indexPath.split("\\.");
+
+            if (indexes.length > 1) {
+                CompositeMap currentCompositeMap = elements;
+                for (int i = 0; i < indexes.length; i++) {
+                    if (currentCompositeMap != null) {
+                        if (i == indexes.length - 1) {
+                            return (T) getSubElement(currentCompositeMap, indexes[i], raw);
+                        } else {
+                            MessageElement subElement = currentCompositeMap.get(indexes[i]);
+                            if (subElement != null && subElement.getValue() instanceof CompositeMap) {
+                                currentCompositeMap = (CompositeMap) subElement.getValue();
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                return null;
+            } else {
+                return (T) getSubElement(elements, indexes[0], raw);
+            }
+        }
+    }
+
     /**
      * Returns the value if the sub element exists and if it is not a CompositeMap.
      *
      * @param compositeMap
      * @param index
+     * @param raw
      * @return
      */
-    private Object getSubElement(CompositeMap compositeMap, String index) {
+    private Object getSubElement(CompositeMap compositeMap, String index, boolean raw) {
         MessageElement<?> messageElement = compositeMap.get(index);
-        return messageElement == null || messageElement.getValue() instanceof CompositeMap ? null : messageElement.getValue();
+        if (messageElement.getValue() instanceof CompositeMap) {
+            return null;
+        } else if (raw) {
+            if (messageBuffer == null) {
+                throw new IllegalStateException("Message doesn't have a backing raw data");
+            } else {
+                byte[] bytes = new byte[messageElement.getLimit() - messageElement.getPos()];
+                messageBuffer.rewind().position(messageElement.getPos());
+                messageBuffer.get(bytes);
+                return ByteUtil.encodeHex(bytes);
+            }
+        } else {
+            return messageElement.getValue();
+        }
     }
 
     /**
@@ -88,6 +135,7 @@ public final class Message {
         if (!m.matches()) {
             throw new IllegalArgumentException(format("%s is not a valid index path", indexPath));
         } else {
+            this.messageBuffer = null;
             String[] indexes = indexPath.split("\\.");
 
             Stack<CompositeMap> compositeMapStack = new Stack<>();
@@ -180,14 +228,6 @@ public final class Message {
                 }
                 parentMap.putAll(tmpMap);
             } else {
-                /*if (raw) {
-                    int pos = element.getPos();
-                    int limit = element.getLimit();
-                    byte[] bytes = new byte[limit - pos];
-                    messageBuffer.position(pos);
-                    messageBuffer.get(bytes);
-                    value = ByteUtil.encodeHex(bytes);
-                }*/
                 Section section = new Section();
                 section.index = entry.getKey();
                 section.pos = element.getPos();
@@ -198,7 +238,7 @@ public final class Message {
     }
 
     /**
-     * Same as getElement values but ordering is not defined by how it was decoded or encoded.
+     * Recursive method to get all message element values except for composite elements.
      *
      * @param compositeMap
      * @param parentMap
@@ -252,38 +292,27 @@ public final class Message {
      * @throws IllegalArgumentException if the indexPath pattern is not valid
      */
     public <T> T getElement(String indexPath) {
-        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
-        if (!m.matches()) {
-            throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
-        } else {
-            String[] indexes = indexPath.split("\\.");
+        return getElement(indexPath, false);
+    }
 
-            if (indexes.length > 1) {
-                CompositeMap currentCompositeMap = elements;
-                for (int i = 0; i < indexes.length; i++) {
-                    if (currentCompositeMap != null) {
-                        if (i == indexes.length - 1) {
-                            return (T) getSubElement(currentCompositeMap, indexes[i]);
-                        } else {
-                            MessageElement subElement = currentCompositeMap.get(indexes[i]);
-                            if (subElement != null && subElement.getValue() instanceof CompositeMap) {
-                                currentCompositeMap = (CompositeMap) subElement.getValue();
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                }
-                return null;
-            } else {
-                return (T) getSubElement(elements, indexes[0]);
-            }
-        }
+    /**
+     * Same as {@see #getElement} except that the value is returned as raw hex value.  This would include any data
+     * related to the element like length prefix bytes.
+     *
+     * @param indexPath
+     * @return
+     * @throws IllegalStateException if the underlying byte[] that represents the message doesn't exist.  This could be
+     *                               due to the message not being encoded yet or if the decoded message was modified via
+     *                               set/remove element methods.
+     */
+    public byte[] getRawElement(String indexPath) {
+        return getElement(indexPath, true);
     }
 
     /**
      * Sets the value of a element at the position expressed by indexPath.  This method adds the constraint of non null
-     * values to {@link #setOrRemoveElement} to distinguish from the intent of setting or removing values.
+     * values to {@link #setOrRemoveElement} to distinguish from the intent of setting or removing values.  This method
+     * invalidates the underlying byte[] if it exists.
      *
      * @param indexPath
      * @param value
@@ -297,7 +326,8 @@ public final class Message {
     }
 
     /**
-     * Removes the element at the position indicated by indexPath.
+     * Removes the element at the position indicated by indexPath.  This method invalidates the underlying byte[] if it
+     * exists.
      *
      * @param indexPath
      */
