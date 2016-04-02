@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><html xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <title>Minimum Configuration</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheets/setvar.css" /><link type="text/css" rel="stylesheet" href="http://chiknrice.github.io/djeng/stylesheets/styles.css" /><link type="text/css" rel="stylesheet" href="http://chiknrice.github.io/djeng/stylesheets/github-dark.css" /></head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span><section><div id="title">
+    <h1>Minimum Configuration</h1>
+
+    <p>meet this</p>
+<hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
+    The configuration requires at least 2 codecs, one composite codec and an element codec. The message elements also
+    requires to be pointing to a composite codec and should have at least one child element.
+</p><h3>
+    No Composite Codec
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.b: The content
+        of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec,
+        "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="no-composite-codec.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="string"&gt;
+        &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+
+</div><h3>
+    No Element Codec
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'composite-codec'. One of '{"http://www.chiknrice.org/djeng":filter-codec,
+        "http://www.chiknrice.org/djeng":element-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="no-element-codec.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+        &lt;element index="1" codec="message"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    No Element
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.b: The content
+        of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element,
+        "http://www.chiknrice.org/djeng":composite}' is expected.</span>
+    <pre i:setResource="#config" i:path="no-element.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    Message Elements Not Composite
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">Key 'composite-codec-id-ref' with
+        value 'string' not found for identity constraint of element 'config'.</span>
+    <pre i:setResource="#config" i:path="message-elements-non-composite.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="string"&gt;
+        &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    The Minimum
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would be <span c:assertEquals="#result" class="success">successful</span>.
+    <pre i:setResource="#config" i:path="minimum-config.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+        &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div></section><div class="footer right">Results generated by <a href="http://www.concordion.org">Concordion</a></div></div></body>
+</html>
