@@ -46,14 +46,20 @@
     Djeng requires a <a href="MinimumConfigSpec.html" c:run="concordion">minimum configuration</a> which respects the
     following rules before any codecs are created:
 <ul>
-    <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique id</a>
-    </li>
-    <li><a href="ValidCodecReferenceSpec.html" c:run="concordion">Elements should reference an existing codec</a></li>
-    <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Each element within a composite should have a unique
-        index</a></li>
-    <li><a href="ValidFilterReferenceSpec.html" c:run="concordion">A codec should reference a valid filter</a></li>
     <li><a href="ValidIdentifiersSpec.html" c:run="concordion">Identifiers and attribute values should meet the
         restrictions</a></li>
+    <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique id</a>
+    </li>
+    <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Sub elements should have a unique index</a></li>
+    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion"><code>message-elements</code> should reference a
+        <code>composite-codec</code></a>
+    </li>
+    <li><a href="ElementReferenceSpec.html" c:run="concordion"><code>element</code> should reference an <code>element-codec</code></a>
+    </li>
+    <li><a href="CompositeReferenceSpec.html" c:run="concordion"><code>composite</code> should reference a <code>composite-codec</code></a>
+    </li>
+    <li><a href="FilterReferenceSpec.html" c:run="concordion"><code>filter-codec</code>, <code>element-codec</code>
+        and <code>composite-codec</code> should reference a <code>filter-codec</code></a></li>
 </ul>
 </p>
 

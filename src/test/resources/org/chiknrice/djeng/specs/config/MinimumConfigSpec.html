@@ -13,8 +13,8 @@
 </div>
 
 <p>
-    The configuration requires at least 2 codecs, one composite codec and an element codec. The message elements also
-    requires to be pointing to a composite codec and should have at least one child element.
+    The configuration requires at least 2 codecs, one composite codec and an element codec. The message elements should
+    have at least one child element.
 </p>
 
 <h3>
@@ -54,18 +54,6 @@
         of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element,
         "http://www.chiknrice.org/djeng":composite}' is expected.</span>
     <pre i:setResource="#config" i:path="no-element.xml"/>
-    </p>
-</div>
-
-<h3>
-    Message Elements Not Composite
-</h3>
-
-<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
-    <p>
-        The following configuration would result in <span c:assertEquals="#result">Key 'composite-codec-id-ref' with
-        value 'string' not found for identity constraint of element 'config'.</span>
-    <pre i:setResource="#config" i:path="message-elements-non-composite.xml"/>
     </p>
 </div>
 

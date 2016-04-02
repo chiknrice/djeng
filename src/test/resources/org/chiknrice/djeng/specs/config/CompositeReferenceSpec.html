@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Composite Reference</title>
+</head>
+<body>
+
+<div id="title">
+    <h1>Composite Reference</h1>
+</div>
+
+<p>
+    All <code>composite</code> should have its <code>codec</code> attribute reference an existing
+    <code>composite-codec</code>.
+</p>
+
+<h3>
+    <code>codec</code> referencing an <code>element-codec</code>
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">Key 'composite-codec-id-ref' with
+        value 'y' not found for identity constraint of element 'config'.</span>
+    <pre i:setResource="#config" i:path="composite-reference1.xml"/>
+    </p>
+</div>
+
+<h3>
+    <code>codec</code> referencing a non existing <code>composite-codec</code>
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">Key 'composite-codec-id-ref' with
+        value 'a' not found for identity constraint of element 'config'.</span>
+    <pre i:setResource="#config" i:path="composite-reference2.xml"/>
+    </p>
+</div>
+
+</body>
+</html>

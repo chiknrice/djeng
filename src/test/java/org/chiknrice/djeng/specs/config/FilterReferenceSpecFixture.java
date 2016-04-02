@@ -20,5 +20,5 @@ import org.chiknrice.djeng.specs.BaseFixture;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class ValidCodecReferenceSpecFixture extends BaseFixture {
+public class FilterReferenceSpecFixture extends BaseFixture {
 }
