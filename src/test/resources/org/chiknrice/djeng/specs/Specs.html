@@ -10,7 +10,7 @@
     <h1>Djeng</h1>
 
     <p>
-        specification (by example)
+        a codec framework
     </p>
 </div>
 
@@ -35,6 +35,10 @@
     easily create a codec for any message format (e.g. HSM calls, SMPP messages).
 </p>
 
+<h3>
+    Specifications
+</h3>
+
 <p>
     These specifications are living documentation (using <a href="http://concordion.org/">Concordion</a>) which defines
     the functionality of every component of djeng. Automated test results are reflected in these pages at every build. A
@@ -42,20 +46,15 @@
     <span class="success">green</span>.
 </p>
 
-<p>
-    The key components of djeng are the <a href="config/Config.html" c:run="concordion">xml configuration</a>,
-    the <a href="codec/Codec.html" c:run="concordion">codecs</a> and the <a href="message/Message.html"
-                                                                            c:run="concordion">message</a>. One would
-    generally define the configuration based on the message structure (requirements) and build the message codec to be
-    used for encoding and decoding messages.
-</p>
-
 <h3>
-    Quickstart
+    Usage
 </h3>
 
 <p>
-    TODO
+    One would generally define the <a href="config/Config.html" c:run="concordion">configuration</a> based on a
+    particular message structure. The configuration is then used to build a message <a href="codec/Codec.html"
+                                                                                       c:run="concordion">codec</a>
+    to be used for encoding and decoding <a href="message/Message.html" c:run="concordion">message</a>.
 </p>
 
 
