@@ -75,8 +75,7 @@
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span
-            c:assertTrue="#result.equals('successful')">a message codec</span>.
+        The following configuration would be <span c:assertEquals="#result">successful</span>.
     <pre i:setResource="#config" i:path="minimum-config.xml"/>
     </p>
 </div>
