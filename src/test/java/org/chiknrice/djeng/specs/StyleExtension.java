@@ -86,7 +86,7 @@ public class StyleExtension implements ConcordionExtension, SpecificationProcess
 
                     section.appendChild(child);
                 } else if ("breadcrumbs".equals(child.getAttributeValue("class"))) {
-                    wrapper.prependChild(child);
+                    body.getElementById("title").prependChild(child);
                 }
 
                 // Remove time and concordion link style
