@@ -829,11 +829,11 @@ div.wrapper div.footer.right {
 }
 
 .success {
-  color: lime;
+  color: #93BD20;
 }
 
 .failure {
-  color: red;
+  color: #e63525;
 }
 
 span.breadcrumbs {
