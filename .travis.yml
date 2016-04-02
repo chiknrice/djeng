@@ -17,6 +17,7 @@ env:
 
 after_success:
   - test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew jacocoTestReport coveralls
+  - test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./deploy_pages.sh
   - test "${TRAVIS_TAG}" != "" && test "${TRAVIS_JDK_VERSION}" == "oraclejdk7" && ./gradlew bintrayUpload
 
 after_failure:
