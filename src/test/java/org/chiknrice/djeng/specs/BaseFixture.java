@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
  */
 @RunWith(ConcordionRunner.class)
 @FullOGNL
-@Extensions({SetVarCommandExtension.class})
+@Extensions({SetVarCommandExtension.class, StyleExtension.class})
 public abstract class BaseFixture {
 
     static MessageCodecFactory MESSAGE_CODEC_FACTORY;

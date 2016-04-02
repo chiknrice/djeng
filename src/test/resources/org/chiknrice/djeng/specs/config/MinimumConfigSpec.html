@@ -6,54 +6,78 @@
 </head>
 <body>
 
-<h1>Minimum Configuration</h1>
+<div id="title">
+    <h1>Minimum Configuration</h1>
+
+    <p>meet this</p>
+</div>
 
 <p>
     The configuration requires at least 2 codecs, one composite codec and an element codec. The message elements also
     requires to be pointing to a composite codec and should have at least one child element.
 </p>
 
-<div class="example">
+<h3>
+    No Composite Codec
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Building a configuration with no composite codec:
+        The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.b: The content
+        of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec,
+        "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
     <pre i:setResource="#config" i:path="no-composite-codec.xml"/>
     </p>
 
+</div>
+
+<h3>
+    No Element Codec
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Would result in <code c:assertEquals="buildCodecWithConfig(#config)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</code>
+        The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'composite-codec'. One of '{"http://www.chiknrice.org/djeng":filter-codec,
+        "http://www.chiknrice.org/djeng":element-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="no-element-codec.xml"/>
     </p>
 </div>
 
-<div class="example">
-    <p>
-        Building a configuration with no element codec:
-    <pre i:setResource="#config" i:path="no-composite-codec.xml"/>
-    </p>
+<h3>
+    No Element
+</h3>
 
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Would result in <code c:assertEquals="buildCodecWithConfig(#config)">cvc-complex-type.2.4.b: The content of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec, "http://www.chiknrice.org/djeng":composite-codec}' is expected.</code>
-    </p>
-</div>
-
-<div class="example">
-    <p>
-        Building a configuration with no element:
+        The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.b: The content
+        of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element,
+        "http://www.chiknrice.org/djeng":composite}' is expected.</span>
     <pre i:setResource="#config" i:path="no-element.xml"/>
     </p>
+</div>
 
+<h3>
+    Message Elements Not Composite
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Would result in <code c:assertEquals="buildCodecWithConfig(#config)">cvc-complex-type.2.4.b: The content of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element, "http://www.chiknrice.org/djeng":composite}' is expected.</code>
+        The following configuration would result in <span c:assertEquals="#result">Key 'composite-codec-id-ref' with
+        value 'string' not found for identity constraint of element 'config'.</span>
+    <pre i:setResource="#config" i:path="message-elements-non-composite.xml"/>
     </p>
 </div>
 
-<div class="example">
-    <p>
-        Building the minimum configuration:
-    <pre i:setResource="#config" i:path="minimum-config.xml"/>
-    </p>
+<h3>
+    The Minimum
+</h3>
 
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Should be <span c:assertEquals="buildCodecWithConfig(#config)">successful</span>
+        The following configuration would result in <span
+            c:assertTrue="#result.equals('successful')">a message codec</span>.
+    <pre i:setResource="#config" i:path="minimum-config.xml"/>
     </p>
 </div>
 

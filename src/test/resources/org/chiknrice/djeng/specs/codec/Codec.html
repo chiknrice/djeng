@@ -1,15 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion">
+<html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>Message Codec</title>
+    <title>Codecs</title>
 </head>
 <body>
 
-<h1>Message Codec</h1>
+<div id="title">
+
+    <h1>Codecs</h1>
+
+    <p>
+        message to byte[] and back
+    </p>
+
+</div>
+
+<h3>
+    Extensible Idea
+</h3>
 
 <p>
-    The message codec is responsible for encode or decode a message to and from a byte[].
+    Message codecs are built based xml configuration. The message codec performs the heavy lifting of encoding and
+    decoding between message and byte arrays. Since a message elements can possibly have different encodings, the
+    message codec delegates the encoding/decoding of the message elements to format specific codecs.
 </p>
 
 </body>

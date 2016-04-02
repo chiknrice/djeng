@@ -6,19 +6,33 @@
 </head>
 <body>
 
-<h1>Message</h1>
+<div id="title">
+    <h1>Message</h1>
+
+    <p>the model</p>
+</div>
+
+<h3>
+    Data Structure
+</h3>
 
 <p>
-    The message (org.chiknrice.djeng.Message) uses a hierarchical model to represent the message elements in a byte
-    stream. Message elements are organized into a tree-like structure. The message would be the root element which is
-    represented as a collection of sub elements. The sub elements can either be a value element (leaf) or a composite
-    element (branch). Each branch/composite element is again a collection of sub elements.
+    Any message can practically be represented as a hierarchical data structure and this is the same with a byte stream.
+    Djeng provides the class org.chiknrice.djeng.Message for this purpose. Message elements are organized into a
+    tree-like structure where the message would be the root element represented as a collection of sub elements. The sub
+    elements can either be a value element or a composite element. Value elements would be placeholders for actual parts
+    of the message while composite elements are collection of sub elements serving as the branches in the tree-like
+    structure.
 </p>
+
+<h3>
+    Accessor/Mutator
+</h3>
 
 <p>
     <!-- TODO link to set/remove/get specifications -->
-    Methods are provided to set, remove, and get elements. Set and remove methods are distinguished from each other as
-    setting an element doesn't allow null values.
+    Message provides methods to set, remove, and get elements. Set and remove methods are distinguished from each other
+    as setting an element doesn't allow null values (one of the fundamental rules of the framework).
 </p>
 
 </body>

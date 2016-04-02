@@ -6,22 +6,48 @@
 </head>
 <body>
 
-<h1>Specifications</h1>
+<div id="title">
+    <h1>Djeng</h1>
+
+    <p>
+        specifications by example
+    </p>
+</div>
+
+<h3>
+    Problem
+</h3>
 
 <p>
-    DJENG stands for Dynamic Java Encoder (NextGen). It is the next generation of byte stream codec framework following
-    another project, Jen8583. Although the original intention was to provide a framework for creating codecs to
-    encode/decode ISO8583/AS2805 messages, it evolved into a dynamic framework which can be used to easily create a
-    codec for any message format.
+    Communication protocols doesn't end in http. As a developer for payment systems, I'm often required to integrate
+    with switches or POS terminals which doesn't communicate using web services. When developing communications
+    adapters for different protocols, I came to realize that there is no one solution available to cover these
+    requirements. Some frameworks exists but are usually focused on a specific format or protocol.
+</p>
+
+<h3>
+    Solution
+</h3>
+
+<p>
+    DJENG stands for Dynamic Java Encoder (NextGen). It is the next generation of byte stream codec framework. Although
+    originally intended to be a framework for creating ISO8583/AS2805 codecs, it evolved into a dynamic framework to
+    easily create a codec for any message format (e.g. HSM calls, SMPP messages).
+</p>
+
+<p>
+    These specifications are living documentation (using <a href="http://concordion.org/">Concordion</a>) which defines
+    the functionality of every component of djeng. Automated test results are reflected in these pages at every build. A
+    test that fails would be marked in <span class="failed">red</span> and passing tests would be marked in
+    <span class="success">green</span>.
 </p>
 
 <p>
     The key components of djeng are the <a href="config/Config.html" c:run="concordion">xml configuration</a>,
-    the <a href="codec/Codec.html" c:run="concordion">message codec</a> and the
-    <a href="message/Message.html" c:run="concordion">message</a>. Message codecs are built based on the xml
-    configuration defined by the user. These message codec then performs the heavy lifting of encoding/decoding between
-    message and from byte arrays. Lastly, the message provides a way for users to query message elements after decoding
-    a byte array and to build messages prior to encoding to byte arrays.
+    the <a href="codec/Codec.html" c:run="concordion">codecs</a> and the <a href="message/Message.html"
+                                                                            c:run="concordion">message</a>. One would
+    generally define the configuration based on the message structure (requirements) and build the message codec to be
+    used for encoding and decoding messages.
 </p>
 
 <h3>
