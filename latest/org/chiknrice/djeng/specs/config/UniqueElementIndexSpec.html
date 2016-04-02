@@ -15,17 +15,27 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Unique Element Index</h1>
-
+<hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
+    A sub-element's index attribute should be unique within the message-elements as well as any composite. Both element
+    and composite are considered a sub-element.
+</p><h3>
+    Two elements under message-elements are having the same index
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        An sub-element's <code>index</code> attribute should be unique within the <code>message-elements</code> as well as
-        any <code>composite</code>. Both <code>element</code> and <code>composite</code> are considered sub-element.
-    </p>
-<hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><div class="example">
-    <p>
-        Below configuration is an example where two <code>element</code>s under <code>message-elements</code> are having
-        the same <code>index</code> attribute:
+        The following configuration would result in <span c:assertEquals="#result" class="success">Duplicate unique
+        value [1] declared for identity constraint of element "message-elements".</span>
     <pre i:setResource="#config" i:path="same-index1.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
@@ -41,16 +51,12 @@
 &lt;/config&gt;
 </pre>
     </p>
-
+</div><h3>
+    An element and a composite under message-elements are having the same index
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Which results in <code c:assertEquals="buildCodecWithConfig(#config)" class="success">Duplicate unique value [1] declared for
-        identity constraint of element "message-elements".</code>
-    </p>
-
-</div><div class="example">
-    <p>
-        Below configuration is an example where an <code>element</code> and a <code>composite</code> under <code>message-elements</code>
-        are having the same <code>index</code> attribute:
+        The following configuration would result in <span c:assertEquals="#result" class="success">Duplicate unique
+        value [4] declared for identity constraint of element "message-elements".</span>
     <pre i:setResource="#config" i:path="same-index2.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
@@ -70,16 +76,12 @@
 &lt;/config&gt;
 </pre>
     </p>
-
+</div><h3>
+    Two elements under composite are having the same index
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)" class="success">Duplicate unique
-        value [4] declared for identity constraint of element "message-elements".</code>
-    </p>
-</div><div class="example">
-
-    <p>
-        Below configuration is an example where two <code>element</code>s under <code>composite</code> are having
-        the same <code>index</code> attribute:
+        The following configuration would result in <span c:assertEquals="#result" class="success">Duplicate unique
+        value [2] declared for identity constraint of element "composite".</span>
     <pre i:setResource="#config" i:path="same-index3.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
@@ -99,17 +101,12 @@
 &lt;/config&gt;
 </pre>
     </p>
-
+</div><h3>
+    An element and a composite under another composite are having the same index
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)" class="success">Duplicate unique value [2]
-        declared for identity constraint of element "composite".</code>
-    </p>
-
-</div><div class="example">
-
-    <p>
-        Below configuration is an example where an <code>element</code> and a <code>composite</code> under another
-        <code>composite</code> are having the same <code>index</code> attribute:
+        The following configuration would result in <span c:assertEquals="#result" class="success">Duplicate unique
+        value [3] declared for identity constraint of element "composite".</span>
     <pre i:setResource="#config" i:path="same-index4.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
@@ -131,11 +128,5 @@
 &lt;/config&gt;
 </pre>
     </p>
-
-    <p>
-        Which in turn results in <code c:assertEquals="buildCodecWithConfig(#config)" class="success">Duplicate unique value [3]
-        declared for identity constraint of element "composite".</code>
-    </p>
-
 </div></section><div class="footer right">Results generated by <a href="http://www.concordion.org">Concordion</a></div></div></body>
 </html>

@@ -20,10 +20,10 @@
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Composite Reference</h1>
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
-    All <code>composite</code> should have its <code>codec</code> attribute reference an existing
-    <code>composite-codec</code>.
+    All composite should have its codec attribute reference an existing
+    composite-codec.
 </p><h3>
-    <code>codec</code> referencing an <code>element-codec</code>
+    codec referencing an element-codec
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key 'composite-codec-id-ref' with
@@ -46,7 +46,7 @@
 </pre>
     </p>
 </div><h3>
-    <code>codec</code> referencing a non existing <code>composite-codec</code>
+    codec referencing a non existing composite-codec
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key 'composite-codec-id-ref' with

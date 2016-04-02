@@ -20,10 +20,10 @@
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Element Reference</h1>
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
-    All <code>element</code> should have its <code>codec</code> attribute reference an existing
-    <code>element-codec</code>.
+    All element should have its codec attribute reference an existing
+    element-codec.
 </p><h3>
-    <code>codec</code> referencing a <code>composite-codec</code>
+    codec referencing a composite-codec
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key 'element-codec-id-ref' with value
@@ -43,7 +43,7 @@
 </pre>
     </p>
 </div><h3>
-    <code>codec</code> referencing a non existing <code>element-codec</code>
+    codec referencing a non existing element-codec
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key 'element-codec-id-ref' with value
