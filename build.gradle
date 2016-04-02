@@ -39,6 +39,15 @@ bintray {
     }
 }
 
+// resource filtering
+processResources {
+    filesMatching('**/*.xsd') {
+        filter {
+            it.replace('@version@', project.property('version'))
+        }
+    }
+}
+
 // to align with tag expected by travis (in .travis.yml)
 release {
     tagTemplate = 'v${version}'
