@@ -10,20 +10,16 @@
     <h1>Valid Filter Reference</h1>
 
     <p>
-        Every codec (or even filter) using a filter should have their <code>filter</code> attribute reference an existing
+        Every codec (or even filter) using a filter should have their filter attribute reference an existing
         filter.
     </p>
 </div>
 
-<div class="example">
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        If the reference doesn't exist like below:
+        The following configuration would result in <span c:assertEquals="#result">Key
+        'filter-codec-id-ref' with value 'f' not found for identity constraint of element 'config'.</span>
     <pre i:setResource="#config" i:path="missing-filter-reference.xml"/>
-    </p>
-
-    <p>
-        Then building the config would result in <code c:assertEquals="buildCodecWithConfig(#config)">Key
-        'filter-codec-id-ref' with value 'f' not found for identity constraint of element 'config'.</code>
     </p>
 </div>
 

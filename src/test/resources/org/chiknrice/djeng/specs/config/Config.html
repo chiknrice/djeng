@@ -28,13 +28,13 @@
 <p>
     Complex message formats can easily be defined using the small set of xml elements.
 <ul>
-    <li><code>codecs</code></li>
-    <li><code>filter-codec</code></li>
-    <li><code>element-codec</code></li>
-    <li><code>composite-codec</code></li>
-    <li><code>message-elements</code></li>
-    <li><code>element</code></li>
-    <li><code>composite</code></li>
+    <li>codecs</li>
+    <li>filter-codec</li>
+    <li>element-codec</li>
+    <li>composite-codec</li>
+    <li>message-elements</li>
+    <li>element</li>
+    <li>composite</li>
 </ul>
 </p>
 
@@ -51,15 +51,15 @@
     <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique id</a>
     </li>
     <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Sub elements should have a unique index</a></li>
-    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion"><code>message-elements</code> should reference a
-        <code>composite-codec</code></a>
+    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion">message-elements should reference a
+        composite-codec</a>
     </li>
-    <li><a href="ElementReferenceSpec.html" c:run="concordion"><code>element</code> should reference an <code>element-codec</code></a>
+    <li><a href="ElementReferenceSpec.html" c:run="concordion">element should reference an element-codec</a>
     </li>
-    <li><a href="CompositeReferenceSpec.html" c:run="concordion"><code>composite</code> should reference a <code>composite-codec</code></a>
+    <li><a href="CompositeReferenceSpec.html" c:run="concordion">composite should reference a composite-codec</a>
     </li>
-    <li><a href="FilterReferenceSpec.html" c:run="concordion"><code>filter-codec</code>, <code>element-codec</code>
-        and <code>composite-codec</code> should reference a <code>filter-codec</code></a></li>
+    <li><a href="FilterReferenceSpec.html" c:run="concordion">filter attribute of all codecs should reference a
+        filter-codec</a></li>
 </ul>
 </p>
 
