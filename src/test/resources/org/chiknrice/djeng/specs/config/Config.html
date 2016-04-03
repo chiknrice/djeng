@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion">
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
 <head>
     <meta charset="UTF-8"/>
     <title>Configuration</title>
@@ -19,15 +19,18 @@
 <p>
     As djeng models message elements into a hierarchical structure, it makes sense to use XML to define the
     configuration. The xml configuration defines codecs and the structure of message elements corresponding to the
-    arrangement specific to a message format. The configuration file is then validated against a comprehensive
-    schema (<a href="#">djeng.xsd</a>) which enforces most of the rules that defines a valid configuration.
+    arrangement specific to a message format. The configuration file is then validated against a comprehensive schema
+    which enforces most of the rules that defines a valid configuration.
 </p>
 
-<h3>XML Elements</h3>
+<h3>
+    XML Elements
+</h3>
 
 <p>
     Complex message formats can easily be defined using the small set of xml elements.
 <ul>
+    <li>config</li>
     <li>codecs</li>
     <li>filter-codec</li>
     <li>element-codec</li>
@@ -39,6 +42,14 @@
 </p>
 
 <h3>
+    Structure
+</h3>
+
+<p>
+    The root element of the xml configuration is <code></code>
+</p>
+
+<h3>
     Schema Validation
 </h3>
 
@@ -46,20 +57,21 @@
     Djeng requires a <a href="MinimumConfigSpec.html" c:run="concordion">minimum configuration</a> which respects the
     following rules before any codecs are created:
 <ul>
+    <li><a href="ValidNamespaceSpec.html" c:run="concordion">The core namespace should be declared</a></li>
     <li><a href="ValidIdentifiersSpec.html" c:run="concordion">Identifiers and attribute values should meet the
         restrictions</a></li>
     <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique id</a>
     </li>
     <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Sub elements should have a unique index</a></li>
-    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion">message-elements should reference a
-        composite-codec</a>
+    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion"><code>message-elements</code> should reference a
+        <code>composite-codec</code></a>
     </li>
-    <li><a href="ElementReferenceSpec.html" c:run="concordion">element should reference an element-codec</a>
+    <li><a href="ElementReferenceSpec.html" c:run="concordion"><code>element</code> should reference an <code>element-codec</code></a>
     </li>
-    <li><a href="CompositeReferenceSpec.html" c:run="concordion">composite should reference a composite-codec</a>
+    <li><a href="CompositeReferenceSpec.html" c:run="concordion"><code>composite</code> should reference a <code>composite-codec</code></a>
     </li>
-    <li><a href="FilterReferenceSpec.html" c:run="concordion">filter attribute of all codecs should reference a
-        filter-codec</a></li>
+    <li><a href="FilterReferenceSpec.html" c:run="concordion"><code>filter</code> attribute of all codecs should reference a
+        <code>filter-codec</code></a></li>
 </ul>
 </p>
 

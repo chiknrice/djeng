@@ -11,8 +11,8 @@
 </div>
 
 <p>
-    Values of the following are based on non-empty-no-space-token
-    type which requires a value without any spaces even in the middle of characters.
+    Values of the following attributes are based on non-empty-no-space-token type which requires a value without any
+    spaces even in the middle of characters.
 <ul>
     <li>id</li>
     <li>codec</li>
@@ -20,23 +20,22 @@
     <li>filter</li>
 </ul>
 
-On the other hand, the index attribute is more strict. Valid values are limited to alphanumeric characters
-and the hyphen (-).
+On the other hand, the index attribute is more strict. Valid values are limited to alphanumeric characters and the
+hyphen (-).
 </p>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span c:assertEquals="#result">cvc-pattern-valid:
-        Value 'my string' is not facet-valid with respect to pattern '[^\s]+' for type
-        'non-empty-no-space-token'.</span>
+        The following configuration would result in <span c:assertEquals="#result">cvc-pattern-valid: Value 'my string'
+        is not facet-valid with respect to pattern '[^\s]+' for type 'non-empty-no-space-token'.</span>
     <pre i:setResource="#config" i:path="invalid-id-format.xml"/>
     </p>
 </div>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span c:assertEquals="#result">cvc-pattern-valid:
-        Value 'a$1' is not facet-valid with respect to pattern '[a-z,A-F,0-9,-]+' for type 'index-type'.</span>
+        The following configuration would result in <span c:assertEquals="#result">cvc-pattern-valid: Value 'a$1' is not
+        facet-valid with respect to pattern '[a-z,A-F,0-9,-]+' for type 'index-type'.</span>
     <pre i:setResource="#config" i:path="invalid-index-format.xml"/>
     </p>
 </div>
