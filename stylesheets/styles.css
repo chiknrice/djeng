@@ -622,6 +622,10 @@ blockquote {
   font-style: italic;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 code {
 //  font-family: "Lucida Sans", Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
 //  color: #efefef;
