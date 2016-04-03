@@ -16,8 +16,8 @@
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Valid Identifiers</h1>
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
-    Values of the following are based on non-empty-no-space-token
-    type which requires a value without any spaces even in the middle of characters.
+    Values of the following attributes are based on non-empty-no-space-token type which requires a value without any
+    spaces even in the middle of characters.
 <ul>
     <li>id</li>
     <li>codec</li>
@@ -25,13 +25,12 @@
     <li>filter</li>
 </ul>
 
-On the other hand, the index attribute is more strict. Valid values are limited to alphanumeric characters
-and the hyphen (-).
+On the other hand, the index attribute is more strict. Valid values are limited to alphanumeric characters and the
+hyphen (-).
 </p><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-pattern-valid:
-        Value 'my string' is not facet-valid with respect to pattern '[^\s]+' for type
-        'non-empty-no-space-token'.</span>
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-pattern-valid: Value 'my string'
+        is not facet-valid with respect to pattern '[^\s]+' for type 'non-empty-no-space-token'.</span>
     <pre i:setResource="#config" i:path="invalid-id-format.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
@@ -48,8 +47,8 @@ and the hyphen (-).
     </p>
 </div><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-pattern-valid:
-        Value 'a$1' is not facet-valid with respect to pattern '[a-z,A-F,0-9,-]+' for type 'index-type'.</span>
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-pattern-valid: Value 'a$1' is not
+        facet-valid with respect to pattern '[a-z,A-F,0-9,-]+' for type 'index-type'.</span>
     <pre i:setResource="#config" i:path="invalid-index-format.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
