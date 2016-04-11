@@ -26,7 +26,7 @@
         The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.b: The content
         of element 'codecs' is not complete. One of '{"http://www.chiknrice.org/djeng":element-codec,
         "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
-    <pre i:setResource="#config" i:path="no-composite-codec.xml"/>
+    <pre i:setResource="#config" i:path="samples/no-composite-codec.xml"/>
     </p>
 
 </div>
@@ -40,7 +40,7 @@
         The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.a: Invalid
         content was found starting with element 'composite-codec'. One of '{"http://www.chiknrice.org/djeng":filter-codec,
         "http://www.chiknrice.org/djeng":element-codec}' is expected.</span>
-    <pre i:setResource="#config" i:path="no-element-codec.xml"/>
+    <pre i:setResource="#config" i:path="samples/no-element-codec.xml"/>
     </p>
 </div>
 
@@ -53,7 +53,7 @@
         The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.b: The content
         of element 'message-elements' is not complete. One of '{"http://www.chiknrice.org/djeng":element,
         "http://www.chiknrice.org/djeng":composite}' is expected.</span>
-    <pre i:setResource="#config" i:path="no-element.xml"/>
+    <pre i:setResource="#config" i:path="samples/no-element.xml"/>
     </p>
 </div>
 
@@ -64,7 +64,7 @@
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would be <span c:assertEquals="#result">successful</span>.
-    <pre i:setResource="#config" i:path="minimum-config.xml"/>
+    <pre i:setResource="#config" i:path="samples/minimum-config.xml"/>
     </p>
 </div>
 
