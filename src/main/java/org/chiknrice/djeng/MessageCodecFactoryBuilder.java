@@ -113,19 +113,13 @@ public class MessageCodecFactoryBuilder {
                 Class<?> codecClass = codecElement.getAttribute(CLASS);
                 switch (codecElement.getName()) {
                     case ELEMENT_CODEC:
-                        if (CompositeCodec.class.isAssignableFrom(codecClass)) {
-                            throw new RuntimeException(format("%s subclass (%s) cannot be used on %s", CompositeCodec.class.getSimpleName(), codecClass.getName(), codecElement.getName().asString()));
-                        }
+                        validateImplementation(ElementCodec.class, codecClass);
                         break;
                     case COMPOSITE_CODEC:
-                        if (!CompositeCodec.class.isAssignableFrom(codecClass)) {
-                            throw new RuntimeException(format("Invalid %s implementation (%s)", CompositeCodec.class.getSimpleName(), codecClass.getName()));
-                        }
+                        validateImplementation(CompositeCodec.class, codecClass);
                         break;
                     case FILTER_CODEC:
-                        if (!CodecFilter.class.isAssignableFrom(codecClass)) {
-                            throw new RuntimeException(format("Invalid %s implementation (%s)", CodecFilter.class.getSimpleName(), codecClass.getName()));
-                        }
+                        validateImplementation(CodecFilter.class, codecClass);
                         break;
                     default:
                         throw new RuntimeException("Unexpected element " + codecElement.getName().asString());
@@ -133,6 +127,12 @@ public class MessageCodecFactoryBuilder {
                 codecMap.put(id, codecElement);
             }
             return codecMap;
+        }
+
+        void validateImplementation(Class<?> expected, Class<?> actual) {
+            if (!expected.isAssignableFrom(actual)) {
+                throw new RuntimeException(format("%s is not a valid implementation of %s", actual.getName(), expected.getName()));
+            }
         }
 
         void configureComposite(XmlConfig.XmlElement compositeConfig, Codec<?> codec) {
