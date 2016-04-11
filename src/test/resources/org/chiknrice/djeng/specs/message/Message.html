@@ -18,11 +18,10 @@
 
 <p>
     Any message can practically be represented as a hierarchical data structure and this is the same with a byte stream.
-    Djeng provides the class <code>org.chiknrice.djeng.Message</code> for this purpose. Message elements are organized
-    into a tree-like structure where the message is the root element which has a collection of sub elements. The sub
-    elements can either be a value element or a composite element. Value elements would be placeholders for actual parts
-    of the message while composite elements are collection of sub elements serving as the branches in the tree-like
-    structure.
+    Djeng provides the class org.chiknrice.djeng.Message for this purpose. Message elements are organized into a
+    tree-like structure where the message is the root element which has a collection of sub elements. The sub elements
+    can either be a value element or a composite element. Value elements would be placeholders for actual parts of the
+    message while composite elements are collection of sub elements serving as the branches in the tree-like structure.
 </p>
 
 <h3>
@@ -30,11 +29,38 @@
 </h3>
 
 <p>
-    Message provides methods to set, remove, and get elements. Set and remove methods are distinguished from each other
-    as setting an element doesn't allow null values (one of the fundamental rules of the framework). Setting an elements
-    is done via <code class="nowrap">void setElement(String indexPath, Object value)</code>, removing an element is done
-    via <code class="nowrap">void removeElement(String indexPath)</code>, and getting an element value is done via <code
-        class="nowrap">T getElement(String indexPath)</code>.
+    The following methods are provided to set, remove, and get element(s):
+<ul>
+    <li class="nowrap">void setElement(String indexPath, Object value)</li>
+    <li class="nowrap">void removeElement(String indexPath)</li>
+    <li class="nowrap">T getElement(String indexPath)</li>
+    <li class="nowrap">byte[] getRawElement(String indexPath)</li>
+    <li class="nowrap">Map&lt;String, Object&gt; getElements()</li>
+</ul>
+
+Set and remove methods are distinguished from each other as setting an element doesn't allow null values (one of the
+fundamental rules of the framework). Methods are also provided to get the raw element (in the form of a byte[]) as well
+all the elements (in no particular order). Note that the getRawElement method only returns the raw value if the message
+was encoded already or if the message was a result of decoding.
+</p>
+
+<h3>
+    Design
+</h3>
+
+<p>
+    The message elements related method follows the following rules:
+<ul>
+    <li><a href="#">Upon creation, the getElements() should return an empty Map</a></li>
+    <li><a href="#">After setting an element, the element should be available via getElement</a></li>
+    <li><a href="#"></a></li>
+    <li><a href="#"></a></li>
+    <li><a href="#"></a></li>
+    <li><a href="#"></a></li>
+    <li><a href="#"></a></li>
+    <li><a href="#"></a></li>
+    <li><a href="#"></a></li>
+</ul>
 </p>
 
 </body>
