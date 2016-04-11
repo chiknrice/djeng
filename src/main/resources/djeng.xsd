@@ -96,14 +96,6 @@
         </restriction>
     </simpleType>
 
-    <simpleType name="length-prefix-encoding">
-        <restriction base="token">
-            <enumeration value="CHAR"/>
-            <enumeration value="BCD"/>
-            <enumeration value="BINARY"/>
-        </restriction>
-    </simpleType>
-
     <complexType name="codec-type">
         <attribute name="id" type="tns:non-empty-no-space-token" use="required"/>
         <attribute name="class" type="tns:non-empty-no-space-token" use="required"/>
