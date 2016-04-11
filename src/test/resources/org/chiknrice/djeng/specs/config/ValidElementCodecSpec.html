@@ -14,11 +14,27 @@
     The class attribute of element-codec should reference a valid implementation of org.chiknrice.djeng.ElementCodec
 </p>
 
+<h3>
+    Invalid Class
+</h3>
+
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result">java.lang.String is not a valid
         implementation of org.chiknrice.djeng.ElementCodec</span>
-    <pre i:setResource="#config" i:path="samples/invalid-element-codec.xml"/>
+    <pre i:setResource="#config" i:path="samples/invalid-element-codec1.xml"/>
+    </p>
+</div>
+
+<h3>
+    Non Exsiting Class
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">Class not found
+        org.chiknrice.djeng.NotExisting</span>
+    <pre i:setResource="#config" i:path="samples/invalid-element-codec2.xml"/>
     </p>
 </div>
 

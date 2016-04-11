@@ -51,7 +51,11 @@ public final class CoreAttributes {
             Object objectValue = null;
             switch (attribute.getName()) {
                 case "class":
-                    objectValue = Class.forName(value);
+                    try {
+                        objectValue = Class.forName(value);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException("Class not found " + e.getMessage(), e);
+                    }
                     break;
                 default:
             }
