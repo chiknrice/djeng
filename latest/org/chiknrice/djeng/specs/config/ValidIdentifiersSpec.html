@@ -31,7 +31,7 @@ hyphen (-).
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-pattern-valid: Value 'my string'
         is not facet-valid with respect to pattern '[^\s]+' for type 'non-empty-no-space-token'.</span>
-    <pre i:setResource="#config" i:path="invalid-id-format.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    <pre i:setResource="#config" i:path="samples/invalid-id-format.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
@@ -49,7 +49,7 @@ hyphen (-).
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-pattern-valid: Value 'a$1' is not
         facet-valid with respect to pattern '[a-z,A-F,0-9,-]+' for type 'index-type'.</span>
-    <pre i:setResource="#config" i:path="invalid-index-format.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    <pre i:setResource="#config" i:path="samples/invalid-index-format.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
