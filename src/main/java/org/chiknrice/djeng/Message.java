@@ -54,14 +54,8 @@ public final class Message {
 
     /**
      * The only publicly accessible constructor which accepts an mti.
-     *
-     * @param mti
      */
-    public Message(int mti) {
-        if (mti < 0) {
-            throw new IllegalArgumentException("MTI cannot be negative");
-        }
-        // TODO implement setting mti
+    public Message() {
         elements = new CompositeMap();
     }
 
