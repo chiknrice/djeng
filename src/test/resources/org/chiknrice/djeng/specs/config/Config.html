@@ -24,7 +24,7 @@
 </p>
 
 <h3>
-    XML Elements
+    Design
 </h3>
 
 <p>
@@ -51,6 +51,16 @@
 </ul>
 </p>
 
+<p>
+    The 'codecs' tag would be the parent of all codec definitions. A codec definition would be one of 'filter-codec',
+    'element-codec', or 'composite-codec'. The definitions provide a type of codec which can be reused by the elements
+    under 'message-elements' tag. Each codec definition is uniquely identified by its 'id' attribute.
+</p>
+
+<p>
+    The 'message-elements' tag would be the parent of all
+</p>
+
 <h3>
     Schema Validation
 </h3>
@@ -60,22 +70,27 @@
         href="MinimumConfigSpec.html" c:run="concordion">minimum configuration</a> which respects the following rules
     before any codecs are created:
 <ul>
+    <li><a href="#">The codecs requires at least an 'id' and 'class'</a></li>
     <li><a href="ValidNamespaceSpec.html" c:run="concordion">The core namespace should be declared</a></li>
     <li><a href="ValidIdentifiersSpec.html" c:run="concordion">Attribute values should meet the restrictions</a></li>
-    <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique id</a>
+    <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique 'id'
+        attribute</a>
     </li>
-    <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Elements under a composite (including message-elements)
-        should have a unique index</a></li>
-    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion">Message elements tag should reference a valid
-        composite-codec tag</a>
+    <li><a href="UniqueElementIndexSpec.html" c:run="concordion">Elements under a 'composite' (including
+        'message-elements') should have a unique 'index' attribute</a></li>
+    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion">The 'codec' attribute of 'message-elements' tag
+        should reference a valid composite codec</a>
     </li>
-    <li><a href="ElementReferenceSpec.html" c:run="concordion">Element tag should reference a valid element-codec</a>
+    <li><a href="ElementReferenceSpec.html" c:run="concordion">The 'codec' attribute of 'element' tags should reference
+        a valid element codec</a>
     </li>
-    <li><a href="CompositeReferenceSpec.html" c:run="concordion">Composite tag should reference a valid
-        composite-codec</a>
+    <li><a href="CompositeReferenceSpec.html" c:run="concordion">The 'codec' attribute of 'composite' tags should
+        reference a valid composite codec</a>
     </li>
-    <li><a href="FilterReferenceSpec.html" c:run="concordion">Filter attribute of all codecs (including filter-codec)
-        should reference a valid filter-codec</a></li>
+    <li><a href="FilterReferenceSpec.html" c:run="concordion">The 'filter' attribute of all codecs (including
+        'filter-codec') should reference a valid filter codec</a></li>
+    <li><a href="CodecOrderingSpec.html" c:run="concordion">The codecs should be grouped into types and defined in the
+        order shown in the structure</a></li>
 </ul>
 </p>
 
@@ -88,9 +103,12 @@
     possible, programmatic validation is implemented. These rules are applied after an xml configuration passes the
     schema validation.
 <ul>
-    <li><a href="ValidElementCodecSpec.html" c:run="concordion">The class attribute of element-codec should be a decendant of ElementCodec</a></li>
-    <li><a href="ValidCompositeCodecSpec.html" c:run="concordion">The class attribute of composite-codec should be a decendant of CompositeCodec</a></li>
-    <li><a href="ValidCodecFilterSpec.html" c:run="concordion">The class attribute of filter-codec should be a decendant of CodecFilter</a></li>
+    <li><a href="ValidElementCodecSpec.html" c:run="concordion">The class attribute of element-codec should be a
+        decendant of ElementCodec</a></li>
+    <li><a href="ValidCompositeCodecSpec.html" c:run="concordion">The class attribute of composite-codec should be a
+        decendant of CompositeCodec</a></li>
+    <li><a href="ValidCodecFilterSpec.html" c:run="concordion">The class attribute of filter-codec should be a decendant
+        of CodecFilter</a></li>
 </ul>
 </p>
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016 Ian Bondoc
+  ~
+  ~ This file is part of Djeng
+  ~
+  ~ Djeng is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation, either version 3 of the License, or(at your option) any later version.
+  ~
+  ~ Djeng is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with this program. If not, see
+  ~ <http://www.gnu.org/licenses/>.
+  -->
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Codec Ordering</title>
+</head>
+<body>
+
+<div id="title">
+    <h1>Codec Ordering</h1>
+</div>
+
+<p>
+    The codecs should be grouped and ordered in the following manner:
+<ul>
+    <li>filter-codec</li>
+    <li>element-codec</li>
+    <li>composite-codec</li>
+</ul>
+</p>
+
+<h3>
+    filter-codec appears after element-codec
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'filter-codec'. One of '{"http://www.chiknrice.org/djeng":element-codec,
+        "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="samples/codec-ordering1.xml"/>
+    </p>
+</div>
+
+<h3>
+    composite-codec appears before element-codec
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'composite-codec'. One of '{"http://www.chiknrice.org/djeng":filter-codec,
+        "http://www.chiknrice.org/djeng":element-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="samples/codec-ordering2.xml"/>
+    </p>
+</div>
+
+<h3>
+    filter-codec appears after composite-codec
+</h3>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'filter-codec'. One of '{"http://www.chiknrice.org/djeng":composite-codec}'
+        is expected.</span>
+    <pre i:setResource="#config" i:path="samples/codec-ordering3.xml"/>
+    </p>
+</div>
+
+</body>
+</html>
