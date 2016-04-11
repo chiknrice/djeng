@@ -11,20 +11,48 @@
 
 
 
+
+
+
+
+
+
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="#">Financial XSD</a></li><li class="downloads"><a href="#">Core XSD</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Valid CompositeCodec</h1>
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
     The class attribute of composite-codec should reference a valid implementation of org.chiknrice.djeng.CompositeCodec
-</p><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+</p><h3>
+    Invalid Class
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">java.lang.Object is not a valid
         implementation of org.chiknrice.djeng.CompositeCodec</span>
-    <pre i:setResource="#config" i:path="samples/invalid-composite-codec.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    <pre i:setResource="#config" i:path="samples/invalid-composite-codec1.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
         &lt;composite-codec id="message" class="java.lang.Object"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+        &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    Non Exsiting Class
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">Class not found
+        org.chiknrice.djeng.NotExisting</span>
+    <pre i:setResource="#config" i:path="samples/invalid-composite-codec2.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.NotExisting"/&gt;
     &lt;/codecs&gt;
     &lt;message-elements codec="message"&gt;
         &lt;element index="1" codec="string"/&gt;

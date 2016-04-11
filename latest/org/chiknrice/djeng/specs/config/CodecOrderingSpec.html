@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><html xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion" lang="en">
 <head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <meta charset="UTF-8" />
-    <title>Valid CodecFilter</title>
+    <title>Codec Ordering</title>
 <link type="text/css" rel="stylesheet" href="../../../../../stylesheets/setvar.css" /><link type="text/css" rel="stylesheet" href="http://chiknrice.github.io/djeng/stylesheets/styles.css" /><link type="text/css" rel="stylesheet" href="http://chiknrice.github.io/djeng/stylesheets/github-dark.css" /></head>
 <body>
 
@@ -17,22 +17,32 @@
 
 
 
+
+
+
+
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="#">Financial XSD</a></li><li class="downloads"><a href="#">Core XSD</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
-    <h1>Valid CodecFilter</h1>
+    <h1>Codec Ordering</h1>
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
-    The class attribute of codec-filter should reference a valid implementation of org.chiknrice.djeng.CodecFilter
+    The codecs should be grouped and ordered in the following manner:
+<ul>
+    <li>filter-codec</li>
+    <li>element-codec</li>
+    <li>composite-codec</li>
+</ul>
 </p><h3>
-    Invalid Class
+    filter-codec appears after element-codec
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span c:assertEquals="#result" class="success">java.lang.Integer is not a valid
-        implementation of org.chiknrice.djeng.CodecFilter</span>
-    <pre i:setResource="#config" i:path="samples/invalid-codec-filter1.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'filter-codec'. One of '{"http://www.chiknrice.org/djeng":element-codec,
+        "http://www.chiknrice.org/djeng":composite-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="samples/codec-ordering1.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="a-filter" class="java.lang.Integer"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
     &lt;/codecs&gt;
     &lt;message-elements codec="message"&gt;
@@ -43,18 +53,41 @@
 </pre>
     </p>
 </div><h3>
-    Non Exsiting Class
+    composite-codec appears before element-codec
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
-        The following configuration would result in <span c:assertEquals="#result" class="success">Class not found
-        org.chiknrice.djeng.NotExisting</span>
-    <pre i:setResource="#config" i:path="samples/invalid-codec-filter2.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'composite-codec'. One of '{"http://www.chiknrice.org/djeng":filter-codec,
+        "http://www.chiknrice.org/djeng":element-codec}' is expected.</span>
+    <pre i:setResource="#config" i:path="samples/codec-ordering2.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="a-filter" class="org.chiknrice.djeng.NotExisting"/&gt;
+        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+        &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    filter-codec appears after composite-codec
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
+        content was found starting with element 'filter-codec'. One of '{"http://www.chiknrice.org/djeng":composite-codec}'
+        is expected.</span>
+    <pre i:setResource="#config" i:path="samples/codec-ordering3.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
     &lt;/codecs&gt;
     &lt;message-elements codec="message"&gt;
         &lt;element index="1" codec="string"/&gt;
