@@ -28,25 +28,7 @@
 </h3>
 
 <p>
-    Complex message formats can easily be defined using the small set of xml elements.
-<ul>
-    <li>config</li>
-    <li>codecs</li>
-    <li>filter-codec</li>
-    <li>element-codec</li>
-    <li>composite-codec</li>
-    <li>message-elements</li>
-    <li>element</li>
-    <li>composite</li>
-</ul>
-</p>
-
-<h3>
-    Structure
-</h3>
-
-<p>
-    The xml elements are expected in the following structure:
+    Complex message formats can easily be defined using the small set of xml elements which are structured as below.
 <ul class="tree-structure">
     <li>config</li>
     <ul>
@@ -107,9 +89,8 @@
     schema validation.
 <ul>
     <li><a href="ValidElementCodecSpec.html" c:run="concordion">The class attribute of element-codec should be a decendant of ElementCodec</a></li>
-    <li><a href="#">The class attribute of composite-codec should be a decendant of CompositeCodec</a></li>
-    <li><a href="#">The class attribute of filter-codec should be a decendant of CodecFilter</a></li>
-    <li><a href="#"></a></li>
+    <li><a href="ValidCompositeCodecSpec.html" c:run="concordion">The class attribute of composite-codec should be a decendant of CompositeCodec</a></li>
+    <li><a href="ValidCodecFilterSpec.html" c:run="concordion">The class attribute of filter-codec should be a decendant of CodecFilter</a></li>
 </ul>
 </p>
 
