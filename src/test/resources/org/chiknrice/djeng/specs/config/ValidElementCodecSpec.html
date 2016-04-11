@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Valid ElementCodec</title>
+</head>
+<body>
+
+<div id="title">
+    <h1>Valid ElementCodec</h1>
+</div>
+
+<p>
+    The class attribute of element-codec should reference a valid implementation of org.chiknrice.djeng.ElementCodec
+</p>
+
+<div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result">java.lang.String is not a valid
+        implementation of org.chiknrice.djeng.ElementCodec</span>
+    <pre i:setResource="#config" i:path="samples/invalid-element-codec.xml"/>
+    </p>
+</div>
+
+</body>
+</html>
