@@ -24,7 +24,10 @@
 
 
 
-<div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt;</span>
+
+
+
+<div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="#">Financial XSD</a></li><li class="downloads"><a href="#">Core XSD</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt;</span>
     <h1>Configuration</h1>
 
     <p>xml is key</p>
@@ -52,28 +55,61 @@
 </p><h3>
     Structure
 </h3><p>
-    The root element of the xml configuration is <code />
+    The xml elements are expected in the following structure:
+<ul class="tree-structure">
+    <li>config</li>
+    <ul>
+        <li>codecs</li>
+        <ul>
+            <li>filter-codec</li>
+            <li>element-codec</li>
+            <li>composite-codec</li>
+        </ul>
+        <li>message-elements</li>
+        <ul>
+            <li>element</li>
+            <li>composite</li>
+            <ul>
+                <li>element</li>
+                <li>composite</li>
+            </ul>
+        </ul>
+    </ul>
+</ul>
 </p><h3>
     Schema Validation
 </h3><p>
-    Djeng requires a <a href="MinimumConfigSpec.html" c:run="concordion" class="success">minimum configuration</a> which respects the
-    following rules before any codecs are created:
+    The fundamental constraints are imposed by schema validation. The configuration constraints requires a <a href="MinimumConfigSpec.html" c:run="concordion" class="success">minimum configuration</a> which respects the following rules
+    before any codecs are created:
 <ul>
     <li><a href="ValidNamespaceSpec.html" c:run="concordion" class="success">The core namespace should be declared</a></li>
-    <li><a href="ValidIdentifiersSpec.html" c:run="concordion" class="success">Identifiers and attribute values should meet the
-        restrictions</a></li>
+    <li><a href="ValidIdentifiersSpec.html" c:run="concordion" class="success">Attribute values should meet the restrictions</a></li>
     <li><a href="UniqueCodecIdSpec.html" c:run="concordion" class="success">Each codec (including filters) should have a unique id</a>
     </li>
-    <li><a href="UniqueElementIndexSpec.html" c:run="concordion" class="success">Sub elements should have a unique index</a></li>
-    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion" class="success"><code>message-elements</code> should reference a
-        <code>composite-codec</code></a>
+    <li><a href="UniqueElementIndexSpec.html" c:run="concordion" class="success">Elements under a composite (including message-elements)
+        should have a unique index</a></li>
+    <li><a href="MessageElementsReferenceSpec.html" c:run="concordion" class="success">Message elements tag should reference a valid
+        composite-codec tag</a>
     </li>
-    <li><a href="ElementReferenceSpec.html" c:run="concordion" class="success"><code>element</code> should reference an <code>element-codec</code></a>
+    <li><a href="ElementReferenceSpec.html" c:run="concordion" class="success">Element tag should reference a valid element-codec</a>
     </li>
-    <li><a href="CompositeReferenceSpec.html" c:run="concordion" class="success"><code>composite</code> should reference a <code>composite-codec</code></a>
+    <li><a href="CompositeReferenceSpec.html" c:run="concordion" class="success">Composite tag should reference a valid
+        composite-codec</a>
     </li>
-    <li><a href="FilterReferenceSpec.html" c:run="concordion" class="success"><code>filter</code> attribute of all codecs should reference a
-        <code>filter-codec</code></a></li>
+    <li><a href="FilterReferenceSpec.html" c:run="concordion" class="success">Filter attribute of all codecs (including filter-codec)
+        should reference a valid filter-codec</a></li>
+</ul>
+</p><h3>
+    Programmatic Validation
+</h3><p>
+    Schema validation can cover the constraints of the configuration up to a point. Where schema validation is not
+    possible, programmatic validation is implemented. These rules are applied after an xml configuration passes the
+    schema validation.
+<ul>
+    <li><a href="#">The class attribute of element-codec should be a decendant of ElementCodec</a></li>
+    <li><a href="#">The class attribute of composite-codec should be a decendant of CompositeCodec</a></li>
+    <li><a href="#">The class attribute of filter-codec should be a decendant of CodecFilter</a></li>
+    <li><a href="#" /></li>
 </ul>
 </p></section><div class="footer right">Results generated by <a href="http://www.concordion.org">Concordion</a></div></div></body>
 </html>
