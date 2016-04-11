@@ -55,15 +55,43 @@ public class StyleExtension implements ConcordionExtension, SpecificationProcess
         css.addAttribute("type", "text/css").addAttribute("rel", "stylesheet").addAttribute("href", "http://chiknrice.github.io/djeng/stylesheets/github-dark.css");
         head.appendChild(css);
 
-        // Create required structure
-        Element wrapper = new Element("div");
-        wrapper.addStyleClass("wrapper");
-        Element section = new Element("section");
-        wrapper.appendChild(section);
-
         // Modify body
         Element body = event.getRootElement().getFirstChildElement("body");
         if (body != null) {
+            // Create header
+            Element header = new Element("div").addAttribute("id", "header");
+            Element nav = new Element("nav");
+            header.appendChild(nav);
+
+            Element li = new Element("li").addAttribute("class", "fork");
+            Element a = new Element("a").addAttribute("href", "https://github.com/chiknrice/djeng").appendText("View On GitHub");
+            li.appendChild(a);
+            nav.appendChild(li);
+
+            li = new Element("li").addAttribute("class", "downloads");
+            a = new Element("a").addAttribute("href", "#").appendText("Financial XSD");
+            li.appendChild(a);
+            nav.appendChild(li);
+
+            li = new Element("li").addAttribute("class", "downloads");
+            a = new Element("a").addAttribute("href", "#").appendText("Core XSD");
+            li.appendChild(a);
+            nav.appendChild(li);
+
+            li = new Element("li").addAttribute("class", "downloads");
+            a = new Element("a").addAttribute("href", "https://bintray.com/chiknrice/maven/djeng/_latestVersion").appendText("JAR");
+            li.appendChild(a);
+            nav.appendChild(li);
+
+            li = new Element("li").addAttribute("class", "title").appendText("DOWNLOADS");
+            nav.appendChild(li);
+
+            // Create wrapper
+            Element wrapper = new Element("div");
+            wrapper.addStyleClass("wrapper");
+            Element section = new Element("section");
+            wrapper.appendChild(section);
+
             Element[] divs = body.getChildElements();
             for (Element child : divs) {
                 body.removeChild(child);
@@ -103,29 +131,11 @@ public class StyleExtension implements ConcordionExtension, SpecificationProcess
                 }
 
             }
+
+            // Append the newly created header and wrapper
+            body.appendChild(header);
+            body.appendChild(wrapper);
         }
-
-        // Created header div and children
-        Element header = new Element("div").addAttribute("id", "header");
-        Element nav = new Element("nav");
-        header.appendChild(nav);
-
-        Element li = new Element("li").addAttribute("class", "fork");
-        Element a = new Element("a").addAttribute("href", "https://github.com/chiknrice/djeng").appendText("View On GitHub");
-        li.appendChild(a);
-        nav.appendChild(li);
-
-        li = new Element("li").addAttribute("class", "downloads");
-        a = new Element("a").addAttribute("href", "https://bintray.com/chiknrice/maven/djeng/_latestVersion").appendText("JAR");
-        li.appendChild(a);
-        nav.appendChild(li);
-
-        li = new Element("li").addAttribute("class", "title").appendText("DOWNLOADS");
-        nav.appendChild(li);
-
-        // Append the newly created header and wrapper
-        body.appendChild(header);
-        body.appendChild(wrapper);
     }
 
 }
