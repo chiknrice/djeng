@@ -25,7 +25,6 @@
 
 
 
-
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="#">Financial XSD</a></li><li class="downloads"><a href="#">Core XSD</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title">
     <h1>Djeng</h1>
 
@@ -35,34 +34,47 @@
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><h3>
     Problem
 </h3><p>
-    Communication protocols doesn't end in http. As a developer for payment systems, I'm often required to integrate
-    with switches or POS terminals which doesn't communicate using web services. When developing communications
-    adapters for different protocols, I came to realize that there is no one solution available to cover these
-    requirements. Some frameworks exists but are usually focused on a specific format or protocol.
+    Communication protocols doesn't end in http. Having developed for different system integrators (including payment
+    and mobile solutions), I'm often required to integrate different components including switches, POS terminals, and
+    HSMs (hardware security module). These components typically communicate using different non-http protocols. One main
+    aspect of a protocol is the message format. Different protocols usually has different message formats. When
+    implementing codecs for different message formats, I came to realize that there is no one-solution available that
+    can cover all the different codec related requirements I have. Although some frameworks exists, they are usually
+    focused on a specific message format. Different frameworks mean inconsistent approach, high learning curve for new
+    developers, and hard to maintain code (just to name a few).
 </p><h3>
     Solution
 </h3><p>
-    DJENG stands for Dynamic Java Encoder (NextGen). It is the next generation of byte stream codec framework. Although
+    DJENG stands for Dynamic Java Encoder (NextGen). It is the protocol-agnostic byte stream codec framework. Although
     originally intended to be a framework for creating ISO8583/AS2805 codecs, it evolved into a dynamic framework to
-    easily create a codec for any message format (e.g. HSM calls, SMPP messages).
+    easily create a codec for any message format (e.g. HSM calls, SMPP messages). The core idea of djeng is to define a
+    comprehensive encoding/decoding process, provide an API to develop codecs, and allow these codecs to be used in this
+    encoding/decoding process. As a convenience, the framework is bundled with a set of codecs which serves as a
+    reference implementation of the core API. The bundled codecs are commonly used in encoding/decoding financial
+    messages but can be used to address a totally different problem. If none of the bundled codecs can cover a specific
+    requirement, it's always easy to develop a new codec to implement this unusual encoding/decoding algorithm.
 </p><h3>
     Specifications
 </h3><p>
-    These specifications are living documentation (using <a href="http://concordion.org/">Concordion</a>) which defines
-    the functionality of every component of djeng. Automated tests are performed when generating these documentation and
-    results are reflected at every build. A test that fails would be marked in <span class="failure">red</span> and
-    passing tests would be marked in <span class="success">green</span>.
+    The specifications are living documentation (@see <a href="http://concordion.org/">Concordion</a>). Automated tests
+    are performed when generating these pages which in turn reflects the results of the tests. A test that fails would
+    be shown in <span class="failure">red</span> and passing tests would be shown in <span class="success">green</span>.
+    The high level results serves the purpose of links to more detailed specification. One can drill down by navigating
+    to these links (try clicking on the message link below), while breadcrumbs are provided for navigating back to the
+    higher level specification page.
 </p><h3>
     Usage
 </h3><p>
-    The usual use cases involving codecs are sending and receiving messages. Sending messages involves building a
-    message, encoding the message to a byte array using a codec, and finally sending that byte array through the wire.
-    Receiving messages involves reading the bytes from the wire, decoding the bytes to a message using a codec and
-    finally querying specific elements on the message.
+    The main use cases involving codecs are sending and receiving messages as byte streams. Sending messages starts with
+    building a message, encoding that message to a byte array using a codec, and finally sending that byte array through
+    the wire. Receiving messages starts with reading the bytes from the wire, decoding the bytes to a message using a
+    codec and finally querying specific elements on the message.
 </p><p>
-    To build a codec, a <a href="config/Config.html" c:run="concordion" class="success">configuration</a> should first be created based
-    on the message format. A message format would usually define the encoding, length, and order of every message
-    element. With the configuration, the <a href="codec/Codec.html" c:run="concordion" class="success">message codec</a> can then be
-    created which could be used (and re-used) for encoding and decoding <a href="message/Message.html" c:run="concordion" class="success">message</a>s.
+    To be able to encode/decode any type of <a href="message/Message.html" c:run="concordion" class="success">message</a> the codec
+    needs to be configurable. The framework provides a way to to define a message codec using an <a href="config/Config.html" c:run="concordion" class="success">xml configuration</a>. The configuration is built based on a
+    specific message format. A message format would usually define the encoding, length, and order of every message
+    element that comprises the message. Together with this configuration the framework provides the APIs to build the
+    message codec. The <a href="codec/Codec.html" c:run="concordion" class="success">message codec</a> can then be used during the
+    lifespan of the application and is designed to be thread safe.
 </p></section><div class="footer right">Results generated by <a href="http://www.concordion.org">Concordion</a></div></div></body>
 </html>
