@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion">
 <head>
     <meta charset="UTF-8"/>
     <title>Configuration</title>
@@ -28,7 +28,9 @@
 </h3>
 
 <p>
-    Complex message formats can easily be defined using the small set of xml elements which are structured as below.
+    Complex message formats can easily be defined using the small set of xml elements. The structure shows how the
+    elements should be used.
+</p>
 <ul class="tree-structure">
     <li>config</li>
     <ul>
@@ -49,16 +51,17 @@
         </ul>
     </ul>
 </ul>
+
+<p>
+    The 'codecs' tag contains all codec definitions. A codec definition describes a particular codec which can be
+    uniquely identified by its 'id' attribute. One codec definition can be reused by any number of appropriate elements
+    within the 'message-elements' tag.
 </p>
 
 <p>
-    The 'codecs' tag would be the parent of all codec definitions. A codec definition would be one of 'filter-codec',
-    'element-codec', or 'composite-codec'. The definitions provide a type of codec which can be reused by the elements
-    under 'message-elements' tag. Each codec definition is uniquely identified by its 'id' attribute.
-</p>
-
-<p>
-    The 'message-elements' tag would be the parent of all
+    The 'message-elements' tag would contain all elements that defines the message structure. The composition
+    a message would generally be reflected on the structure of the message elements although the framework is flexible
+    enough to allow you to deviate from this convention to achieve a special type of encoding/decoding.
 </p>
 
 <h3>
@@ -68,9 +71,11 @@
 <p>
     The fundamental constraints are imposed by schema validation. The configuration constraints requires a <a
         href="MinimumConfigSpec.html" c:run="concordion">minimum configuration</a> which respects the following rules
-    before any codecs are created:
+    before any codecs are created
+</p>
 <ul>
-    <li><a href="#">The codecs requires at least an 'id' and 'class'</a></li>
+    <li><a href="#">A codec is required to have at least an 'id' and a 'class' attribute</a></li>
+    <li><a href="#">An element is required to have at least an 'index' and a 'codec' attribute</a></li>
     <li><a href="ValidNamespaceSpec.html" c:run="concordion">The core namespace should be declared</a></li>
     <li><a href="ValidIdentifiersSpec.html" c:run="concordion">Attribute values should meet the restrictions</a></li>
     <li><a href="UniqueCodecIdSpec.html" c:run="concordion">Each codec (including filters) should have a unique 'id'
@@ -92,7 +97,6 @@
     <li><a href="CodecOrderingSpec.html" c:run="concordion">The codecs should be grouped into types and defined in the
         order shown in the structure</a></li>
 </ul>
-</p>
 
 <h3>
     Programmatic Validation
@@ -102,6 +106,7 @@
     Schema validation can cover the constraints of the configuration up to a point. Where schema validation is not
     possible, programmatic validation is implemented. These rules are applied after an xml configuration passes the
     schema validation.
+</p>
 <ul>
     <li><a href="ValidElementCodecSpec.html" c:run="concordion">The class attribute of element-codec should be a
         decendant of ElementCodec</a></li>
@@ -110,7 +115,6 @@
     <li><a href="ValidCodecFilterSpec.html" c:run="concordion">The class attribute of filter-codec should be a decendant
         of CodecFilter</a></li>
 </ul>
-</p>
 
 </body>
 </html>
