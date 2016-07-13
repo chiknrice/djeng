@@ -28,16 +28,13 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
             // TODO: clean this up
 //            System.out.println(String.format("%5s : %s", index, element.getValue()));
             codec.encode(buffer, element);
-        } catch (Exception e) {
-            if (e instanceof CodecException) {
-                CodecException ce = (CodecException) e;
-                if (isCompositeCodec(codec)) {
-                    ce.addParentIndex(index);
-                }
-                throw ce;
-            } else {
-                throw new CodecException(e, index);
+        } catch (CodecException ce) {
+            if (isCompositeCodec(codec)) {
+                ce.addParentIndex(index);
             }
+            throw ce;
+        } catch (Exception e) {
+            throw new CodecException(e, index);
         }
     }
 
@@ -47,16 +44,13 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
             // TODO: clean this up
 //            System.out.println(String.format("%5s : %s", index, element.getValue()));
             return element;
-        } catch (Exception e) {
-            if (e instanceof CodecException) {
-                CodecException ce = (CodecException) e;
-                if (isCompositeCodec(codec)) {
-                    ce.addParentIndex(index);
-                }
-                throw ce;
-            } else {
-                throw new CodecException(e, index);
+        } catch (CodecException ce) {
+            if (isCompositeCodec(codec)) {
+                ce.addParentIndex(index);
             }
+            throw ce;
+        } catch (Exception e) {
+            throw new CodecException(e, index);
         }
     }
 
