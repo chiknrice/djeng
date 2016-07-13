@@ -38,6 +38,6 @@ public final class CodecException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return String.format("[%s] %s", msgElementIndex.toString(), super.getMessage());
+        return String.format("element[%s] %s", msgElementIndex.toString(), super.getMessage());
     }
 }

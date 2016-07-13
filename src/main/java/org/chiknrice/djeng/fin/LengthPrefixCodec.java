@@ -20,8 +20,8 @@ import org.chiknrice.djeng.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import static org.chiknrice.djeng.fin.FinancialAttributes.LVAR_LENGTH;
 import static org.chiknrice.djeng.fin.FinancialAttributes.LVAR_ENCODING;
+import static org.chiknrice.djeng.fin.FinancialAttributes.LVAR_LENGTH;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
@@ -90,7 +90,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
                 dataLength = ByteUtil.decodeBinaryInt(lengthPrefixBytes);
                 break;
             default:
-                throw new RuntimeException(String.format("Unsupported length prefix encoding: %s", encoding));
+                throw new RuntimeException(String.format("Unsupported length prefix encoding %s", encoding));
         }
 
         int dataByteCount;
@@ -98,6 +98,9 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
             dataByteCount = ((LengthPrefixDelegate) chain).determineDataBytesCount(dataLength);
         } else {
             dataByteCount = dataLength;
+        }
+        if (dataByteCount > buffer.remaining()) {
+            throw new RuntimeException(String.format("Not enough bytes in buffer for var length %d", dataByteCount));
         }
         ByteBuffer dataBuffer = ByteUtil.consumeToBuffer(buffer, dataByteCount);
         MessageElement<T> element = chain.decode(dataBuffer);
