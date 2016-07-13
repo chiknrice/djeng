@@ -76,33 +76,33 @@ publishing {
             artifact javadocJar
 
             pom.withXml {
-                asNode().appendNode("description", project.description).plus(pomConfig)
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name project.name
+                    description project.description
+                    url "https://github.com/chiknrice/${project.name}"
+                    scm {
+                        url "https://github.com/chiknrice/${project.name}"
+                        connection "scm:git:git@github.com:chiknrice/${project.name}.git"
+                        developerConnection "scm:git:git@github.com:chiknrice/${project.name}.git"
+                    }
+                    licenses {
+                        license {
+                            name 'GPL v3.0'
+                            url 'http://www.gnu.org/licenses/gpl.txt'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'chiknrice'
+                            name 'Ian Bondoc'
+                            email 'chiknrice@gmail.com'
+                            url 'https://github.com/chiknrice'
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-
-def pomConfig = {
-    name project.name
-    url "https://github.com/chiknrice/${project.name}"
-    scm {
-        url "https://github.com/chiknrice/${project.name}"
-        connection "scm:git:git@github.com:chiknrice/${project.name}.git"
-        developerConnection "scm:git:git@github.com:chiknrice/${project.name}.git"
-    }
-    licenses {
-        license {
-            name 'GPL v3.0'
-            url 'http://www.gnu.org/licenses/gpl.txt'
-            distribution 'repo'
-        }
-    }
-    developers {
-        developer {
-            id 'chiknrice'
-            name 'Ian Bondoc'
-            email 'chiknrice@gmail.com'
-            url 'https://github.com/chiknrice'
         }
     }
 }
