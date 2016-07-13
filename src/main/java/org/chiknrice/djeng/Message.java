@@ -375,4 +375,28 @@ public final class Message implements Cloneable {
         setOrRemoveElement(indexPath, null);
     }
 
+    /**
+     * TODO
+     *
+     * @param src TODO
+     * @return TODO
+     */
+    public static Message createFrom(Message src) {
+        Message m = new Message();
+        for (Entry<String, Object> entry : src.getElements().entrySet()) {
+            m.setElement(entry.getKey(), entry.getValue());
+        }
+        return m;
+    }
+
+    /**
+     * TODO
+     * @param dst TODO
+     * @param indexes TODO
+     */
+    public void copyElementsTo(Message dst, String... indexes) {
+        for (String index : indexes) {
+            dst.setElement(index, this.getElement(index));
+        }
+    }
 }
