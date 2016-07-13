@@ -22,10 +22,10 @@
     Communication protocols doesn't end in http. Having developed for different system integrators (including payment
     and mobile solutions), I'm often required to integrate different components including switches, POS terminals, and
     HSMs (hardware security module). These components typically communicate using different non-http protocols. One main
-    aspect of a protocol is the message format. Different protocols usually has different message formats. When
-    implementing codecs for different message formats, I came to realize that there is no one-solution available that
-    can cover all the different codec related requirements I have. Although some frameworks exists, they are usually
-    focused on a specific message format. Different frameworks mean inconsistent approach, high learning curve for new
+    aspect of a protocol is the message format. Different protocols usually have different message formats. When
+    implementing codecs for different message formats, I realized that there's no single solution available that can
+    cover all the different codec related requirements I have. Although some frameworks exists, they are usually focused
+    on a specific message format. Different frameworks mean inconsistent approach, high learning curve for new
     developers, and hard to maintain code (just to name a few).
 </p>
 
@@ -34,7 +34,7 @@
 </h3>
 
 <p>
-    DJENG stands for Dynamic Java Encoder (NextGen). It is the protocol-agnostic byte stream codec framework. Although
+    DJENG stands for Dynamic Java Encoder (NextGen). It is a protocol-agnostic byte stream codec framework. Although
     originally intended to be a framework for creating ISO8583/AS2805 codecs, it evolved into a dynamic framework to
     easily create a codec for any message format (e.g. HSM calls, SMPP messages). The core idea of djeng is to define a
     comprehensive encoding/decoding process, provide an API to develop codecs, and allow these codecs to be used in this
