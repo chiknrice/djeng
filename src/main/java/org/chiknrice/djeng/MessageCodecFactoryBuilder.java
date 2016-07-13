@@ -26,7 +26,7 @@ import static org.chiknrice.djeng.XmlConfig.ElementName.CODECS;
 import static org.chiknrice.djeng.XmlConfig.ElementName.MESSAGE_ELEMENTS;
 
 /**
- * Builder for a {@see MessageCodecFactory} which provides a fluent API for adding custom schemas and custom type
+ * Builder for a {@link MessageCodecFactory} which provides a fluent API for adding custom schemas and custom type
  * mappers.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
@@ -37,11 +37,21 @@ public class MessageCodecFactoryBuilder {
     private final List<AttributeTypeMapper> customTypeMappers = new ArrayList<>();
     private int encodeBufferSize = 0x7FFF;
 
+    /**
+     *
+     * @param customSchema TODO
+     * @return TODO
+     */
     public MessageCodecFactoryBuilder withSchema(String customSchema) {
         customSchemas.add(customSchema);
         return this;
     }
 
+    /**
+     *
+     * @param cusstomTypeMapperClass TODO
+     * @return TODO
+     */
     public MessageCodecFactoryBuilder withTypeMapper(Class<? extends AttributeTypeMapper> cusstomTypeMapperClass) {
         try {
             return withTypeMapper(cusstomTypeMapperClass.newInstance());
@@ -50,16 +60,30 @@ public class MessageCodecFactoryBuilder {
         }
     }
 
+    /**
+     *
+     * @param customTypeMapper TODO
+     * @return TODO
+     */
     public MessageCodecFactoryBuilder withTypeMapper(AttributeTypeMapper customTypeMapper) {
         customTypeMappers.add(customTypeMapper);
         return this;
     }
 
+    /**
+     *
+     * @param encodeBufferSize TODO
+     * @return TODO
+     */
     public MessageCodecFactoryBuilder withEncodeBufferSize(int encodeBufferSize) {
         this.encodeBufferSize = encodeBufferSize;
         return this;
     }
 
+    /**
+     *
+     * @return TODO
+     */
     public MessageCodecFactory build() {
         return new MessageCodecFactoryImpl(customSchemas, customTypeMappers, encodeBufferSize);
     }

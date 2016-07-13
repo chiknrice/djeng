@@ -25,8 +25,8 @@ import java.nio.ByteBuffer;
 public abstract class ElementCodec<V, R> extends BaseCodec<V> {
 
     /**
-     * @param buffer
-     * @param element
+     * @param buffer the ByteBuffer where the element would be encoded
+     * @param element the element to be encoded
      */
     public final void encode(ByteBuffer buffer, MessageElement<V> element) {
         int pos = buffer.arrayOffset() + buffer.position();
@@ -39,23 +39,23 @@ public abstract class ElementCodec<V, R> extends BaseCodec<V> {
     /**
      * Encode the value to raw value.
      *
-     * @param value
-     * @return
+     * @param value the actual value to be encoded
+     * @return TODO
      */
     protected abstract R encodeValue(V value);
 
     /**
      * Encode the raw value to the buffer.
      *
-     * @param buffer
-     * @param rawValue
+     * @param buffer the ByteBuffer to which the value would be encoded
+     * @param rawValue TODO
      */
     protected abstract void encodeRawValue(ByteBuffer buffer, R rawValue);
 
 
     /**
-     * @param buffer
-     * @return
+     * @param buffer TODO
+     * @return TODO
      */
     @Override
     public MessageElement<V> decode(ByteBuffer buffer) {
@@ -70,16 +70,16 @@ public abstract class ElementCodec<V, R> extends BaseCodec<V> {
     /**
      * Decode the raw value to the value.
      *
-     * @param rawValue
-     * @return
+     * @param rawValue TODO
+     * @return TODO
      */
     protected abstract V decodeValue(R rawValue);
 
     /**
      * Decode the raw value from the buffer.
      *
-     * @param buffer
-     * @return
+     * @param buffer TODO
+     * @return TODO
      */
     protected abstract R decodeRawValue(ByteBuffer buffer);
 

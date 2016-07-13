@@ -16,7 +16,7 @@
 package org.chiknrice.djeng;
 
 /**
- * Encodes and decodes a {@see Message} to and from a byte[]
+ * Encodes and decodes a {@link Message} to and from a byte[]
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */

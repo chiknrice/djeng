@@ -24,8 +24,8 @@ public interface AttributeTypeMapper {
      * The implementation should map the attribute to the expected type or if the attribute is unknown the implementor
      * should return null.
      *
-     * @param attribute
-     * @param value
+     * @param attribute TODO
+     * @param value TODO
      * @return the attribute in a type expected by the implementor or null if the attribute is unknown.
      */
     Object mapType(Attribute attribute, String value);

@@ -35,16 +35,16 @@ import static org.chiknrice.djeng.MessageElement.Section;
  * sub elements. The sub elements can either be a value element (leaf) or a composite element (branch). Each
  * branch/composite element is again a collection of sub elements.
  * <p>
- * The underlying collection implement is a {@see CompositeMap} which is a TreeMap that restricts keys and values to
- * String and MessageElement<?>.  Keys corresponds to the indexes defined in the configuration xml.  Getting, setting
- * and removing an element can be done with index path, setting would require a non-null value.  The index path is a
- * pattern of indexes separated by a dot (.).  Valid indexes are restricted by the config schema to alpha-numeric
- * characters plus the hyphen (-).  An example index path would be h1.a.b-1 or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583
- * message).  The accessor/mutator methods are all thread-safe.
+ * The underlying collection implement is a {@link CompositeMap} which is a TreeMap that restricts keys and values to
+ * String and MessageElement.  Keys corresponds to the indexes defined in the configuration xml.  Getting, setting and
+ * removing an element can be done with index path, setting would require a non-null value.  The index path is a pattern
+ * of indexes separated by a dot (.).  Valid indexes are restricted by the config schema to alpha-numeric characters
+ * plus the hyphen (-).  An example index path would be h1.a.b-1 or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583 message).
+ * The accessor/mutator methods are all thread-safe.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class Message {
+public final class Message implements Cloneable {
 
     private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[a-z,A-F,0-9,-]+(\\.[a-z,A-F,0-9,-]+)*");
 
@@ -106,10 +106,10 @@ public final class Message {
     /**
      * Returns the value if the sub element exists and if it is not a CompositeMap.
      *
-     * @param compositeMap
-     * @param index
-     * @param raw
-     * @return
+     * @param compositeMap TODO
+     * @param index        TODO
+     * @param raw          TODO
+     * @return TODO
      */
     private Object getSubElement(CompositeMap compositeMap, String index, boolean raw) {
         MessageElement<?> messageElement = compositeMap.get(index);
@@ -243,8 +243,8 @@ public final class Message {
     /**
      * Recursive method to get all message elements except for composite elements.
      *
-     * @param compositeMap
-     * @param parentMap
+     * @param compositeMap TODO
+     * @param parentMap    TODO
      */
     private void findElements(CompositeMap compositeMap, Map<Section, MessageElement<?>> parentMap) {
         for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
@@ -270,8 +270,8 @@ public final class Message {
     /**
      * Recursive method to get all message element values except for composite elements.
      *
-     * @param compositeMap
-     * @param parentMap
+     * @param compositeMap TODO
+     * @param parentMap    TODO
      */
     private void findElementValues(CompositeMap compositeMap, Map<String, Object> parentMap) {
         for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
@@ -292,7 +292,7 @@ public final class Message {
     /**
      * Internal method used for logging messages during encoding/decoding.
      *
-     * @return
+     * @return TODO
      */
     Map<Section, MessageElement<?>> getElementsInternal() {
         Map<MessageElement.Section, MessageElement<?>> elementMap = new TreeMap<>();
@@ -310,7 +310,7 @@ public final class Message {
     /**
      * Method to allow for getting all element values with key being the index path.
      *
-     * @return
+     * @return TODO
      */
     public Map<String, Object> getElements() {
         Map<String, Object> elements = new HashMap<>();
@@ -327,7 +327,8 @@ public final class Message {
      * Traverses the message element hierarchy to get the value located at the indexPath. TODO: get list of elements
      * using * wildcard?
      *
-     * @param indexPath
+     * @param indexPath TODO
+     * @param <T>       TODO
      * @return the value or null if the element doesn't exist or is a composite element
      * @throws IllegalArgumentException if the indexPath pattern is not valid
      */
@@ -336,11 +337,11 @@ public final class Message {
     }
 
     /**
-     * Same as {@see #getElement} except that the value is returned as raw hex value.  This would include any data
-     * related to the element like length prefix bytes.
+     * Same as {@link #getElement(String indexPath) getElement} except that the value is returned as raw hex value. This
+     * would include any data related to the element like length prefix bytes.
      *
-     * @param indexPath
-     * @return
+     * @param indexPath TODO
+     * @return TODO
      * @throws IllegalStateException if the underlying byte[] that represents the message doesn't exist.  This could be
      *                               due to the message not being encoded yet or if the decoded message was modified via
      *                               set/remove element methods.
@@ -350,12 +351,11 @@ public final class Message {
     }
 
     /**
-     * Sets the value of a element at the position expressed by indexPath.  This method adds the constraint of non null
-     * values to {@link #setOrRemoveElement} to distinguish from the intent of setting or removing values.  This method
-     * invalidates the underlying byte[] if it exists.
+     * Sets the value of a element at the position expressed by indexPath.  This method invalidates the underlying
+     * byte[] if it exists.
      *
-     * @param indexPath
-     * @param value
+     * @param indexPath TODO
+     * @param value     TODO
      * @throws IllegalArgumentException if the value is null
      */
     public void setElement(String indexPath, Object value) {
@@ -369,7 +369,7 @@ public final class Message {
      * Removes the element at the position indicated by indexPath.  This method invalidates the underlying byte[] if it
      * exists.
      *
-     * @param indexPath
+     * @param indexPath TODO
      */
     public void removeElement(String indexPath) {
         setOrRemoveElement(indexPath, null);

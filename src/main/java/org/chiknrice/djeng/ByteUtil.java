@@ -31,7 +31,7 @@ public final class ByteUtil {
      * than Integer.parseInt(s, 16).
      *
      * @param c the hex character to be
-     * @return
+     * @return TODO
      * @throws IllegalArgumentException if the character is not a valid hex value (0 to F)
      */
     public static int hexValue(char c) {
@@ -45,8 +45,8 @@ public final class ByteUtil {
     /**
      * Transforms bytes to an array of hex characters representing the nibbles
      *
-     * @param bytes
-     * @return
+     * @param bytes TODO
+     * @return TODO
      */
     static char[] bytesToHexChars(byte[] bytes) {
         char[] chars = new char[bytes.length * 2];
@@ -62,8 +62,8 @@ public final class ByteUtil {
     /**
      * Transforms an even number of hex characters to a byte[]
      *
-     * @param chars
-     * @return
+     * @param chars TODO
+     * @return TODO
      */
     static byte[] hexCharsToBytes(char[] chars) {
         if (chars.length % 2 > 0) {
@@ -88,8 +88,8 @@ public final class ByteUtil {
     /**
      * Encodes a byte[] to a string of hex characters representing the nibbles
      *
-     * @param bytes
-     * @return
+     * @param bytes TODO
+     * @return TODO
      */
     public static String encodeHex(byte[] bytes) {
         return new String(bytesToHexChars(bytes));
@@ -98,8 +98,8 @@ public final class ByteUtil {
     /**
      * Decodes a string of (even) hex characters to nibbles in a byte[]
      *
-     * @param hex
-     * @return
+     * @param hex TODO
+     * @return TODO
      */
     public static byte[] decodeHex(String hex) {
         return hexCharsToBytes(hex.toCharArray());
@@ -297,9 +297,9 @@ public final class ByteUtil {
      * Creates a new ByteBuffer with capacity = length from the current position.  Creation of the buffer consumes
      * length bytes.
      *
-     * @param origBuffer
-     * @param length
-     * @return
+     * @param origBuffer TODO
+     * @param length TODO
+     * @return TODO
      */
     public static ByteBuffer consumeToBuffer(ByteBuffer origBuffer, int length) {
         int origBufferLimit = origBuffer.limit();
@@ -319,9 +319,9 @@ public final class ByteUtil {
     /**
      * Creates a new ByteBuffer from the current position back up to length bytes
      *
-     * @param origBuffer
-     * @param length
-     * @return
+     * @param origBuffer TODO
+     * @param length TODO
+     * @return TODO
      */
     static ByteBuffer recallToBuffer(ByteBuffer origBuffer, int length) {
         origBuffer.position(origBuffer.position() - length);

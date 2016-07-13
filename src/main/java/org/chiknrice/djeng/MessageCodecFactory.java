@@ -18,7 +18,7 @@ package org.chiknrice.djeng;
 import java.io.InputStream;
 
 /**
- * A factory for creating {@see MessageCodec} implementation based on a supplied xml configuration.  A
+ * A factory for creating {@link MessageCodec} implementation based on a supplied xml configuration.  A
  * MessageCodecFactory is reusable and would have consistent custom schemas and custom type mappers configured.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
@@ -29,8 +29,8 @@ public interface MessageCodecFactory {
      * The argument is a path to the configXml.  The underlying implementation expects this config to exist in the
      * classpath.
      *
-     * @param configXml
-     * @return
+     * @param configXml TODO
+     * @return TODO
      */
     MessageCodec build(String configXml);
 
@@ -38,8 +38,8 @@ public interface MessageCodecFactory {
      * The codec factory accepts an inputstream to the actual config xml, in this case, it is expected that the caller
      * would be closing the resource after the method returns.
      *
-     * @param configXml
-     * @return
+     * @param configXml TODO
+     * @return TODO
      */
     MessageCodec build(InputStream configXml);
 
