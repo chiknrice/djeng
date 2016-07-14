@@ -44,7 +44,7 @@ import static org.chiknrice.djeng.MessageElement.Section;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class Message implements Cloneable {
+public final class Message {
 
     private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[a-z,A-F,0-9,-]+(\\.[a-z,A-F,0-9,-]+)*");
 
