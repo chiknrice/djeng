@@ -15,11 +15,12 @@
  */
 package org.chiknrice.djeng;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * A MessageElement is a portion of a financial message...
+ * A MessageElement is a portion of a message...
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -99,22 +100,31 @@ public class MessageElement<T> {
     }
 
     @Override
+    // TODO: determine if hashcode is needed to be implemented, where does message element identities matter?
     public int hashCode() {
         return value == null ? 0 : value.hashCode();
     }
 
     @Override
     public String toString() {
-        // TODO: implement printing byte arrays
-        return value.toString();
+        if (value instanceof byte[]) {
+            return "0x".concat(ByteUtil.encodeHex((byte[]) value));
+        } else {
+            return value.toString();
+        }
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof MessageElement) {
             MessageElement element = (MessageElement) obj;
-            // TODO: implement comparing arrays
-            return this.value == null ? element.value == null : this.value.equals(element.value);
+            if (this.value == null) {
+                return element.value == null;
+            } else if (value instanceof byte[]) {
+                return Arrays.equals((byte[]) this.value, (byte[]) element.value);
+            } else {
+                return this.value.equals(element.value);
+            }
         }
         return false;
     }
