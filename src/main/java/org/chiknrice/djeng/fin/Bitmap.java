@@ -20,6 +20,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * Represents a bitmap as defined by ISO8583/AS2805.  Provides methods to test if a bit is set or not and encapsulates
+ * properties specific to different bitmap types like primary and secondary bitmap sizes and which bits are control
+ * bit.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 final class Bitmap {
@@ -27,7 +31,7 @@ final class Bitmap {
     enum Encoding {
         BINARY(8, 8),
         HEX(16, 16),
-        DATA_SET(2,1);
+        DATA_SET(2, 1);
 
         int primaryBitmapLength;
         int secondaryBitmapLength;
