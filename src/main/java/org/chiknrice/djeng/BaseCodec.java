@@ -15,8 +15,8 @@
  */
 package org.chiknrice.djeng;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This base codec just provides the convenience of handling attribute storage for all codecs
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public abstract class BaseCodec<T> implements Codec<T> {
 
-    private final Map<Attribute, Object> attributes = new HashMap<>();
+    private final Map<Attribute, Object> attributes = new ConcurrentHashMap<>();
 
     @Override
     public final <A> A getAttribute(Attribute attribute) {
