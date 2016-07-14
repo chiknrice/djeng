@@ -25,7 +25,6 @@ enum Encoding {
     BCD,
     BCD_F, // e.g. 23 3F (for odd digits BCD is left justified and right padded with F - only used for as2805 messages)
     C_BCD, // e.g. C0 01 23 45 (first nibble is C/D, rest is BCD)
-    CC_BCD, // e.g. 43 01 23 45 (first byte is a C/D char, the rest is BCD)
-    CUSTOM
+    CC_BCD // e.g. 43 01 23 45 (first byte is a C/D char, the rest is BCD)
 
 }
