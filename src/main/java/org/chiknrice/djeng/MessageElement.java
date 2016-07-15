@@ -30,6 +30,7 @@ public class MessageElement<T> {
     private final TreeSet<Section> sections;
 
     public MessageElement(T value) {
+        if (value == null) throw new IllegalArgumentException("Null value is not allowed");
         this.value = value;
         this.sections = new TreeSet<>();
     }
