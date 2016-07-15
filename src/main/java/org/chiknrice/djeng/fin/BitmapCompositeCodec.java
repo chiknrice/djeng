@@ -34,6 +34,7 @@ public final class BitmapCompositeCodec extends CompositeCodec {
             String index = codecEntry.getKey();
             Codec<?> codec = codecEntry.getValue();
             if (codec instanceof BitmapCodec) {
+                // TODO refactor bitmap element into a non value element
                 Bitmap bitmap = buildBitmap((BitmapCodec) codec, compositeMap);
                 compositeMap.put(index, new MessageElement<>(bitmap));
             }

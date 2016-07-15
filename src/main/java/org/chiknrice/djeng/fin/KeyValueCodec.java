@@ -32,8 +32,8 @@ import java.util.Map;
 public abstract class KeyValueCodec<K> extends CompositeCodec {
 
     /**
-     * @param buffer TODO
-     * @param compositeMap TODO
+     * @param buffer            TODO
+     * @param compositeMap      TODO
      * @param subElementsCodecs TODO
      */
     @Override
@@ -48,13 +48,14 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
             MessageElement<?> valueElement = entry.getValue();
             MessageElement<Object> keyElement = new MessageElement<>(keyValue);
             keyCodec.encode(buffer, keyElement);
-            valueElement.copySections(keyElement);
             valueCodec.encode(buffer, valueElement);
+            valueElement.addSectionsFrom(keyElement);
         }
     }
 
     /**
      * TODO
+     *
      * @param stringKey TODO
      * @return TODO
      */
@@ -64,7 +65,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
      * Decodes the sub-elements using the key and value codecs which are specified by the attributes {@code key} and
      * {@code value}.  Decoding would consume the {@code ByteBuffer} up to the limit.
      *
-     * @param buffer TODO
+     * @param buffer            TODO
      * @param subElementsCodecs TODO
      * @return TODO
      */
@@ -79,7 +80,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
         while (buffer.hasRemaining()) {
             MessageElement keyElement = keyCodec.decode(buffer);
             MessageElement valueElement = valueCodec.decode(buffer);
-            valueElement.copySections(keyElement);
+            valueElement.addSectionsFrom(keyElement);
             compositeMap.put(toKeyString((K) keyElement.getValue()), valueElement);
         }
 

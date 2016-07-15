@@ -16,7 +16,7 @@
 package org.chiknrice.djeng;
 
 import java.util.Arrays;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -36,9 +36,16 @@ public class MessageElement<T> {
     }
 
     static class Section implements Comparable<Section> {
-        String index;
-        int pos;
-        int limit;
+        final int pos;
+        final int limit;
+        final Object value;
+        String path;
+
+        private Section(int pos, int limit, Object value) {
+            this.pos = pos;
+            this.limit = limit;
+            this.value = value;
+        }
 
         @Override
         public int compareTo(Section o) {
@@ -53,66 +60,44 @@ public class MessageElement<T> {
                 }
                 return 1;
             } else {
-                if (this.limit != o.limit && !this.index.equals(o.index)) {
+                if (this.limit != o.limit) {
                     throw new RuntimeException("Overlapping sections");
                 }
                 return 0;
             }
         }
+
     }
 
-    public Set<Section> getSections() {
+    SortedSet<Section> getSections() {
         return sections;
     }
 
-    public void addSection(String index, int pos, int limit) {
-        Section section = new Section();
-        section.index = index;
-        section.pos = pos;
-        section.limit = limit;
-        sections.add(section);
-    }
-
-    public void copySections(MessageElement<?> element) {
-        for (Section section : element.sections) {
-            addSection(section.index, section.pos, section.limit);
+    void clearSections() {
+        sections.clear();
+        if (value instanceof CompositeMap) {
+            for (MessageElement<?> subElement : ((CompositeMap) value).values()) {
+                subElement.clearSections();
+            }
         }
     }
 
-    public int getPos() {
-        return sections.first().pos;
+    public void addSectionsFrom(MessageElement<?> element) {
+        sections.addAll(element.getSections());
     }
 
-    public int getLimit() {
-        return sections.last().limit;
+    public void addSection(int pos, int limit, Object value) {
+        sections.add(new Section(pos, limit, value));
     }
 
     public T getValue() {
         return this.value;
     }
 
-    void clearMarkers() {
-        sections.clear();
-        if (value instanceof CompositeMap) {
-            for (MessageElement<?> subElement : ((CompositeMap) value).values()) {
-                subElement.clearMarkers();
-            }
-        }
-    }
-
     @Override
     // TODO: determine if hashcode is needed to be implemented, where does message element identities matter?
     public int hashCode() {
         return value == null ? 0 : value.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        if (value instanceof byte[]) {
-            return "0x".concat(ByteUtil.encodeHex((byte[]) value));
-        } else {
-            return value.toString();
-        }
     }
 
     @Override
@@ -128,5 +113,14 @@ public class MessageElement<T> {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        if (value instanceof byte[]) {
+            return "0x".concat(ByteUtil.encodeHex((byte[]) value));
+        } else {
+            return value.toString();
+        }
     }
 }

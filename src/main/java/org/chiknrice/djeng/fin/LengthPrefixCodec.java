@@ -38,11 +38,11 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
         buffer.reset();
         int pos = buffer.arrayOffset() + buffer.position();
         int limit = pos + lengthPrefixBytesCount;
-        element.addSection(getSectionId(), pos, limit);
         int valueLength = dataBuffer.position();
         if (chain instanceof LengthPrefixDelegate) {
             valueLength = ((LengthPrefixDelegate) chain).determineLengthPrefixValue(element.getValue());
         }
+        element.addSection(pos, limit, valueLength);
         encodeLengthPrefix(buffer, valueLength);
         buffer.position(buffer.position() + dataBuffer.position());
     }
@@ -104,13 +104,8 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
         }
         ByteBuffer dataBuffer = ByteUtil.consumeToBuffer(buffer, dataByteCount);
         MessageElement<T> element = chain.decode(dataBuffer);
-        element.addSection(getSectionId(), pos, pos + lengthPrefixBytes.length);
+        element.addSection(pos, pos + lengthPrefixBytes.length, dataLength);
         return element;
-    }
-
-    private String getSectionId() {
-        String index = getAttribute(CoreAttributes.INDEX);
-        return index.concat(".len");
     }
 
     final int getLengthPrefixBytesCount() {
