@@ -42,12 +42,12 @@ public class MessageCodec {
         ByteBuffer buffer = ByteBuffer.allocate(encodeBufferSize);
         try {
             message.rwLock.writeLock().lock();
-            message.resetRawState();
+            message.clearRawState();
             rootCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
             byte[] encoded = new byte[buffer.position()];
             buffer.rewind();
             buffer.get(encoded);
-            message.messageBuffer = ByteBuffer.wrap(encoded);
+            message.setBackingBuffer(ByteBuffer.wrap(encoded));
             logMessage("ENCODE", message);
             return encoded;
         } finally {
@@ -65,7 +65,7 @@ public class MessageCodec {
         ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
         MessageElement<CompositeMap> element = rootCodec.decode(buffer);
         Message message = new Message(element.getValue());
-        message.messageBuffer = buffer;
+        message.setBackingBuffer(buffer);
         logMessage("DECODE", message);
         return message;
     }

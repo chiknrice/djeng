@@ -16,11 +16,8 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Stack;
-import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -34,7 +31,7 @@ import static org.chiknrice.djeng.MessageElement.Section;
  * organized into a tree-like structure. This class would be the root element which is represented as a collection of
  * sub elements. The sub elements can either be a value element (leaf) or a composite element (branch). Each
  * branch/composite element is again a collection of sub elements.
- * <p>
+ * <p/>
  * The underlying collection implement is a {@link CompositeMap} which is a TreeMap that restricts keys and values to
  * String and MessageElement.  Keys corresponds to the indexes defined in the configuration xml.  Getting, setting and
  * removing an element can be done with index path, setting would require a non-null value.  The index path is a pattern
@@ -50,10 +47,12 @@ public final class Message {
 
     private final CompositeMap elements;
     final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-    ByteBuffer messageBuffer;
+
+    private SortedMap<Section, String> sections;
+    private ByteBuffer backingBuffer;
 
     /**
-     * The only publicly accessible constructor which accepts an mti.
+     * The only publicly accessible constructor.
      */
     public Message() {
         elements = new CompositeMap();
@@ -68,6 +67,52 @@ public final class Message {
         this.elements = elements;
     }
 
+    /**
+     * Gets the hex value of the bytes in the backingBuffer from pos to limit
+     *
+     * @param pos
+     * @param limit
+     * @return
+     */
+    private String getHex(int pos, int limit) {
+        if (backingBuffer == null) {
+            throw new IllegalStateException("Shallow message");
+        } else {
+            byte[] bytes = new byte[limit - pos];
+            backingBuffer.rewind().position(pos);
+            backingBuffer.get(bytes);
+            return ByteUtil.encodeHex(bytes);
+        }
+    }
+
+    /**
+     * Gets the sub-element's value in the composite map under the specified index
+     *
+     * @param compositeMap TODO
+     * @param index        TODO
+     * @param raw          TODO
+     * @return the value or raw value if the sub element exists and if it is not a CompositeMap
+     */
+    private Object getSubElementValue(CompositeMap compositeMap, String index, boolean raw) {
+        MessageElement<?> messageElement = compositeMap.get(index);
+        if (messageElement == null || messageElement.getValue() instanceof CompositeMap) {
+            return null;
+        } else if (raw) {
+            SortedSet<Section> sections = messageElement.getSections();
+            return getHex(sections.first().pos, sections.last().limit);
+        } else {
+            return messageElement.getValue();
+        }
+    }
+
+    /**
+     * TODO
+     *
+     * @param indexPath TODO
+     * @param raw       TODO
+     * @param <T>       TODO
+     * @return TODO
+     */
     private <T> T getElement(String indexPath, boolean raw) {
         Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
         if (!m.matches()) {
@@ -82,7 +127,7 @@ public final class Message {
                     for (int i = 0; i < indexes.length; i++) {
                         if (currentCompositeMap != null) {
                             if (i == indexes.length - 1) {
-                                return (T) getSubElement(currentCompositeMap, indexes[i], raw);
+                                return (T) getSubElementValue(currentCompositeMap, indexes[i], raw);
                             } else {
                                 MessageElement subElement = currentCompositeMap.get(indexes[i]);
                                 if (subElement != null && subElement.getValue() instanceof CompositeMap) {
@@ -95,37 +140,11 @@ public final class Message {
                     }
                     return null;
                 } else {
-                    return (T) getSubElement(elements, indexes[0], raw);
+                    return (T) getSubElementValue(elements, indexes[0], raw);
                 }
             } finally {
                 rwLock.readLock().unlock();
             }
-        }
-    }
-
-    /**
-     * Returns the value if the sub element exists and if it is not a CompositeMap.
-     *
-     * @param compositeMap TODO
-     * @param index        TODO
-     * @param raw          TODO
-     * @return TODO
-     */
-    private Object getSubElement(CompositeMap compositeMap, String index, boolean raw) {
-        MessageElement<?> messageElement = compositeMap.get(index);
-        if (messageElement == null || messageElement.getValue() instanceof CompositeMap) {
-            return null;
-        } else if (raw) {
-            if (messageBuffer == null) {
-                throw new IllegalStateException("Message doesn't have a backing raw data");
-            } else {
-                byte[] bytes = new byte[messageElement.getLimit() - messageElement.getPos()];
-                messageBuffer.rewind().position(messageElement.getPos());
-                messageBuffer.get(bytes);
-                return ByteUtil.encodeHex(bytes);
-            }
-        } else {
-            return messageElement.getValue();
         }
     }
 
@@ -144,7 +163,7 @@ public final class Message {
         } else {
             try {
                 rwLock.writeLock().lock();
-                resetRawState();
+                clearRawState();
                 String[] indexes = indexPath.split("\\.");
 
                 Stack<CompositeMap> compositeMapStack = new Stack<>();
@@ -194,6 +213,87 @@ public final class Message {
         return elements;
     }
 
+    /**
+     * Recursive method to collects all individual sections that make up the message including their hex values.
+     *
+     * @param compositeMap TODO
+     * @param parentMap    TODO
+     */
+    private void collectSections(CompositeMap compositeMap, Map<Section, String> parentMap) {
+        for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
+            MessageElement<?> element = entry.getValue();
+            for (Section section : element.getSections()) {
+                if (section.value instanceof CompositeMap) {
+                    Map<Section, String> childMap = new HashMap<>();
+                    collectSections((CompositeMap) section.value, childMap);
+                    for (Section childSection : childMap.keySet()) {
+                        if (childSection.path != null) {
+                            childSection.path = entry.getKey().concat(".").concat(childSection.path);
+                        }
+                    }
+                    parentMap.putAll(childMap);
+                } else {
+                    String raw = getHex(section.pos, section.limit);
+                    if (element.getValue().equals(section.value)) {
+                        section.path = entry.getKey();
+                    }
+                    parentMap.put(section, raw);
+                }
+            }
+        }
+    }
+
+    /**
+     * Recursive method to get all message element values except for composite elements.
+     *
+     * @param compositeMap TODO
+     * @param parentMap    TODO
+     */
+    private void findElementValues(CompositeMap compositeMap, Map<String, Object> parentMap) {
+        for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
+            MessageElement<?> element = entry.getValue();
+            Object value = element.getValue();
+            if (value instanceof CompositeMap) {
+                Map<String, Object> tmpMap = new HashMap<>();
+                findElementValues((CompositeMap) value, tmpMap);
+                for (Entry<String, Object> tmpEntry : tmpMap.entrySet()) {
+                    parentMap.put(entry.getKey().concat(".").concat(tmpEntry.getKey()), tmpEntry.getValue());
+                }
+            } else {
+                parentMap.put(entry.getKey(), entry.getValue().getValue());
+            }
+        }
+    }
+
+    /**
+     * Called internally to build the backing buffer and consolidates the sections as cache for performance during
+     * logging or accessing values.  Message is locked for writing externally
+     *
+     * @param buffer
+     */
+    void setBackingBuffer(ByteBuffer buffer) {
+        backingBuffer = buffer;
+        sections = new TreeMap<>();
+        collectSections(this.elements, sections);
+    }
+
+    /**
+     * Clears sections of all sub elements and the backing buffer
+     */
+    void clearRawState() {
+        if (backingBuffer != null) {
+            backingBuffer = null;
+            sections = null;
+            for (MessageElement<?> subElement : elements.values()) {
+                subElement.clearSections();
+            }
+        }
+    }
+
+    //
+    // Public API starts
+    //
+
     @Override
     public int hashCode() {
         try {
@@ -224,91 +324,26 @@ public final class Message {
     public String toString() {
         try {
             rwLock.readLock().lock();
-            // TODO
-            return super.toString();
+            StringBuilder sb = new StringBuilder();
+            for (Entry<Section, String> entry : sections.entrySet()) {
+                Section section = entry.getKey();
+                sb.append(String.format("%4d -> %4d %15s %-50s\t%s\n", section.pos, section.limit, section.path, section.value, "0x" + entry.getValue()));
+                if (section.path != null) {
+                    Object val = getElement(section.path);
+                    if (!section.value.equals(val)) {
+                        throw new RuntimeException("Not equal: " + section.path);
+                    }
+                }
+            }
+            return sb.toString();
         } finally {
             rwLock.readLock().unlock();
         }
     }
 
-    void resetRawState() {
-        if (messageBuffer != null) {
-            messageBuffer = null;
-            for (MessageElement<?> subElement : elements.values()) {
-                subElement.clearMarkers();
-            }
-        }
-    }
-
     /**
-     * Recursive method to get all message elements except for composite elements.
-     *
-     * @param compositeMap TODO
-     * @param parentMap    TODO
-     */
-    private void findElements(CompositeMap compositeMap, Map<Section, MessageElement<?>> parentMap) {
-        for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
-            MessageElement<?> element = entry.getValue();
-            Object value = element.getValue();
-            if (value instanceof CompositeMap) {
-                Map<Section, MessageElement<?>> tmpMap = new HashMap<>();
-                findElements((CompositeMap) value, tmpMap);
-                for (Section section : tmpMap.keySet()) {
-                    section.index = entry.getKey().concat(".").concat(section.index);
-                }
-                parentMap.putAll(tmpMap);
-            } else {
-                Section section = new Section();
-                section.index = entry.getKey();
-                section.pos = element.getPos();
-                section.limit = element.getLimit();
-                parentMap.put(section, element);
-            }
-        }
-    }
-
-    /**
-     * Recursive method to get all message element values except for composite elements.
-     *
-     * @param compositeMap TODO
-     * @param parentMap    TODO
-     */
-    private void findElementValues(CompositeMap compositeMap, Map<String, Object> parentMap) {
-        for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
-            MessageElement<?> element = entry.getValue();
-            Object value = element.getValue();
-            if (value instanceof CompositeMap) {
-                Map<String, Object> tmpMap = new HashMap<>();
-                findElementValues((CompositeMap) value, tmpMap);
-                for (Entry<String, Object> tmpEntry : tmpMap.entrySet()) {
-                    parentMap.put(entry.getKey().concat(".").concat(tmpEntry.getKey()), tmpEntry.getValue());
-                }
-            } else {
-                parentMap.put(entry.getKey(), entry.getValue().getValue());
-            }
-        }
-    }
-
-    /**
-     * Internal method used for logging messages during encoding/decoding.
-     *
-     * @return TODO
-     */
-    Map<Section, MessageElement<?>> getElementsInternal() {
-        Map<MessageElement.Section, MessageElement<?>> elementMap = new TreeMap<>();
-        try {
-            rwLock.readLock().lock();
-            findElements(this.elements, elementMap);
-            return elementMap;
-        } finally {
-            rwLock.readLock().unlock();
-        }
-    }
-
-    // Public API
-
-    /**
-     * Method to allow for getting all element values with key being the index path.
+     * Method to allow for getting all element values with key being the index path. TODO use the backing buffer if it
+     * exists
      *
      * @return TODO
      */
@@ -324,12 +359,11 @@ public final class Message {
     }
 
     /**
-     * Traverses the message element hierarchy to get the value located at the indexPath. TODO: get list of elements
-     * using * wildcard?
+     * Gets the value located at the indexPath. TODO: get list of elements using * wildcard?
      *
      * @param indexPath TODO
      * @param <T>       TODO
-     * @return the value or null if the element doesn't exist or is a composite element
+     * @return the value or {@code null} if the element doesn't exist or is a composite element
      * @throws IllegalArgumentException if the indexPath pattern is not valid
      */
     public <T> T getElement(String indexPath) {
@@ -337,8 +371,8 @@ public final class Message {
     }
 
     /**
-     * Same as {@link #getElement(String indexPath) getElement} except that the value is returned as raw hex value. This
-     * would include any data related to the element like length prefix bytes.
+     * Same as {@link #getElement} except that the value is returned as raw hex value. This would include any data
+     * related to the element like length prefix bytes.
      *
      * @param indexPath TODO
      * @return TODO
@@ -351,12 +385,12 @@ public final class Message {
     }
 
     /**
-     * Sets the value of a element at the position expressed by indexPath.  This method invalidates the underlying
+     * Sets the value of an element at the position indicated by indexPath.  This method invalidates the underlying
      * byte[] if it exists.
      *
      * @param indexPath TODO
      * @param value     TODO
-     * @throws IllegalArgumentException if the value is null
+     * @throws IllegalArgumentException if the indexPath is not valid or if the value is {@code null}
      */
     public void setElement(String indexPath, Object value) {
         if (value == null) {
@@ -391,7 +425,8 @@ public final class Message {
 
     /**
      * TODO
-     * @param dst TODO
+     *
+     * @param dst     TODO
      * @param indexes TODO
      */
     public void copyElementsTo(Message dst, String... indexes) {
