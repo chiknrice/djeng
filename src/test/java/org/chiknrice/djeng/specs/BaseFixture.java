@@ -17,13 +17,11 @@ package org.chiknrice.djeng.specs;
 
 import org.chiknrice.concordion.SetVarCommandExtension;
 import org.chiknrice.djeng.MessageCodec;
-import org.chiknrice.djeng.MessageCodecFactory;
-import org.chiknrice.djeng.MessageCodecFactoryBuilder;
+import org.chiknrice.djeng.MessageCodecConfig;
 import org.chiknrice.djeng.fin.FinancialAttributes;
 import org.concordion.api.FullOGNL;
 import org.concordion.api.extension.Extensions;
 import org.concordion.integration.junit4.ConcordionRunner;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
@@ -37,18 +35,11 @@ import java.nio.charset.StandardCharsets;
 @Extensions({SetVarCommandExtension.class, StyleExtension.class})
 public abstract class BaseFixture {
 
-    static MessageCodecFactory MESSAGE_CODEC_FACTORY;
-
-    @BeforeClass
-    public static void init() {
-        MESSAGE_CODEC_FACTORY = new MessageCodecFactoryBuilder().withSchema("djeng-financial.xsd").withTypeMapper(FinancialAttributes.class).build();
-    }
-
     MessageCodec messageCodec;
 
     public String buildCodecWithConfig(String configuration) {
         try {
-            messageCodec = MESSAGE_CODEC_FACTORY.build(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8)));
+            messageCodec = new MessageCodec(MessageCodecConfig.fromXml(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8))).withSchemas("djeng-financial.xsd").withAttributeMappers(FinancialAttributes.class).build());
             return "successful";
         } catch (Exception e) {
             return e.getMessage();
