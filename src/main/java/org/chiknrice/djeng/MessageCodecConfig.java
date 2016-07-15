@@ -221,7 +221,7 @@ public class MessageCodecConfig {
             try {
                 return (T) clazz.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
+                throw new RuntimeException("Failed to create instance of " + clazz.getSimpleName(), e);
             }
         } else {
             return null;
