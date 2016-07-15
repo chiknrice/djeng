@@ -23,10 +23,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * TODO
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public final class PlainCompositeCodec extends CompositeCodec {
 
+    /**
+     * TODO
+     * @param buffer TODO
+     * @param compositeMap TODO
+     * @param subElementsCodecs TODO
+     */
     @Override
     protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs) {
         Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
@@ -45,6 +53,12 @@ public final class PlainCompositeCodec extends CompositeCodec {
 
     }
 
+    /**
+     * TODO
+     * @param buffer TODO
+     * @param subElementsCodecs TODO
+     * @return TODO
+     */
     @Override
     protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs) {
         CompositeMap compositeMap = new CompositeMap();

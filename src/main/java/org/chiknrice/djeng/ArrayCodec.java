@@ -16,20 +16,34 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 /**
+ * The {@code ArrayCodec} defines the encoding and decoding of array elements.  It is implemented as a filter which just
+ * delegates encoding and decoding of the elements to the filtered codec.  Elements can then be any type of value (even
+ * composite).
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public abstract class ArrayCodec extends CodecFilter<CompositeMap> {
 
+    /**
+     * TODO
+     * @param buffer TODO
+     * @param element TODO
+     * @param chain TODO
+     */
     @Override
     protected void encode(ByteBuffer buffer, MessageElement<CompositeMap> element, Codec chain) {
         CompositeMap compositeMap = element.getValue();
         // TODO finish this
     }
 
+    /**
+     * TODO
+     * @param buffer TODO
+     * @param chain TODO
+     * @return TODO
+     */
     @Override
     protected MessageElement<CompositeMap> decode(ByteBuffer buffer, Codec chain) {
         CompositeMap compositeMap = new CompositeMap();

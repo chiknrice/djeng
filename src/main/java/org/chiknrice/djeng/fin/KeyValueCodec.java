@@ -24,10 +24,18 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
+ * The {@code KeyValueCodec} is a {@code CompositeCodec} which maps the sub elements to keys and values.  The index of
+ * the {@code MessageElement} being the key and the {@code MessageElement} value as the value.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public abstract class KeyValueCodec<K> extends CompositeCodec {
 
+    /**
+     * @param buffer TODO
+     * @param compositeMap TODO
+     * @param subElementsCodecs TODO
+     */
     @Override
     protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs) {
         Codec keyCodec = subElementsCodecs.get("key");
@@ -45,8 +53,21 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
         }
     }
 
+    /**
+     * TODO
+     * @param stringKey TODO
+     * @return TODO
+     */
     protected abstract K toKeyValue(String stringKey);
 
+    /**
+     * Decodes the sub-elements using the key and value codecs which are specified by the attributes {@code key} and
+     * {@code value}.  Decoding would consume the {@code ByteBuffer} up to the limit.
+     *
+     * @param buffer TODO
+     * @param subElementsCodecs TODO
+     * @return TODO
+     */
     @Override
     protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs) {
         Codec keyCodec = subElementsCodecs.get("key");
@@ -65,6 +86,11 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
         return compositeMap;
     }
 
+    /**
+     * TODO
+     * @param key TODO
+     * @return TODO
+     */
     protected abstract String toKeyString(K key);
 
 }
