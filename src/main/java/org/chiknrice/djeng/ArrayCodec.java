@@ -16,6 +16,8 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The {@code ArrayCodec} defines the encoding and decoding of array elements.  It is implemented as a filter which just
@@ -24,31 +26,49 @@ import java.nio.ByteBuffer;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class ArrayCodec extends CodecFilter<CompositeMap> {
+public class ArrayCodec extends CodecFilter<CompositeMap> {
 
     /**
      * TODO
-     * @param buffer TODO
+     *
+     * @param buffer  TODO
      * @param element TODO
-     * @param chain TODO
+     * @param chain   TODO
      */
     @Override
     protected void encode(ByteBuffer buffer, MessageElement<CompositeMap> element, Codec chain) {
+        int pos = buffer.arrayOffset() + buffer.position();
         CompositeMap compositeMap = element.getValue();
-        // TODO finish this
+        Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
+        int index = 0;
+        MessageElement<?> arrayElement;
+        while ((arrayElement = compositeMap.get(Integer.toString(index))) != null) {
+            chain.encode(buffer, arrayElement);
+            elementsLeft.remove(Integer.toString(index++));
+        }
+        if (elementsLeft.size() > 0) {
+            throw new RuntimeException("Unexpected array elements: " + elementsLeft);
+        }
+        element.addSection(pos, buffer.arrayOffset() + buffer.position(), compositeMap);
     }
 
     /**
      * TODO
+     *
      * @param buffer TODO
-     * @param chain TODO
+     * @param chain  TODO
      * @return TODO
      */
     @Override
     protected MessageElement<CompositeMap> decode(ByteBuffer buffer, Codec chain) {
+        int pos = buffer.arrayOffset() + buffer.position();
         CompositeMap compositeMap = new CompositeMap();
+        int index = 0;
+        while (buffer.hasRemaining()) {
+            compositeMap.put(Integer.toString(index++), chain.decode(buffer));
+        }
         MessageElement<CompositeMap> element = new MessageElement<>(compositeMap);
-        // TODO finish this
+        element.addSection(pos, buffer.arrayOffset() + buffer.position(), compositeMap);
         return element;
     }
 }
