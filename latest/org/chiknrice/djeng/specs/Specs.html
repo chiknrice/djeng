@@ -34,18 +34,18 @@
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><h3>
     Problem
 </h3><p>
-    Communication protocols doesn't end in http. Having developed for different system integrators (including payment
-    and mobile solutions), I'm often required to integrate different components including switches, POS terminals, and
-    HSMs (hardware security module). These components typically communicate using different non-http protocols. One main
-    aspect of a protocol is the message format. Different protocols usually have different message formats. When
-    implementing codecs for different message formats, I realized that there's no single solution available that can
-    cover all the different codec related requirements I have. Although some frameworks exists, they are usually focused
-    on a specific message format. Different frameworks mean inconsistent approach, high learning curve for new
-    developers, and hard to maintain code (just to name a few).
+    Communication protocols doesn't end in http. Having to work for different system integrators (including payment
+    and mobile solutions), I'm often tasked to integrate different components including switches, POS terminals, and
+    HSMs (hardware security module). These components typically communicate using non-http protocols. One main aspect of
+    a protocol is the message format. Different protocols usually have different message formats. When implementing
+    codecs for different message formats, I realized that there's no single solution available that can cover all the
+    codec related requirements I have. Although some frameworks exists, they are usually focused on a specific message
+    format. Different frameworks mean inconsistent approach, high learning curve for new developers, and hard to
+    maintain code (just to name a few).
 </p><h3>
     Solution
 </h3><p>
-    DJENG stands for Dynamic Java Encoder (NextGen). It is a protocol-agnostic byte stream codec framework. Although
+    The Dynamic Java Encoder (NextGen), or simple djeng is a protocol-agnostic byte stream codec framework. Although
     originally intended to be a framework for creating ISO8583/AS2805 codecs, it evolved into a dynamic framework to
     easily create a codec for any message format (e.g. HSM calls, SMPP messages). The core idea of djeng is to define a
     comprehensive encoding/decoding process, provide an API to develop codecs, and allow these codecs to be used in this
@@ -59,9 +59,9 @@
     The specifications are living documentation (@see <a href="http://concordion.org/">Concordion</a>). Automated tests
     are performed when generating these pages which in turn reflects the results of the tests. A test that fails would
     be shown in <span class="failure">red</span> and passing tests would be shown in <span class="success">green</span>.
-    The high level results serves the purpose of links to more detailed specification. One can drill down by navigating
-    to these links (try clicking on the message link below), while breadcrumbs are provided for navigating back to the
-    higher level specification page.
+    The high level results serves as links to more detailed specification. One can drill down by navigating to these
+    links (try clicking on the message link below), while breadcrumbs are provided for navigating back to the higher
+    level specification pages.
 </p><h3>
     Usage
 </h3><p>
