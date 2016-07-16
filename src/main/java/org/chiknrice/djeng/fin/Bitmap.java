@@ -99,7 +99,7 @@ final class Bitmap {
         Set<Integer> setBits = new TreeSet<>();
         int bits = bytes.length * 8;
         for (int i = 1; i <= bits; i++) {
-            if (isSet(i)) {
+            if (isSet(i) && !isControlBit(i)) {
                 setBits.add(i);
             }
         }
