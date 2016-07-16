@@ -16,6 +16,7 @@
 package org.chiknrice.djeng.fin;
 
 import org.chiknrice.djeng.ByteUtil;
+import org.chiknrice.djeng.ElementCodec;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class NumericCodec extends ByteArrayBasedCodec<Long> implements LengthPrefixDelegate<Long>{
+public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDelegate<Long>{
 
     @Override
     protected byte[] encodeValue(Long value) {

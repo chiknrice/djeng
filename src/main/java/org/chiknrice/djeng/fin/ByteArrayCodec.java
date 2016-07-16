@@ -15,10 +15,12 @@
  */
 package org.chiknrice.djeng.fin;
 
+import org.chiknrice.djeng.ElementCodec;
+
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class ByteArrayCodec extends ByteArrayBasedCodec<byte[]> {
+public class ByteArrayCodec extends ElementCodec<byte[]> {
     @Override
     protected byte[] encodeValue(byte[] value) {
         return value;

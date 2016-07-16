@@ -15,6 +15,8 @@
  */
 package org.chiknrice.djeng;
 
+import org.chiknrice.djeng.fin.FinancialAttributes;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -22,16 +24,16 @@ import java.nio.ByteBuffer;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class ElementCodec<V, R> extends BaseCodec<V> {
+public abstract class ElementCodec<T> extends BaseCodec<T> {
 
     /**
      * @param buffer  the ByteBuffer where the element would be encoded
      * @param element the element to be encoded
      */
-    public final void encode(ByteBuffer buffer, MessageElement<V> element) {
+    public final void encode(ByteBuffer buffer, MessageElement<T> element) {
         int pos = buffer.arrayOffset() + buffer.position();
-        V value = element.getValue();
-        R rawValue = encodeValue(value);
+        T value = element.getValue();
+        byte[] rawValue = encodeValue(value);
         encodeRawValue(buffer, rawValue);
         element.addSection(pos, buffer.arrayOffset() + buffer.position(), value);
     }
@@ -42,15 +44,17 @@ public abstract class ElementCodec<V, R> extends BaseCodec<V> {
      * @param value the actual value to be encoded
      * @return TODO
      */
-    protected abstract R encodeValue(V value);
+    protected abstract byte[] encodeValue(T value);
 
     /**
      * Encode the raw value to the buffer.
      *
      * @param buffer   the ByteBuffer to which the value would be encoded
-     * @param rawValue TODO
+     * @param value TODO
      */
-    protected abstract void encodeRawValue(ByteBuffer buffer, R rawValue);
+    protected void encodeRawValue(ByteBuffer buffer, byte[] value) {
+        buffer.put(value);
+    }
 
 
     /**
@@ -58,11 +62,11 @@ public abstract class ElementCodec<V, R> extends BaseCodec<V> {
      * @return TODO
      */
     @Override
-    public MessageElement<V> decode(ByteBuffer buffer) {
+    public MessageElement<T> decode(ByteBuffer buffer) {
         int pos = buffer.arrayOffset() + buffer.position();
-        R rawValue = decodeRawValue(buffer);
-        V value = decodeValue(rawValue);
-        MessageElement<V> element = new MessageElement<>(value);
+        byte[] rawValue = decodeRawValue(buffer);
+        T value = decodeValue(rawValue);
+        MessageElement<T> element = new MessageElement<>(value);
         element.addSection(pos, buffer.arrayOffset() + buffer.position(), value);
         return element;
     }
@@ -73,7 +77,7 @@ public abstract class ElementCodec<V, R> extends BaseCodec<V> {
      * @param rawValue TODO
      * @return TODO
      */
-    protected abstract V decodeValue(R rawValue);
+    protected abstract T decodeValue(byte[] rawValue);
 
     /**
      * Decode the raw value from the buffer.
@@ -81,6 +85,16 @@ public abstract class ElementCodec<V, R> extends BaseCodec<V> {
      * @param buffer TODO
      * @return TODO
      */
-    protected abstract R decodeRawValue(ByteBuffer buffer);
+    protected byte[] decodeRawValue(ByteBuffer buffer) {
+        Integer length = getAttribute(FinancialAttributes.LENGTH);
+        byte[] bytes;
+        if (length != null) {
+            bytes = new byte[length];
+        } else {
+            bytes = new byte[buffer.remaining()];
+        }
+        buffer.get(bytes);
+        return bytes;
+    }
 
 }

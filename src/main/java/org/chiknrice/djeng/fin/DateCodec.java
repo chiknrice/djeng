@@ -16,6 +16,7 @@
 package org.chiknrice.djeng.fin;
 
 import org.chiknrice.djeng.ByteUtil;
+import org.chiknrice.djeng.ElementCodec;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +27,7 @@ import java.util.Date;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class DateCodec extends ByteArrayBasedCodec<Date> {
+public class DateCodec extends ElementCodec<Date> {
 
     @Override
     protected byte[] encodeValue(Date value) {

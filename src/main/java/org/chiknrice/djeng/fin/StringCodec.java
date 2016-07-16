@@ -15,12 +15,14 @@
  */
 package org.chiknrice.djeng.fin;
 
+import org.chiknrice.djeng.ElementCodec;
+
 import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class StringCodec extends ByteArrayBasedCodec<String> {
+public class StringCodec extends ElementCodec<String> {
 
     @Override
     protected byte[] encodeValue(String value) {

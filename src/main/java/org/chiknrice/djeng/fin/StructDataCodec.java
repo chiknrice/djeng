@@ -15,6 +15,8 @@
  */
 package org.chiknrice.djeng.fin;
 
+import org.chiknrice.djeng.ElementCodec;
+
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,7 +24,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class StructDataCodec extends ByteArrayBasedCodec<Map<String, String>> {
+public class StructDataCodec extends ElementCodec<Map<String, String>> {
 
     @Override
     protected byte[] encodeValue(Map<String, String> value) {
