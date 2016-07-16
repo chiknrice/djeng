@@ -9,14 +9,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="#">Financial XSD</a></li><li class="downloads"><a href="#">Core XSD</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Valid Filter Reference</h1>
 
     <p>
-        Every codec (or even filter) using a filter should have their filter attribute reference an existing
-        filter.
+        Every codec using any filters should have their code attribute reference an existing filter.
     </p>
-<hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+<hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><h3>
+    Missing Filter
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key
         'filter-codec-id-ref' with value 'f' not found for identity constraint of element 'config'.</span>
@@ -25,11 +36,67 @@
 
     &lt;codecs&gt;
         &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
-        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec" filter="f"/&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
+            &lt;filter codec="f"/&gt;
+        &lt;/element-codec&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
     &lt;/codecs&gt;
     &lt;message-elements codec="message"&gt;
         &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    Invalid Filter
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would result in <span c:assertEquals="#result" class="success">Key
+        'filter-codec-id-ref' with value 'string' not found for identity constraint of element 'config'.</span>
+    <pre i:setResource="#config" i:path="samples/invalid-filter-reference.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+        &lt;composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec"&gt;
+            &lt;filter codec="string"/&gt;
+        &lt;/composite-codec&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+        &lt;element index="1" codec="string"/&gt;
+    &lt;/message-elements&gt;
+
+&lt;/config&gt;
+</pre>
+    </p>
+</div><h3>
+    Valid Reference
+</h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
+    <p>
+        The following configuration would be <span c:assertEquals="#result" class="success">successful</span>.
+    <pre i:setResource="#config" i:path="samples/valid-filter-reference.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
+
+    &lt;codecs&gt;
+        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;filter-codec id="array" class="org.chiknrice.djeng.ArrayCodec"/&gt;
+        &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
+            &lt;filter codec="lvar"/&gt;
+        &lt;/element-codec&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+        &lt;composite-codec id="arr-lvar-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec"&gt;
+            &lt;filter codec="lvar"/&gt;
+            &lt;filter codec="array"/&gt;
+        &lt;/composite-codec&gt;
+    &lt;/codecs&gt;
+    &lt;message-elements codec="message"&gt;
+        &lt;element index="1" codec="string"/&gt;
+        &lt;composite index="2" codec="arr-lvar-composite"&gt;
+            &lt;element index="1" codec="string"/&gt;
+        &lt;/composite&gt;
     &lt;/message-elements&gt;
 
 &lt;/config&gt;

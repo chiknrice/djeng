@@ -53,7 +53,13 @@
         <ul>
             <li>filter-codec</li>
             <li>element-codec</li>
+            <ul>
+                <li>filter</li>
+            </ul>
             <li>composite-codec</li>
+            <ul>
+                <li>filter</li>
+            </ul>
         </ul>
         <li>message-elements</li>
         <ul>
@@ -97,8 +103,8 @@
     <li><a href="CompositeReferenceSpec.html" c:run="concordion" class="success">The 'codec' attribute of 'composite' tags should
         reference a valid composite codec</a>
     </li>
-    <li><a href="FilterReferenceSpec.html" c:run="concordion" class="success">The 'filter' attribute of all codecs (including
-        'filter-codec') should reference a valid filter codec</a></li>
+    <li><a href="FilterReferenceSpec.html" c:run="concordion" class="success">The 'codec' attribute of all filter elements should
+        reference a valid filter codec</a></li>
     <li><a href="CodecOrderingSpec.html" c:run="concordion" class="success">The codecs should be grouped into types and defined in the
         order shown in the structure</a></li>
 </ul><h3>
