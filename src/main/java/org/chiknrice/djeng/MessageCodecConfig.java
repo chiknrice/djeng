@@ -149,7 +149,7 @@ public class MessageCodecConfig {
                 case COMPOSITE_CODEC:
                     validateImplementation(CompositeCodec.class, codecClass);
                     break;
-                case FILTER_CODEC:
+                case CODEC_FILTER:
                     validateImplementation(CodecFilter.class, codecClass);
                     break;
                 default:

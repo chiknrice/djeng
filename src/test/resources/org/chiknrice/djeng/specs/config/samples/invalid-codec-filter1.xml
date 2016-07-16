@@ -2,7 +2,7 @@
 <config xmlns="http://www.chiknrice.org/djeng">
 
     <codecs>
-        <filter-codec id="a-filter" class="java.lang.Integer"/>
+        <codec-filter id="a-filter" class="java.lang.Integer"/>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
         <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
     </codecs>

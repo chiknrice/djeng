@@ -2,7 +2,7 @@
 <config xmlns="http://www.chiknrice.org/djeng">
 
     <codecs>
-        <filter-codec id="a-filter" class="org.chiknrice.djeng.NotExisting"/>
+        <codec-filter id="a-filter" class="org.chiknrice.djeng.NotExisting"/>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
         <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
     </codecs>

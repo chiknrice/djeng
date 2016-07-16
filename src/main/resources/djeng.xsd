@@ -26,7 +26,7 @@
                 <element name="codecs" minOccurs="1" maxOccurs="1">
                     <complexType>
                         <sequence>
-                            <element name="filter-codec" type="tns:filter-type" minOccurs="0" maxOccurs="unbounded"/>
+                            <element name="codec-filter" type="tns:filter-type" minOccurs="0" maxOccurs="unbounded"/>
                             <element name="element-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
                             <element name="composite-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
@@ -49,8 +49,8 @@
                 </element>
             </sequence>
         </complexType>
-        <key name="filter-codec-id">
-            <selector xpath="tns:codecs/tns:filter-codec"/>
+        <key name="codec-filter-id">
+            <selector xpath="tns:codecs/tns:codec-filter"/>
             <field xpath="@id"/>
         </key>
         <key name="element-codec-id">
@@ -61,7 +61,7 @@
             <selector xpath="tns:codecs/tns:composite-codec"/>
             <field xpath="@id"/>
         </key>
-        <keyref name="filter-codec-id-ref" refer="tns:filter-codec-id">
+        <keyref name="codec-filter-id-ref" refer="tns:codec-filter-id">
             <selector xpath="tns:codecs/*/tns:filter"/>
             <field xpath="@codec"/>
         </keyref>

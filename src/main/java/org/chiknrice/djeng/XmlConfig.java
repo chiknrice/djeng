@@ -87,9 +87,9 @@ class XmlConfig implements Closeable {
 
     enum ElementName {
         CODECS,
+        CODEC_FILTER,
         ELEMENT_CODEC,
         COMPOSITE_CODEC,
-        FILTER_CODEC,
         FILTER,
         MESSAGE_ELEMENTS,
         ELEMENT,

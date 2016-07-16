@@ -2,8 +2,8 @@
 <config xmlns="http://www.chiknrice.org/djeng">
 
     <codecs>
-        <filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
-        <filter-codec id="array" class="org.chiknrice.djeng.ArrayCodec"/>
+        <codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
+        <codec-filter id="array" class="org.chiknrice.djeng.ArrayCodec"/>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec">
             <filter codec="lvar"/>
         </element-codec>

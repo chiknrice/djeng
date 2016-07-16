@@ -21,7 +21,7 @@
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result">Key
-        'filter-codec-id-ref' with value 'f' not found for identity constraint of element 'config'.</span>
+        'codec-filter-id-ref' with value 'f' not found for identity constraint of element 'config'.</span>
     <pre i:setResource="#config" i:path="samples/missing-filter-reference.xml"/>
     </p>
 </div>
@@ -33,7 +33,7 @@
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result">Key
-        'filter-codec-id-ref' with value 'string' not found for identity constraint of element 'config'.</span>
+        'codec-filter-id-ref' with value 'string' not found for identity constraint of element 'config'.</span>
     <pre i:setResource="#config" i:path="samples/invalid-filter-reference.xml"/>
     </p>
 </div>

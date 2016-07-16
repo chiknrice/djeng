@@ -4,7 +4,7 @@
     <codecs>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
         <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
-        <filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
+        <codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
     </codecs>
     <message-elements codec="message">
         <element index="1" codec="string"/>
