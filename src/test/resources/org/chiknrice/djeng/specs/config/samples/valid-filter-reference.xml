@@ -3,13 +3,21 @@
 
     <codecs>
         <filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
+        <filter-codec id="array" class="org.chiknrice.djeng.ArrayCodec"/>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec">
-            <filter codec="f"/>
+            <filter codec="lvar"/>
         </element-codec>
         <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
+        <composite-codec id="arr-lvar-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec">
+            <filter codec="lvar"/>
+            <filter codec="array"/>
+        </composite-codec>
     </codecs>
     <message-elements codec="message">
         <element index="1" codec="string"/>
+        <composite index="2" codec="arr-lvar-composite">
+            <element index="1" codec="string"/>
+        </composite>
     </message-elements>
 
 </config>

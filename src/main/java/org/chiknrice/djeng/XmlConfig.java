@@ -90,6 +90,7 @@ class XmlConfig implements Closeable {
         ELEMENT_CODEC,
         COMPOSITE_CODEC,
         FILTER_CODEC,
+        FILTER,
         MESSAGE_ELEMENTS,
         ELEMENT,
         COMPOSITE;

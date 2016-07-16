@@ -205,9 +205,9 @@ public class MessageCodecConfig {
         XmlConfig.XmlElement codecConfig = codecMap.get(elementCodec);
         Codec codec = buildObject(codecConfig.<Class<?>>getAttribute(CLASS));
         setAttributes(codecConfig, codec);
-        String filter;
-        while ((filter = codecConfig.getOptionalAttribute(FILTER)) != null) {
-            codecConfig = codecMap.get(filter);
+        List<XmlConfig.XmlElement> filters = codecConfig.getChildren() ;
+        for (XmlConfig.XmlElement filter : filters) {
+            codecConfig = codecMap.get(filter.getAttribute(CODEC));
             CodecFilter<?> codecFilter = buildObject(codecConfig.<Class<?>>getAttribute(CLASS));
             codecFilter.setChain(codec);
             setAttributes(codecConfig, codec);

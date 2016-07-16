@@ -3,10 +3,11 @@
 
     <codecs>
         <filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
-        <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec">
-            <filter codec="f"/>
-        </element-codec>
+        <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
         <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
+        <composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec">
+            <filter codec="string"/>
+        </composite-codec>
     </codecs>
     <message-elements codec="message">
         <element index="1" codec="string"/>

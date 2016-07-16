@@ -28,7 +28,6 @@ public final class CoreAttributes {
     public static final Attribute ID;
     public static final Attribute CODEC;
     public static final Attribute CLASS;
-    public static final Attribute FILTER;
     public static final Attribute INDEX;
     public static final Attribute DESCRIPTION;
     public static final Attribute MASK; // TODO: implement mask in the schema
@@ -38,7 +37,6 @@ public final class CoreAttributes {
         ID = new Attribute("id", NAMESPACE);
         CODEC = new Attribute("codec", NAMESPACE);
         CLASS = new Attribute("class", NAMESPACE);
-        FILTER = new Attribute("filter", NAMESPACE);
         INDEX = new Attribute("index", NAMESPACE);
         DESCRIPTION = new Attribute("description", NAMESPACE);
         MASK = new Attribute("packed", NAMESPACE);

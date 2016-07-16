@@ -26,7 +26,7 @@
                 <element name="codecs" minOccurs="1" maxOccurs="1">
                     <complexType>
                         <sequence>
-                            <element name="filter-codec" type="tns:codec-type" minOccurs="0" maxOccurs="unbounded"/>
+                            <element name="filter-codec" type="tns:filter-type" minOccurs="0" maxOccurs="unbounded"/>
                             <element name="element-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
                             <element name="composite-codec" type="tns:codec-type" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
@@ -62,8 +62,8 @@
             <field xpath="@id"/>
         </key>
         <keyref name="filter-codec-id-ref" refer="tns:filter-codec-id">
-            <selector xpath="tns:codecs/*"/>
-            <field xpath="@filter"/>
+            <selector xpath="tns:codecs/*/tns:filter"/>
+            <field xpath="@codec"/>
         </keyref>
         <keyref name="element-codec-id-ref" refer="tns:element-codec-id">
             <selector xpath=".//tns:element"/>
@@ -96,12 +96,25 @@
         </restriction>
     </simpleType>
 
-    <complexType name="codec-type">
+    <complexType name="filter-type">
         <attribute name="id" type="tns:non-empty-no-space-token" use="required"/>
         <attribute name="class" type="tns:non-empty-no-space-token" use="required"/>
-        <attribute name="filter" type="tns:non-empty-no-space-token" use="optional"/>
         <attribute name="description" type="tns:non-empty-token" use="optional"/>
         <anyAttribute/>
+    </complexType>
+
+    <complexType name="codec-type">
+        <complexContent>
+            <extension base="tns:filter-type">
+                <sequence>
+                    <element name="filter" minOccurs="0" maxOccurs="unbounded">
+                        <complexType>
+                            <attribute name="codec" type="tns:non-empty-no-space-token" use="required"/>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
     </complexType>
 
     <complexType name="element-type">
