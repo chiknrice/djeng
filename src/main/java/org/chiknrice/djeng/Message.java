@@ -239,9 +239,7 @@ public final class Message {
                     parentMap.putAll(childMap);
                 } else {
                     String raw = getHex(section.pos, section.limit);
-                    if (element.getValue().equals(section.value)) {
-                        section.path = entry.getKey();
-                    }
+                    section.path = element.getValue().equals(section.value) ? entry.getKey() : entry.getKey().concat(".?");
                     parentMap.put(section, raw);
                 }
             }
@@ -333,7 +331,7 @@ public final class Message {
             for (Entry<Section, String> entry : sections.entrySet()) {
                 Section section = entry.getKey();
                 sb.append(String.format("%4d -> %4d %15s %-50s\t%s\n", section.pos, section.limit, section.path, section.value, "0x" + entry.getValue()));
-                if (section.path != null) {
+                if (!section.path.endsWith("?")) {
                     Object val = getElement(section.path);
                     if (!section.value.equals(val)) {
                         throw new RuntimeException("Not equal: " + section.path);
