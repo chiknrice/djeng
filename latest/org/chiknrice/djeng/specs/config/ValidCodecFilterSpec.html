@@ -31,7 +31,7 @@
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="a-filter" class="java.lang.Integer"/&gt;
+        &lt;codec-filter id="a-filter" class="java.lang.Integer"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
     &lt;/codecs&gt;
@@ -52,7 +52,7 @@
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="a-filter" class="org.chiknrice.djeng.NotExisting"/&gt;
+        &lt;codec-filter id="a-filter" class="org.chiknrice.djeng.NotExisting"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
     &lt;/codecs&gt;

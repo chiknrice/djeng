@@ -30,12 +30,12 @@
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key
-        'filter-codec-id-ref' with value 'f' not found for identity constraint of element 'config'.</span>
+        'codec-filter-id-ref' with value 'f' not found for identity constraint of element 'config'.</span>
     <pre i:setResource="#config" i:path="samples/missing-filter-reference.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
             &lt;filter codec="f"/&gt;
         &lt;/element-codec&gt;
@@ -53,12 +53,12 @@
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">Key
-        'filter-codec-id-ref' with value 'string' not found for identity constraint of element 'config'.</span>
+        'codec-filter-id-ref' with value 'string' not found for identity constraint of element 'config'.</span>
     <pre i:setResource="#config" i:path="samples/invalid-filter-reference.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
         &lt;composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec"&gt;
@@ -81,8 +81,8 @@
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;filter-codec id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
-        &lt;filter-codec id="array" class="org.chiknrice.djeng.ArrayCodec"/&gt;
+        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;codec-filter id="array" class="org.chiknrice.djeng.ArrayCodec"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
             &lt;filter codec="lvar"/&gt;
         &lt;/element-codec&gt;
