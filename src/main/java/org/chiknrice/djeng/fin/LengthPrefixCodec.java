@@ -99,7 +99,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
      * Decodes the length prefix of a var length data element
      *
      * @param buffer
-     * @return
+     * @return the length prefix value
      */
     private int decodeLengthPrefix(ByteBuffer buffer) {
         Encoding encoding = getAttribute(LVAR_ENCODING);

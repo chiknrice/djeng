@@ -27,17 +27,21 @@ import static java.lang.String.format;
 import static org.chiknrice.djeng.MessageElement.Section;
 
 /**
- * A class that uses hierarchical model to represent the message elements in a byte stream. Message elements are
- * organized into a tree-like structure. This class would be the root element which is represented as a collection of
- * sub elements. The sub elements can either be a value element (leaf) or a composite element (branch). Each
- * branch/composite element is again a collection of sub elements.
+ * The {@code Message} class represents a message sent to and from a byte stream.  Any message structure can be modeled
+ * using a tree-like structure similar to JSON, XML, and YAML.  Similar to these hierarchical models, this class also
+ * represents message elements using a collection of sub-elements which can either be a value element (leaf) or a
+ * composite-element (branch).  Each branch/composite-element is also a collection of sub-elements.
  * <p>
- * The underlying collection implement is a {@link CompositeMap} which is a TreeMap that restricts keys and values to
- * String and MessageElement.  Keys corresponds to the indexes defined in the configuration xml.  Getting, setting and
- * removing an element can be done with index path, setting would require a non-null value.  The index path is a pattern
- * of indexes separated by a dot (.).  Valid indexes are restricted by the config schema to alpha-numeric characters
- * plus the hyphen (-).  An example index path would be h1.a.b-1 or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583 message).
- * The accessor/mutator methods are all thread-safe.
+ * The collection of sub-elements is implemented using a {@link CompositeMap} which is a {@code HashMap} that restricts
+ * keys and values to {@code String} and {@code MessageElement}.  The key/index is the unique identifier of a
+ * sub-element within that {@code CompositeMap}. This would usually correspond to the index of the element in the
+ * configuration xml but can be set to a different value depending on the {@code Codec} implementation.  Valid indexes
+ * are restricted by the configuration schema to alpha-numeric characters and the hyphen (-).
+ * <p>
+ * The message elements can be referenced when getting, setting or removing their value using an index path.  The index
+ * path is similar to XPATH which is a made up of element indexes separated by a dot (.).  Similar to any path pattern
+ * it a way to navigate to the hierarchical structure to reach a sub-element.  An example index path would be h1.a.b-1
+ * or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583 message). The accessor/mutator methods are all thread-safe.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -70,9 +74,9 @@ public final class Message {
     /**
      * Gets the hex value of the bytes in the backingBuffer from pos to limit
      *
-     * @param pos
-     * @param limit
-     * @return
+     * @param pos   the starting index of array (included)
+     * @param limit the ending index of the array (excluded)
+     * @return a hex string of the bytes from the pos to limit-1 index
      */
     private String getHex(int pos, int limit) {
         if (backingBuffer == null) {
