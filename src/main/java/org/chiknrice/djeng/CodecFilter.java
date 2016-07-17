@@ -62,4 +62,23 @@ public abstract class CodecFilter<T> implements Codec<T> {
     public Codec getChain() {
         return chain;
     }
+
+    /**
+     * TODO
+     * @param chain TODO
+     * @param type TODO
+     * @return the delegate or {@code null} if it doesn't exist
+     */
+    protected <D> D getDelegate(Codec chain, Class<D> type) {
+        while (true) {
+            if (type.isAssignableFrom(chain.getClass())) {
+                return type.cast(chain);
+            }
+            if (chain instanceof CodecFilter) {
+                chain = ((CodecFilter) chain).getChain();
+            } else {
+                return null;
+            }
+        }
+    }
 }

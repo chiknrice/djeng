@@ -31,11 +31,9 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      * @param element the element to be encoded
      */
     public final void encode(ByteBuffer buffer, MessageElement<T> element) {
-        int pos = buffer.arrayOffset() + buffer.position();
         T value = element.getValue();
         byte[] rawValue = encodeValue(value);
         encodeRawValue(buffer, rawValue);
-        element.addSection(pos, buffer.arrayOffset() + buffer.position(), value);
     }
 
     /**
@@ -63,12 +61,9 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      */
     @Override
     public MessageElement<T> decode(ByteBuffer buffer) {
-        int pos = buffer.arrayOffset() + buffer.position();
         byte[] rawValue = decodeRawValue(buffer);
         T value = decodeValue(rawValue);
-        MessageElement<T> element = new MessageElement<>(value);
-        element.addSection(pos, buffer.arrayOffset() + buffer.position(), value);
-        return element;
+        return new MessageElement<>(value);
     }
 
     /**

@@ -39,8 +39,9 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
         int pos = buffer.arrayOffset() + buffer.position();
         int limit = pos + lengthPrefixBytesCount;
         int valueLength = dataBuffer.position();
-        if (chain instanceof LengthPrefixDelegate) {
-            valueLength = ((LengthPrefixDelegate) chain).determineLengthPrefixValue(element.getValue());
+        LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
+        if (delegate != null) {
+            valueLength = delegate.determineLengthPrefixValue(element.getValue());
         }
         element.addSection(pos, limit, valueLength);
         encodeLengthPrefix(buffer, valueLength);
@@ -93,11 +94,10 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
                 throw new RuntimeException(String.format("Unsupported length prefix encoding %s", encoding));
         }
 
-        int dataByteCount;
-        if (chain instanceof LengthPrefixDelegate) {
-            dataByteCount = ((LengthPrefixDelegate) chain).determineDataBytesCount(dataLength);
-        } else {
-            dataByteCount = dataLength;
+        int dataByteCount = dataLength;
+        LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
+        if (delegate != null) {
+            dataByteCount = delegate.determineDataBytesCount(dataLength);
         }
         if (dataByteCount > buffer.remaining()) {
             throw new RuntimeException(String.format("Not enough bytes in buffer for var length %d", dataByteCount));

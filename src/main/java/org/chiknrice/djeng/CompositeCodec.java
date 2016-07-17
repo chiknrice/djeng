@@ -25,8 +25,6 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
     protected final void encodeSubElement(String index, Codec codec, ByteBuffer buffer, MessageElement element) {
         try {
-            // TODO: clean this up
-//            System.out.println(String.format("%5s : %s", index, element.getValue()));
             codec.encode(buffer, element);
         } catch (CodecException ce) {
             if (isCompositeCodec(codec)) {
@@ -40,10 +38,7 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
     protected final MessageElement decodeSubElement(String index, Codec codec, ByteBuffer buffer) {
         try {
-            MessageElement element = codec.decode(buffer);
-            // TODO: clean this up
-//            System.out.println(String.format("%5s : %s", index, element.getValue()));
-            return element;
+            return codec.decode(buffer);
         } catch (CodecException ce) {
             if (isCompositeCodec(codec)) {
                 ce.addParentIndex(index);
@@ -56,21 +51,16 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
     @Override
     public final void encode(ByteBuffer buffer, MessageElement<CompositeMap> element) {
-        int pos = buffer.arrayOffset() + buffer.position();
         Map<String, Codec<?>> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
         encodeSubElements(buffer, element.getValue(), subElementsCodecs);
-        element.addSection(pos, buffer.arrayOffset() + buffer.position(), element.getValue());
     }
 
     protected abstract void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs);
 
     @Override
     public final MessageElement<CompositeMap> decode(ByteBuffer buffer) {
-        int pos = buffer.arrayOffset() + buffer.position();
         Map<String, Codec<?>> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
-        MessageElement<CompositeMap> element = new MessageElement<>(decodeSubElements(buffer, subElementsCodecs));
-        element.addSection(pos, buffer.arrayOffset() + buffer.position(), element.getValue());
-        return element;
+        return new MessageElement<>(decodeSubElements(buffer, subElementsCodecs));
     }
 
     protected abstract CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs);

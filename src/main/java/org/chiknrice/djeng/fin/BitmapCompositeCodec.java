@@ -33,9 +33,8 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         for (Map.Entry<String, Codec<?>> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
             Codec<?> codec = codecEntry.getValue();
-            if (codec instanceof BitmapCodec) {
-                // TODO refactor bitmap element into a non value element
-                Bitmap bitmap = buildBitmap((BitmapCodec) codec, compositeMap);
+            if (BitmapCodec.class.equals(codec.<Class<?>>getAttribute(CoreAttributes.CLASS))) {
+                Bitmap bitmap = buildBitmap(codec.<Bitmap.Encoding>getAttribute(FinancialAttributes.BITMAP_ENCODING), compositeMap);
                 compositeMap.put(index, new MessageElement<>(bitmap));
             }
             MessageElement messageElement = compositeMap.get(index);
@@ -49,8 +48,8 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         }
     }
 
-    Bitmap buildBitmap(BitmapCodec codec, CompositeMap compositeMap) {
-        Bitmap.Encoding bitmapEncoding = codec.getAttribute(FinancialAttributes.BITMAP_ENCODING);
+    Bitmap buildBitmap(Bitmap.Encoding encoding, CompositeMap compositeMap) {
+        Bitmap.Encoding bitmapEncoding = encoding;
         Bitmap bitmap = new Bitmap(bitmapEncoding);
         for (int i = 2; i < 129; i++) {
             if (compositeMap.containsKey(Integer.toString(i))) {
@@ -69,7 +68,7 @@ public final class BitmapCompositeCodec extends CompositeCodec {
             Codec<?> codec = codecEntry.getValue();
             MessageElement subElement = decodeSubElement(index, codec, buffer);
             compositeMap.put(index, subElement);
-            if (codec instanceof BitmapCodec) {
+            if (BitmapCodec.class.equals(codec.<Class<?>>getAttribute(CoreAttributes.CLASS))) {
                 bitmap = (Bitmap) subElement.getValue();
                 break;
             }

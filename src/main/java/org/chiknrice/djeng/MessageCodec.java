@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
  */
 public class MessageCodec {
 
-    private final CompositeCodec rootCodec;
+    private final Codec<CompositeMap> rootCodec;
     private final int encodeBufferSize;
 
     public MessageCodec(MessageCodecConfig config) {
