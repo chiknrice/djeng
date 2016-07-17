@@ -134,9 +134,6 @@ public class MessageCodecConfig {
         return encodeBufferSize;
     }
 
-    private final List<String> elementIndexList = new LinkedList<>();
-    private final Stack<String> indexStack = new Stack<>();
-
     private Map<String, XmlConfig.XmlElement> buildCodecMap() {
         Map<String, XmlConfig.XmlElement> codecMap = new HashMap<>();
         XmlConfig.XmlElement codecsElement = xmlConfig.getElement(CODECS);
@@ -168,15 +165,14 @@ public class MessageCodecConfig {
     }
 
     private void configureComposite(XmlConfig.XmlElement compositeConfig, Codec codec) {
+        // LinkedHashMap ensures the ordering of the elements in the config is maintained
         Map<String, Codec> subElementCodecMap = new LinkedHashMap<>();
         codec.setAttribute(SUB_ELEMENT_CODECS_MAP, subElementCodecMap);
         for (XmlConfig.XmlElement subElementConfig : compositeConfig.getChildren()) {
             Codec subElementCodec = buildCodec(subElementConfig);
             String index = subElementConfig.getAttribute(INDEX);
-            indexStack.push(index);
             switch (subElementConfig.getName()) {
                 case ELEMENT:
-                    elementIndexList.add(getCurrentIndex());
                     break;
                 case COMPOSITE:
                 case MESSAGE_ELEMENTS:
@@ -186,17 +182,7 @@ public class MessageCodecConfig {
                     throw new RuntimeException("Unexpected element " + subElementConfig.getName().asString());
             }
             subElementCodecMap.put(index, subElementCodec);
-            indexStack.pop();
         }
-    }
-
-    private String getCurrentIndex() {
-        StringBuilder sb = new StringBuilder(indexStack.firstElement());
-        for (int i = 1; i < indexStack.size(); i++) {
-            sb.append(".");
-            sb.append(indexStack.elementAt(i));
-        }
-        return sb.toString();
     }
 
     private Codec buildCodec(XmlConfig.XmlElement elementConfig) {
