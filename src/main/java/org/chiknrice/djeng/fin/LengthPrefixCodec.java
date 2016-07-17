@@ -15,7 +15,10 @@
  */
 package org.chiknrice.djeng.fin;
 
-import org.chiknrice.djeng.*;
+import org.chiknrice.djeng.ByteUtil;
+import org.chiknrice.djeng.Codec;
+import org.chiknrice.djeng.CodecFilter;
+import org.chiknrice.djeng.MessageElement;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -43,8 +46,8 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
         if (delegate != null) {
             valueLength = delegate.determineLengthPrefixValue(element.getValue());
         }
-        element.addSection(pos, limit, valueLength);
         encodeLengthPrefix(buffer, valueLength);
+        element.addSection(pos, limit, valueLength);
         buffer.position(buffer.position() + dataBuffer.position());
     }
 
@@ -54,9 +57,9 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
      * @param buffer
      * @param dataLength
      */
-    final void encodeLengthPrefix(ByteBuffer buffer, int dataLength) {
-        Integer lengthDigits = getLengthPrefixLength();
-        Encoding encoding = getLengthPrefixEncoding();
+    private final void encodeLengthPrefix(ByteBuffer buffer, int dataLength) {
+        Integer lengthDigits = getAttribute(LVAR_LENGTH);
+        Encoding encoding = getAttribute(LVAR_ENCODING);
         String numericString = String.format("%0" + lengthDigits + "d", dataLength);
         switch (encoding) {
             case BCD:
@@ -76,7 +79,30 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
     @Override
     public MessageElement<T> decode(ByteBuffer buffer, Codec chain) {
         int pos = buffer.arrayOffset() + buffer.position();
-        Encoding encoding = getLengthPrefixEncoding();
+        int dataLength = decodeLengthPrefix(buffer);
+        int limit = buffer.arrayOffset() + buffer.position();
+        int dataByteCount = dataLength;
+        LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
+        if (delegate != null) {
+            dataByteCount = delegate.determineDataBytesCount(dataLength);
+        }
+        if (dataByteCount > buffer.remaining()) {
+            throw new RuntimeException(String.format("Not enough bytes in buffer for var length %d", dataByteCount));
+        }
+        ByteBuffer dataBuffer = ByteUtil.consumeToBuffer(buffer, dataByteCount);
+        MessageElement<T> element = chain.decode(dataBuffer);
+        element.addSection(pos, limit, dataLength);
+        return element;
+    }
+
+    /**
+     * Decodes the length prefix of a var length data element
+     *
+     * @param buffer
+     * @return
+     */
+    private int decodeLengthPrefix(ByteBuffer buffer) {
+        Encoding encoding = getAttribute(LVAR_ENCODING);
         byte[] lengthPrefixBytes = new byte[getLengthPrefixBytesCount()];
         buffer.get(lengthPrefixBytes);
         int dataLength;
@@ -93,25 +119,13 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
             default:
                 throw new RuntimeException(String.format("Unsupported length prefix encoding %s", encoding));
         }
-
-        int dataByteCount = dataLength;
-        LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
-        if (delegate != null) {
-            dataByteCount = delegate.determineDataBytesCount(dataLength);
-        }
-        if (dataByteCount > buffer.remaining()) {
-            throw new RuntimeException(String.format("Not enough bytes in buffer for var length %d", dataByteCount));
-        }
-        ByteBuffer dataBuffer = ByteUtil.consumeToBuffer(buffer, dataByteCount);
-        MessageElement<T> element = chain.decode(dataBuffer);
-        element.addSection(pos, pos + lengthPrefixBytes.length, dataLength);
-        return element;
+        return dataLength;
     }
 
-    final int getLengthPrefixBytesCount() {
+    private int getLengthPrefixBytesCount() {
         int lengthPrefixBytes;
-        Integer lengthDigits = getLengthPrefixLength();
-        Encoding encoding = getLengthPrefixEncoding();
+        Integer lengthDigits = getAttribute(LVAR_LENGTH);
+        Encoding encoding = getAttribute(LVAR_ENCODING);
         switch (encoding) {
             case BCD:
                 lengthPrefixBytes = lengthDigits / 2 + lengthDigits % 2;
@@ -124,14 +138,6 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
                 throw new RuntimeException(String.format("Unsupported length prefix encoding: %s", encoding));
         }
         return lengthPrefixBytes;
-    }
-
-    protected Integer getLengthPrefixLength() {
-        return getAttribute(LVAR_LENGTH);
-    }
-
-    protected Encoding getLengthPrefixEncoding() {
-        return getAttribute(LVAR_ENCODING);
     }
 
 }
