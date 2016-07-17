@@ -67,6 +67,7 @@ public abstract class CodecFilter<T> implements Codec<T> {
      * TODO
      * @param chain TODO
      * @param type TODO
+     * @param <D> TODO
      * @return the delegate or {@code null} if it doesn't exist
      */
     protected <D> D getDelegate(Codec chain, Class<D> type) {

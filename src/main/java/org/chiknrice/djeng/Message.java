@@ -31,7 +31,7 @@ import static org.chiknrice.djeng.MessageElement.Section;
  * organized into a tree-like structure. This class would be the root element which is represented as a collection of
  * sub elements. The sub elements can either be a value element (leaf) or a composite element (branch). Each
  * branch/composite element is again a collection of sub elements.
- * <p/>
+ * <p>
  * The underlying collection implement is a {@link CompositeMap} which is a TreeMap that restricts keys and values to
  * String and MessageElement.  Keys corresponds to the indexes defined in the configuration xml.  Getting, setting and
  * removing an element can be done with index path, setting would require a non-null value.  The index path is a pattern
