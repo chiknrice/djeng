@@ -1,0 +1,103 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.chiknrice.org/djeng/financial"
+        xmlns:tns="http://www.chiknrice.org/djeng/financial" xmlns:d="http://www.chiknrice.org/djeng"
+        elementFormDefault="qualified" version="1.0">
+    <!--
+
+        Copyright (c) 2016 Ian Bondoc
+
+        This file is part of Djeng
+
+        Djeng is free software: you can redistribute it and/or modify it under the terms of the
+        GNU General Public License as published by the Free Software Foundation, either version 3
+        of the License, or(at your option) any later version.
+
+        Djeng is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+        without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        See the GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License along with this program.
+        If not, see <http://www.gnu.org/licenses/>.
+
+    -->
+
+    <!-- Simple type restricting empty token -->
+
+    <import namespace="http://www.chiknrice.org/djeng" schemaLocation="djeng.xsd"/>
+
+    <!-- Simple type restricting the possible encodings which can be used for the length prefix -->
+    <simpleType name="length-prefix-encoding">
+        <restriction base="token">
+            <enumeration value="CHAR"/>
+            <enumeration value="BCD"/>
+            <enumeration value="BINARY"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting the possible encodings which can be used for var length numeric elements -->
+    <simpleType name="var-length-numeric-data-encoding">
+        <restriction base="token">
+            <enumeration value="CHAR"/>
+            <enumeration value="BCD"/>
+            <enumeration value="BCD_F"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting the possible encodings which can be used for fixed length numeric elements -->
+    <simpleType name="fixed-length-numeric-data-encoding">
+        <restriction base="token">
+            <enumeration value="CHAR"/>
+            <enumeration value="BCD"/>
+            <enumeration value="C_BCD"/>
+            <enumeration value="CC_BCD"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting a token to characters allowed in defining a java date pattern -->
+    <simpleType name="date-pattern-type">
+        <restriction base="token">
+            <pattern value="[GyYMwWDdFEuaHkKhmsSzZX]+"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting the possible encodings which can be used for date elements -->
+    <simpleType name="date-encoding">
+        <restriction base="token">
+            <enumeration value="CHAR"/>
+            <enumeration value="BCD"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting the possible encodings which can be used for bitmaps -->
+    <simpleType name="bitmap-encoding">
+        <restriction base="token">
+            <enumeration value="BINARY"/>
+            <enumeration value="HEX"/>
+            <enumeration value="DATA_SET"/>
+        </restriction>
+    </simpleType>
+
+    <!-- Simple type restricting 1 hex byte used to identify fill byte in fixed length elements -->
+    <simpleType name="hexByte">
+        <restriction base="hexBinary">
+            <length value="1"/>
+        </restriction>
+    </simpleType>
+
+    <attribute name="length" type="positiveInteger"/>
+    <attribute name="lvar-length" type="positiveInteger"/>
+    <attribute name="lvar-encoding" type="tns:length-prefix-encoding"/>
+    <attribute name="date-encoding" type="tns:date-encoding"/>
+    <attribute name="fixed-numeric-encoding" type="tns:fixed-length-numeric-data-encoding"/>
+    <attribute name="var-numeric-encoding" type="tns:var-length-numeric-data-encoding"/>
+    <attribute name="bitmap-encoding" type="tns:bitmap-encoding"/>
+    <attribute name="pattern" type="tns:date-pattern-type"/>
+    <attribute name="timezone" type="d:non-empty-token"/>
+    <attribute name="padding" type="tns:hexByte"/>
+    <attribute name="strip-padding" type="boolean"/>
+    <attribute name="left-justified" type="boolean"/>
+    <attribute name="packed" type="boolean"/>
+    <!-- TODO: Should this be in core attributes?-->
+    <attribute name="mask" type="d:non-empty-no-space-token"/>
+
+</schema>
