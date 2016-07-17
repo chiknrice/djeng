@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class CodecFilter<T> implements Codec<T> {
+public abstract class CodecFilter<T, W> implements Codec<T> {
 
     @Override
     public final void encode(ByteBuffer buffer, MessageElement<T> element) {
@@ -30,7 +30,7 @@ public abstract class CodecFilter<T> implements Codec<T> {
         encode(buffer, element, chain);
     }
 
-    protected abstract void encode(ByteBuffer buffer, MessageElement<T> element, Codec chain);
+    protected abstract void encode(ByteBuffer buffer, MessageElement<T> element, Codec<W> chain);
 
     @Override
     public final MessageElement<T> decode(ByteBuffer buffer) {
@@ -41,10 +41,11 @@ public abstract class CodecFilter<T> implements Codec<T> {
         return element;
     }
 
-    protected abstract MessageElement<T> decode(ByteBuffer buffer, Codec<?> chain);
+    protected abstract MessageElement<T> decode(ByteBuffer buffer, Codec<W> chain);
 
     @Override
     public final <A> A getAttribute(Attribute attribute) {
+        //noinspection unchecked
         return (A) chain.getAttribute(attribute);
     }
 
@@ -53,13 +54,13 @@ public abstract class CodecFilter<T> implements Codec<T> {
         chain.setAttribute(attribute, value);
     }
 
-    private Codec chain;
+    private Codec<W> chain;
 
-    void setChain(Codec codec) {
+    void setChain(Codec<W> codec) {
         this.chain = codec;
     }
 
-    public Codec getChain() {
+    public Codec<W> getChain() {
         return chain;
     }
 

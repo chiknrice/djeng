@@ -29,10 +29,10 @@ import static org.chiknrice.djeng.fin.FinancialAttributes.LVAR_LENGTH;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class LengthPrefixCodec<T> extends CodecFilter<T> {
+public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
 
     @Override
-    public void encode(ByteBuffer buffer, MessageElement<T> element, Codec chain) {
+    public void encode(ByteBuffer buffer, MessageElement<T> element, Codec<T> chain) {
         int lengthPrefixBytesCount = getLengthPrefixBytesCount();
         buffer.mark();
         buffer.position(buffer.position() + lengthPrefixBytesCount);
@@ -57,7 +57,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T> {
      * @param buffer
      * @param dataLength
      */
-    private final void encodeLengthPrefix(ByteBuffer buffer, int dataLength) {
+    private void encodeLengthPrefix(ByteBuffer buffer, int dataLength) {
         Integer lengthDigits = getAttribute(LVAR_LENGTH);
         Encoding encoding = getAttribute(LVAR_ENCODING);
         String numericString = String.format("%0" + lengthDigits + "d", dataLength);

@@ -29,6 +29,7 @@ public abstract class BaseCodec<T> implements Codec<T> {
 
     @Override
     public final <A> A getAttribute(Attribute attribute) {
+        //noinspection unchecked
         return (A) attributes.get(attribute);
     }
 

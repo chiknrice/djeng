@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class ArrayCodec extends CodecFilter<CompositeMap> {
+public class ArrayCodec<W> extends CodecFilter<CompositeMap, W> {
 
     /**
      * TODO
@@ -36,13 +36,14 @@ public class ArrayCodec extends CodecFilter<CompositeMap> {
      * @param chain   TODO
      */
     @Override
-    protected void encode(ByteBuffer buffer, MessageElement<CompositeMap> element, Codec chain) {
+    protected void encode(ByteBuffer buffer, MessageElement<CompositeMap> element, Codec<W> chain) {
         int pos = buffer.arrayOffset() + buffer.position();
         CompositeMap compositeMap = element.getValue();
         Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
         int index = 0;
-        MessageElement<?> arrayElement;
-        while ((arrayElement = compositeMap.get(Integer.toString(index))) != null) {
+        MessageElement<W> arrayElement;
+        //noinspection unchecked
+        while ((arrayElement = (MessageElement<W>) compositeMap.get(Integer.toString(index))) != null) {
             chain.encode(buffer, arrayElement);
             elementsLeft.remove(Integer.toString(index++));
         }
@@ -60,7 +61,7 @@ public class ArrayCodec extends CodecFilter<CompositeMap> {
      * @return TODO
      */
     @Override
-    protected MessageElement<CompositeMap> decode(ByteBuffer buffer, Codec chain) {
+    protected MessageElement<CompositeMap> decode(ByteBuffer buffer, Codec<W> chain) {
         int pos = buffer.arrayOffset() + buffer.position();
         CompositeMap compositeMap = new CompositeMap();
         int index = 0;
