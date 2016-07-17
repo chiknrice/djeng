@@ -32,10 +32,10 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         Set<String> elementsToEncode = new TreeSet<>(compositeMap.keySet());
         for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
-            Codec<?> codec = codecEntry.getValue();
+            Codec codec = codecEntry.getValue();
             if (BitmapCodec.class.equals(codec.getAttribute(CoreAttributes.CLASS))) {
-                Bitmap bitmap = buildBitmap(codec.getAttribute(FinancialAttributes.BITMAP_ENCODING), compositeMap);
-                compositeMap.put(index, new MessageElement<>(bitmap));
+                Bitmap bitmap = buildBitmap(compositeMap);
+                compositeMap.put(index, new MessageElement(bitmap));
             }
             MessageElement messageElement = compositeMap.get(index);
             if (messageElement != null) {
@@ -48,9 +48,8 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         }
     }
 
-    Bitmap buildBitmap(Bitmap.Encoding encoding, CompositeMap compositeMap) {
-        Bitmap.Encoding bitmapEncoding = encoding;
-        Bitmap bitmap = new Bitmap(bitmapEncoding);
+    private Bitmap buildBitmap(CompositeMap compositeMap) {
+        Bitmap bitmap = new Bitmap();
         for (int i = 2; i < 129; i++) {
             if (compositeMap.containsKey(Integer.toString(i))) {
                 bitmap.set(i);
@@ -74,18 +73,17 @@ public final class BitmapCompositeCodec extends CompositeCodec {
             }
         }
 
-        for (int bit = 1; bit <= 128; bit++) {
-            if ((!bitmap.isControlBit(bit) && bitmap.isSet(bit))) {
-                String index = Integer.toString(bit);
-                Codec codec = subElementsCodecs.get(index);
-                if (codec != null) {
-                    MessageElement subElement = decodeSubElement(index, codec, buffer);
-                    compositeMap.put(index, subElement);
-                } else {
-                    throw new CodecException("No codec defined", index);
-                }
+        for (Integer bit : bitmap) {
+            String index = bit.toString();
+            Codec codec = subElementsCodecs.get(index);
+            if (codec != null) {
+                MessageElement subElement = decodeSubElement(index, codec, buffer);
+                compositeMap.put(index, subElement);
+            } else {
+                throw new CodecException("No codec defined", index);
             }
         }
+
         return compositeMap;
     }
 
