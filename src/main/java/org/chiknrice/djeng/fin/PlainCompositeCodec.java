@@ -36,9 +36,9 @@ public final class PlainCompositeCodec extends CompositeCodec {
      * @param subElementsCodecs TODO
      */
     @Override
-    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs) {
+    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs) {
         Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
-        for (Map.Entry<String, Codec<?>> codecEntry : subElementsCodecs.entrySet()) {
+        for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
             MessageElement subElement = compositeMap.get(index);
             if (subElement == null) {
@@ -60,9 +60,9 @@ public final class PlainCompositeCodec extends CompositeCodec {
      * @return TODO
      */
     @Override
-    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs) {
+    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs) {
         CompositeMap compositeMap = new CompositeMap();
-        for (Map.Entry<String, Codec<?>> subElementCodec : subElementsCodecs.entrySet()) {
+        for (Map.Entry<String, Codec> subElementCodec : subElementsCodecs.entrySet()) {
             String index = subElementCodec.getKey();
             MessageElement subElement = decodeSubElement(index, subElementCodec.getValue(), buffer);
             compositeMap.put(index, subElement);

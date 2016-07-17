@@ -76,13 +76,13 @@ public class MessageElement<T> {
     void clearSections() {
         sections.clear();
         if (value instanceof CompositeMap) {
-            for (MessageElement<?> subElement : ((CompositeMap) value).values()) {
+            for (MessageElement subElement : ((CompositeMap) value).values()) {
                 subElement.clearSections();
             }
         }
     }
 
-    public void addSectionsFrom(MessageElement<?> element) {
+    public void addSectionsFrom(MessageElement element) {
         sections.addAll(element.getSections());
     }
 

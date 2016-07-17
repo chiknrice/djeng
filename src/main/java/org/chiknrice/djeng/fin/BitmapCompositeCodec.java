@@ -28,13 +28,13 @@ import java.util.TreeSet;
 public final class BitmapCompositeCodec extends CompositeCodec {
 
     @Override
-    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs) {
+    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs) {
         Set<String> elementsToEncode = new TreeSet<>(compositeMap.keySet());
-        for (Map.Entry<String, Codec<?>> codecEntry : subElementsCodecs.entrySet()) {
+        for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
             Codec<?> codec = codecEntry.getValue();
-            if (BitmapCodec.class.equals(codec.<Class<?>>getAttribute(CoreAttributes.CLASS))) {
-                Bitmap bitmap = buildBitmap(codec.<Bitmap.Encoding>getAttribute(FinancialAttributes.BITMAP_ENCODING), compositeMap);
+            if (BitmapCodec.class.equals(codec.getAttribute(CoreAttributes.CLASS))) {
+                Bitmap bitmap = buildBitmap(codec.getAttribute(FinancialAttributes.BITMAP_ENCODING), compositeMap);
                 compositeMap.put(index, new MessageElement<>(bitmap));
             }
             MessageElement messageElement = compositeMap.get(index);
@@ -60,15 +60,15 @@ public final class BitmapCompositeCodec extends CompositeCodec {
     }
 
     @Override
-    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs) {
+    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs) {
         Bitmap bitmap = null;
         CompositeMap compositeMap = new CompositeMap();
-        for (Map.Entry<String, Codec<?>> codecEntry : subElementsCodecs.entrySet()) {
+        for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
-            Codec<?> codec = codecEntry.getValue();
+            Codec codec = codecEntry.getValue();
             MessageElement subElement = decodeSubElement(index, codec, buffer);
             compositeMap.put(index, subElement);
-            if (BitmapCodec.class.equals(codec.<Class<?>>getAttribute(CoreAttributes.CLASS))) {
+            if (BitmapCodec.class.equals(codec.getAttribute(CoreAttributes.CLASS))) {
                 bitmap = (Bitmap) subElement.getValue();
                 break;
             }
@@ -77,7 +77,7 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         for (int bit = 1; bit <= 128; bit++) {
             if ((!bitmap.isControlBit(bit) && bitmap.isSet(bit))) {
                 String index = Integer.toString(bit);
-                Codec<?> codec = subElementsCodecs.get(index);
+                Codec codec = subElementsCodecs.get(index);
                 if (codec != null) {
                     MessageElement subElement = decodeSubElement(index, codec, buffer);
                     compositeMap.put(index, subElement);

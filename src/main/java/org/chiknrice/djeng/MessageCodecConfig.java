@@ -142,7 +142,7 @@ public class MessageCodecConfig {
         XmlConfig.XmlElement codecsElement = xmlConfig.getElement(CODECS);
         for (XmlConfig.XmlElement codecElement : codecsElement.getChildren()) {
             String id = codecElement.getAttribute(ID);
-            Class<?> codecClass = codecElement.getAttribute(CLASS);
+            Class codecClass = codecElement.getAttribute(CLASS);
             switch (codecElement.getName()) {
                 case CODEC_FILTER:
                     validateImplementation(CodecFilter.class, codecClass);
@@ -161,7 +161,7 @@ public class MessageCodecConfig {
         return codecMap;
     }
 
-    private void validateImplementation(Class<?> expected, Class<?> actual) {
+    private void validateImplementation(Class expected, Class actual) {
         if (!expected.isAssignableFrom(actual)) {
             throw new RuntimeException(format("%s is not a valid implementation of %s", actual.getName(), expected.getName()));
         }
@@ -202,14 +202,14 @@ public class MessageCodecConfig {
     private Codec buildCodec(XmlConfig.XmlElement elementConfig) {
         String elementCodec = elementConfig.getAttribute(CODEC);
         XmlConfig.XmlElement codecConfig = codecMap.get(elementCodec);
-        Codec codec = buildObject(codecConfig.<Class<?>>getAttribute(CLASS));
+        Codec codec = buildObject(codecConfig.<Class>getAttribute(CLASS));
         // Codec attributes first
         setAttributes(codecConfig, codec);
         codec = wrap(codec, SectionRecordingFilter.class);
         List<XmlConfig.XmlElement> filters = codecConfig.getChildren();
         for (XmlConfig.XmlElement filter : filters) {
             codecConfig = codecMap.get(filter.getAttribute(CODEC));
-            codec = wrap(codec, codecConfig.<Class<?>>getAttribute(CLASS));
+            codec = wrap(codec, codecConfig.<Class>getAttribute(CLASS));
             // Filter attributes override codec attributes
             setAttributes(codecConfig, codec);
         }
@@ -218,13 +218,13 @@ public class MessageCodecConfig {
         return codec;
     }
 
-    private Codec wrap(Codec codec, Class<?> filter) {
+    private Codec wrap(Codec codec, Class filter) {
         CodecFilter codecFilter = buildObject(filter);
         codecFilter.setChain(codec);
         return codecFilter;
     }
 
-    private <T> T buildObject(Class<?> clazz) {
+    private <T> T buildObject(Class clazz) {
         if (clazz != null) {
             try {
                 return (T) clazz.newInstance();

@@ -15,15 +15,15 @@
  */
 package org.chiknrice.djeng;
 
-import java.util.TreeMap;
+import java.util.HashMap;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class CompositeMap extends TreeMap<String, MessageElement<?>> {
+public class CompositeMap extends HashMap<String, MessageElement> {
 
     @Override
-    public MessageElement put(String key, MessageElement<?> value) {
+    public MessageElement put(String key, MessageElement value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Composite map cannot have null keys or values");
         }

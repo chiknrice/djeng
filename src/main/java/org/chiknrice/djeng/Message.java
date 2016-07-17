@@ -98,7 +98,7 @@ public final class Message {
      * @return the value or raw value if the sub element exists and if it is not a CompositeMap
      */
     private Object getSubElementValue(CompositeMap compositeMap, String index, boolean raw) {
-        MessageElement<?> messageElement = compositeMap.get(index);
+        MessageElement messageElement = compositeMap.get(index);
         if (messageElement == null || messageElement.getValue() instanceof CompositeMap) {
             return null;
         } else if (raw) {
@@ -193,8 +193,8 @@ public final class Message {
                         if (subElement != null && subElement.getValue() instanceof CompositeMap) {
                             compositeMapStack.push((CompositeMap) subElement.getValue());
                         } else {
-                            subElement = new MessageElement<>(new CompositeMap());
-                            MessageElement<?> replaced = compositeMapStack.peek().put(key, subElement);
+                            subElement = new MessageElement(new CompositeMap());
+                            MessageElement replaced = compositeMapStack.peek().put(key, subElement);
                             if (replaced != null) {
                                 // TODO log replaced?
                             }
@@ -224,9 +224,10 @@ public final class Message {
      * @param parentMap    TODO
      */
     private void collectSections(CompositeMap compositeMap, Map<Section, String> parentMap) {
-        for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
-            MessageElement<?> element = entry.getValue();
-            for (Section section : element.getSections()) {
+        for (Entry<String, MessageElement> entry : compositeMap.entrySet()) {
+            MessageElement element = entry.getValue();
+            SortedSet<Section> sections = element.getSections();
+            for (Section section : sections) {
                 if (section.value instanceof CompositeMap) {
                     Map<Section, String> childMap = new HashMap<>();
                     collectSections((CompositeMap) section.value, childMap);
@@ -254,8 +255,8 @@ public final class Message {
      * @param parentMap    TODO
      */
     private void findElementValues(CompositeMap compositeMap, Map<String, Object> parentMap) {
-        for (Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
-            MessageElement<?> element = entry.getValue();
+        for (Entry<String, MessageElement> entry : compositeMap.entrySet()) {
+            MessageElement element = entry.getValue();
             Object value = element.getValue();
             if (value instanceof CompositeMap) {
                 Map<String, Object> tmpMap = new HashMap<>();
@@ -288,7 +289,7 @@ public final class Message {
         if (backingBuffer != null) {
             backingBuffer = null;
             sections = null;
-            for (MessageElement<?> subElement : elements.values()) {
+            for (MessageElement subElement : elements.values()) {
                 subElement.clearSections();
             }
         }

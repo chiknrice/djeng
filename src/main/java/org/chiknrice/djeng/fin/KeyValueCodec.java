@@ -37,16 +37,16 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
      * @param subElementsCodecs TODO
      */
     @Override
-    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs) {
+    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs) {
         Codec keyCodec = subElementsCodecs.get("key");
         Codec valueCodec = subElementsCodecs.get("value");
         if (subElementsCodecs.size() != 2 && keyCodec == null || valueCodec == null) {
             throw new RuntimeException("Invalid " + KeyValueCodec.class.getSimpleName() + " configuration");
         }
-        for (Map.Entry<String, MessageElement<?>> entry : compositeMap.entrySet()) {
+        for (Map.Entry<String, MessageElement> entry : compositeMap.entrySet()) {
             Object keyValue = toKeyValue(entry.getKey());
-            MessageElement<?> valueElement = entry.getValue();
-            MessageElement<Object> keyElement = new MessageElement<>(keyValue);
+            MessageElement valueElement = entry.getValue();
+            MessageElement keyElement = new MessageElement(keyValue);
             keyCodec.encode(buffer, keyElement);
             valueCodec.encode(buffer, valueElement);
             valueElement.addSectionsFrom(keyElement);
@@ -70,7 +70,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
      * @return TODO
      */
     @Override
-    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs) {
+    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs) {
         Codec keyCodec = subElementsCodecs.get("key");
         Codec valueCodec = subElementsCodecs.get("value");
         if (subElementsCodecs.size() != 2 && keyCodec == null || valueCodec == null) {

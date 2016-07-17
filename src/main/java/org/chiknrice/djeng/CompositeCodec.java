@@ -51,22 +51,22 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
     @Override
     public final void encode(ByteBuffer buffer, MessageElement<CompositeMap> element) {
-        Map<String, Codec<?>> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
+        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
         encodeSubElements(buffer, element.getValue(), subElementsCodecs);
     }
 
-    protected abstract void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec<?>> subElementsCodecs);
+    protected abstract void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs);
 
     @Override
     public final MessageElement<CompositeMap> decode(ByteBuffer buffer) {
-        Map<String, Codec<?>> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
+        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
         return new MessageElement<>(decodeSubElements(buffer, subElementsCodecs));
     }
 
-    protected abstract CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec<?>> subElementsCodecs);
+    protected abstract CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs);
 
-    static boolean isCompositeCodec(Codec<?> codec) {
-        Codec<?> elementCodec = codec;
+    static boolean isCompositeCodec(Codec codec) {
+        Codec elementCodec = codec;
         while (elementCodec instanceof CodecFilter) {
             elementCodec = ((CodecFilter) elementCodec).getChain();
         }
