@@ -50,9 +50,6 @@ public class BitmapCodec extends ElementCodec<Bitmap> {
                 bytes[byteIndex - offset] |= (128 >> ((i - 1) % 8));
             }
         }
-        if ((bytes[bytes.length - 1] & 0x80) > 0) {
-            throw new RuntimeException("Extension bit should not be set");
-        }
         buffer.put(Bitmap.Encoding.HEX.equals(encoding) ? ByteUtil.encodeHex(bytes).getBytes(StandardCharsets.ISO_8859_1) : bytes);
         bytes = new byte[buffer.position()];
         buffer.rewind();
