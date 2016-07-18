@@ -187,12 +187,14 @@ public class MessageCodecConfig {
         codec = wrap(codec, SectionRecordingFilter.class);
         List<XmlConfig.XmlElement> filters = codecConfig.getChildren();
         for (XmlConfig.XmlElement filter : filters) {
-            codecConfig = codecMap.get(filter.getAttribute(CODEC));
-            codec = wrap(codec, codecConfig.<Class>getAttribute(CLASS));
-            // Filter attributes override codec attributes
-            setAttributes(codecConfig, codec);
+            XmlConfig.XmlElement globalFilterConfig = codecMap.get(filter.getAttribute(CODEC));
+            codec = wrap(codec, globalFilterConfig.<Class>getAttribute(CLASS));
+            // Main filter attributes override codec attributes
+            setAttributes(globalFilterConfig, codec);
+            // Filter reference attributes override the main one
+            setAttributes(filter, codec);
         }
-        // Element attributes override filter & codec attributes
+        // Element attributes override both filter & codec attributes
         setAttributes(elementConfig, codec);
         return codec;
     }

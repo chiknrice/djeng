@@ -110,6 +110,7 @@
                     <element name="filter" minOccurs="0" maxOccurs="unbounded">
                         <complexType>
                             <attribute name="codec" type="tns:non-empty-no-space-token" use="required"/>
+                            <anyAttribute/>
                         </complexType>
                     </element>
                 </sequence>
