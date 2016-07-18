@@ -43,13 +43,13 @@ class XmlConfig implements Closeable {
     static final String NAMESPACE = "http://www.chiknrice.org/djeng";
 
     final Document document;
-    final List<AttributeTypeMapper> customTypeMappers;
+    final List<Attribute> customAttributes;
 
     final List<InputStream> inputStreams;
 
-    XmlConfig(InputStream configSource, List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers) {
+    XmlConfig(InputStream configSource, List<String> customSchemas, List<Attribute> customAttributes) {
         try {
-            this.customTypeMappers = customTypeMappers;
+            this.customAttributes = customAttributes;
             Source[] schemaSources = new Source[customSchemas.size() + 1];
             inputStreams = new ArrayList<>();
             inputStreams.add(Thread.currentThread().getContextClassLoader().getResourceAsStream(CORE_SCHEMA_FILE));
@@ -172,10 +172,42 @@ class XmlConfig implements Closeable {
             int length = xmlAttributes.getLength();
             for (int i = 0; i < length; i++) {
                 Attr xmlAttribute = (Attr) xmlAttributes.item(i);
-                Attribute key = new Attribute(xmlAttribute.getLocalName(), xmlAttribute.getNamespaceURI() != null ? xmlAttribute.getNamespaceURI() : element.getNamespaceURI());
-                attributes.put(key, CoreAttributes.mapType(key, xmlAttribute.getValue(), customTypeMappers));
+                Attribute attribute = toAttribute(xmlAttribute);
+                try {
+                    attributes.put(attribute, attribute.applyType(xmlAttribute.getValue()));
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
             }
             return attributes;
+        }
+
+        Attribute toAttribute(Attr xmlAttribute) {
+            String absoluteName = toAbsoluteName(xmlAttribute.getLocalName(), xmlAttribute.getNamespaceURI() != null ? xmlAttribute.getNamespaceURI() : element.getNamespaceURI());
+            Attribute attribute = null;
+            for (CoreAttributes coreAttribute : CoreAttributes.values()) {
+                if (toAbsoluteName(coreAttribute).equals(absoluteName)) {
+                    attribute = coreAttribute;
+                    break;
+                }
+            }
+            if (attribute == null) {
+                for (Attribute customAttribute : customAttributes) {
+                    if (toAbsoluteName(customAttribute).equals(absoluteName)) {
+                        attribute = customAttribute;
+                        break;
+                    }
+                }
+            }
+            return attribute;
+        }
+
+        String toAbsoluteName(Attribute attribute) {
+            return toAbsoluteName(attribute.getName(), attribute.getNamespace());
+        }
+
+        String toAbsoluteName(String name, String namespace) {
+            return String.format("{%s}%s", namespace, name);
         }
 
         <T> T getAttribute(Attribute attribute) {
@@ -204,7 +236,11 @@ class XmlConfig implements Closeable {
             if (stringValue == null || stringValue.trim().length() == 0) {
                 return null;
             } else {
-                return (T) CoreAttributes.mapType(attribute, stringValue, customTypeMappers);
+                try {
+                    return (T) attribute.applyType(stringValue);
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
             }
         }
 

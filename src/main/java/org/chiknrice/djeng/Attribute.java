@@ -20,38 +20,12 @@ package org.chiknrice.djeng;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class Attribute {
+public interface Attribute {
 
-    private final String name;
-    private final String nameSpace;
-    private final String absoluteName;
+    String getName();
 
-    public Attribute(String name, String nameSpace) {
-        this.name = name;
-        this.nameSpace = nameSpace;
-        this.absoluteName = String.format("{%s}%s", nameSpace, name);
-    }
+    String getNamespace();
 
-    public String getName() {
-        return this.name;
-    }
+    Object applyType(String value) throws Exception;
 
-    public String getNamespace() {
-        return this.nameSpace;
-    }
-
-    @Override
-    public int hashCode() {
-        return absoluteName.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return absoluteName;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj == null ? false : obj instanceof Attribute ? absoluteName.equals(((Attribute) obj).absoluteName) : false;
-    }
 }

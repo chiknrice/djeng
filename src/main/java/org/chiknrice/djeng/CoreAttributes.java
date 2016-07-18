@@ -15,61 +15,45 @@
  */
 package org.chiknrice.djeng;
 
-import java.util.Iterator;
-import java.util.List;
-
-import static org.chiknrice.djeng.XmlConfig.*;
+import static org.chiknrice.djeng.XmlConfig.NAMESPACE;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class CoreAttributes {
+public enum CoreAttributes implements Attribute {
+    ID("id", NAMESPACE),
+    CODEC("codec", NAMESPACE),
+    CLASS("class", NAMESPACE),
+    INDEX("index", NAMESPACE),
+    DESCRIPTION("description", NAMESPACE),
+    MASK("packed", NAMESPACE),
+    // doesn't map to actual xml attribute but used for composite codecs
+    SUB_ELEMENT_CODECS_MAP("sub-element-codecs-map", NAMESPACE);
 
-    public static final Attribute ID;
-    public static final Attribute CODEC;
-    public static final Attribute CLASS;
-    public static final Attribute INDEX;
-    public static final Attribute DESCRIPTION;
-    public static final Attribute MASK; // TODO: implement mask in the schema
-    public static final Attribute SUB_ELEMENT_CODECS_MAP;
+    private final String name;
+    private final String nameSpace;
 
-    static {
-        ID = new Attribute("id", NAMESPACE);
-        CODEC = new Attribute("codec", NAMESPACE);
-        CLASS = new Attribute("class", NAMESPACE);
-        INDEX = new Attribute("index", NAMESPACE);
-        DESCRIPTION = new Attribute("description", NAMESPACE);
-        MASK = new Attribute("packed", NAMESPACE);
-        // doesn't map to actual xml attribute but used for composite codecs
-        SUB_ELEMENT_CODECS_MAP = new Attribute("sub-element-codecs-map", NAMESPACE);
+    CoreAttributes(String name, String nameSpace) {
+        this.name = name;
+        this.nameSpace = nameSpace;
     }
 
-    static Object mapType(Attribute attribute, String value, List<AttributeTypeMapper> customTypeMappers) {
-        try {
-            Object objectValue = null;
-            switch (attribute.getName()) {
-                case "class":
-                    try {
-                        objectValue = Class.forName(value);
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("Class not found " + e.getMessage(), e);
-                    }
-                    break;
-                default:
-            }
-            Iterator<AttributeTypeMapper> iterator = customTypeMappers.iterator();
-            while (objectValue == null && iterator.hasNext()) {
-                AttributeTypeMapper customTypeMapper = iterator.next();
-                objectValue = customTypeMapper.mapType(attribute, value);
-            }
-            if (objectValue == null) {
-                return value;
-            } else {
-                return objectValue;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getNamespace() {
+        return this.nameSpace;
+    }
+
+    @Override
+    public Object applyType(String value) throws Exception {
+        if ("class".equals(name)) {
+            return Class.forName(value.toString());
         }
+        return value;
     }
 
 }

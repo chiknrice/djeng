@@ -16,68 +16,67 @@
 package org.chiknrice.djeng.fin;
 
 import org.chiknrice.djeng.Attribute;
-import org.chiknrice.djeng.AttributeTypeMapper;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class FinancialAttributes implements AttributeTypeMapper {
+public enum FinancialAttributes implements Attribute {
 
-    public static final String NAMESPACE = "http://www.chiknrice.org/djeng/financial";
+    LENGTH("length"),
+    LVAR_LENGTH("lvar-length"),
+    LVAR_ENCODING("lvar-encoding"),
+    BITMAP_ENCODING("bitmap-encoding"),
+    DATE_ENCODING("date-encoding"),
+    FIXED_NUMERIC_ENCODING("fixed-numeric-encoding"),
+    VAR_NUMERIC_ENCODING("var-numeric-encoding"),
+    PATTERN("pattern"),
+    TIMEZONE("timezone"),
+    PADDING("padding"),
+    STRIP_PADDING("strip-padding"),
+    LEFT_JUSTIFIED("left-justified"),
+    PACKED("packed");
 
-    public static final Attribute LENGTH;
-    public static final Attribute LVAR_LENGTH;
-    public static final Attribute LVAR_ENCODING;
-    public static final Attribute FIXED_NUMERIC_ENCODING;
-    public static final Attribute VAR_NUMERIC_ENCODING;
-    public static final Attribute DATE_ENCODING;
-    public static final Attribute BITMAP_ENCODING;
-    public static final Attribute PATTERN;
-    public static final Attribute TIMEZONE;
-    public static final Attribute PADDING;
-    public static final Attribute STRIP_PADDING;
-    public static final Attribute LEFT_JUSTIFIED;
-    public static final Attribute PACKED;
+    private final String name;
+    private final String nameSpace;
 
-    static {
-        LENGTH = new Attribute("length", NAMESPACE);
-        LVAR_LENGTH = new Attribute("lvar-length", NAMESPACE);
-        LVAR_ENCODING = new Attribute("lvar-encoding", NAMESPACE);
-        BITMAP_ENCODING = new Attribute("bitmap-encoding", NAMESPACE);
-        DATE_ENCODING = new Attribute("date-encoding", NAMESPACE);
-        FIXED_NUMERIC_ENCODING = new Attribute("fixed-numeric-encoding", NAMESPACE);
-        VAR_NUMERIC_ENCODING = new Attribute("var-numeric-encoding", NAMESPACE);
-        PATTERN = new Attribute("pattern", NAMESPACE);
-        TIMEZONE = new Attribute("timezone", NAMESPACE);
-        PADDING = new Attribute("padding", NAMESPACE);
-        STRIP_PADDING = new Attribute("strip-padding", NAMESPACE);
-        LEFT_JUSTIFIED = new Attribute("left-justified", NAMESPACE);
-        PACKED = new Attribute("packed", NAMESPACE);
+    FinancialAttributes(String name) {
+        this.name = name;
+        this.nameSpace = "http://www.chiknrice.org/djeng/financial";
     }
 
     @Override
-    public Object mapType(Attribute attribute, String value) {
-        switch (attribute.getName()) {
-            case "length":
-            case "lvar-length":
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getNamespace() {
+        return this.nameSpace;
+    }
+
+    @Override
+    public Object applyType(String value) throws Exception {
+        switch (this) {
+            case LENGTH:
+            case LVAR_LENGTH:
                 return Integer.valueOf(value);
-            case "bitmap-encoding":
+            case BITMAP_ENCODING:
                 return Bitmap.Encoding.valueOf(value);
-            case "date-encoding":
-            case "lvar-encoding":
-            case "fixed-numeric-encoding":
-            case "var-numeric-encoding":
+            case DATE_ENCODING:
+            case LVAR_ENCODING:
+            case FIXED_NUMERIC_ENCODING:
+            case VAR_NUMERIC_ENCODING:
                 return Encoding.valueOf(value);
-            case "pattern":
-            case "timezone":
-            case "padding":
+            case PATTERN:
+            case TIMEZONE:
+            case PADDING:
                 return value;
-            case "strip-padding":
-            case "left-justified":
-            case "packed":
+            case STRIP_PADDING:
+            case LEFT_JUSTIFIED:
+            case PACKED:
                 return Boolean.valueOf(value);
             default:
-                return value;
+                throw new RuntimeException("Unexpected attribute " + this);
         }
     }
 }

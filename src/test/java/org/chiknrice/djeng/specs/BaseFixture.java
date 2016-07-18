@@ -39,7 +39,7 @@ public abstract class BaseFixture {
 
     public String buildCodecWithConfig(String configuration) {
         try {
-            messageCodec = new MessageCodec(MessageCodecConfig.fromXml(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8))).withSchemas("djeng-financial.xsd").withAttributeMappers(FinancialAttributes.class).build());
+            messageCodec = new MessageCodec(MessageCodecConfig.fromXml(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8))).withSchemas("djeng-financial.xsd").withCustomAttributes(FinancialAttributes.values()).build());
             return "successful";
         } catch (Exception e) {
             return e.getMessage();

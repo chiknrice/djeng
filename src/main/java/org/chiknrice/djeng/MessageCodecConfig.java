@@ -29,7 +29,7 @@ import static org.chiknrice.djeng.XmlConfig.ElementName.MESSAGE_ELEMENTS;
 
 /**
  * A {@code MessageCodecConfig} is the configuration required when creating a {@link MessageCodec}.  The configuration
- * requires at least a configuration xml and optional custom schemas and {@link AttributeTypeMapper}.
+ * requires at least a configuration xml and optional custom schemas and {@link Attribute}s.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -71,7 +71,7 @@ public class MessageCodecConfig {
 
         private final InputStream xmlConfig;
         private final List<String> customSchemas = new ArrayList<>();
-        private final List<AttributeTypeMapper> customTypeMappers = new ArrayList<>();
+        private final List<Attribute> customAttributes = new ArrayList<>();
         private int encodeBufferSize = 0x7FFF;
 
         private MessageCodecConfigBuilder(InputStream xmlConfig) {
@@ -90,20 +90,13 @@ public class MessageCodecConfig {
             return this;
         }
 
-        public MessageCodecConfigBuilder withAttributeMappers(Class<? extends AttributeTypeMapper>... typeMapperClasses) {
-            for (Class<? extends AttributeTypeMapper> typeMapperClass : typeMapperClasses) {
-                try {
-                    AttributeTypeMapper mapper = typeMapperClass.newInstance();
-                    customTypeMappers.add(mapper);
-                } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
+        public MessageCodecConfigBuilder withCustomAttributes(Attribute[] attributes) {
+            customAttributes.addAll(Arrays.asList(attributes));
             return this;
         }
 
         public MessageCodecConfig build() {
-            return new MessageCodecConfig(xmlConfig, customSchemas, customTypeMappers, encodeBufferSize);
+            return new MessageCodecConfig(xmlConfig, customSchemas, customAttributes, encodeBufferSize);
         }
     }
 
@@ -112,9 +105,9 @@ public class MessageCodecConfig {
     private final Codec<CompositeMap> rootCodec;
     private final int encodeBufferSize;
 
-    private MessageCodecConfig(InputStream xmlConfigStream, List<String> customSchemas, List<AttributeTypeMapper> customTypeMappers, int encodeBufferSize) {
+    private MessageCodecConfig(InputStream xmlConfigStream, List<String> customSchemas, List<Attribute> customAttributes, int encodeBufferSize) {
         // XmlConfig only closes the input streams that it creates, the xmlConfigStream is required to be closed by the caller if needed
-        try (XmlConfig xmlConfig = new XmlConfig(xmlConfigStream, customSchemas, customTypeMappers)) {
+        try (XmlConfig xmlConfig = new XmlConfig(xmlConfigStream, customSchemas, customAttributes)) {
             this.xmlConfig = xmlConfig;
             codecMap = buildCodecMap();
             final XmlConfig.XmlElement element = this.xmlConfig.getElement(MESSAGE_ELEMENTS);
