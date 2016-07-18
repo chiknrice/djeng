@@ -31,10 +31,10 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
         // TODO: implement the padding here
         String stringValue;
         Encoding encoding;
-        Integer length = getAttribute(FinancialAttributes.LENGTH);
+        Integer length = getAttribute(FinancialAttribute.LENGTH);
         byte[] bytes;
         if (length != null) {
-            encoding = getAttribute(FinancialAttributes.FIXED_NUMERIC_ENCODING);
+            encoding = getAttribute(FinancialAttribute.FIXED_NUMERIC_ENCODING);
             switch (encoding) {
                 case CHAR:
                     // length is the same
@@ -68,7 +68,7 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
             }
         } else {
             stringValue = value.toString();
-            encoding = getAttribute(FinancialAttributes.VAR_NUMERIC_ENCODING);
+            encoding = getAttribute(FinancialAttribute.VAR_NUMERIC_ENCODING);
             switch (encoding) {
                 case CHAR:
                     bytes = stringValue.getBytes(StandardCharsets.ISO_8859_1);
@@ -89,7 +89,7 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
 
     @Override
     protected Long decodeValue(byte[] rawValue) {
-        Encoding encoding = getAttribute(FinancialAttributes.FIXED_NUMERIC_ENCODING);
+        Encoding encoding = getAttribute(FinancialAttribute.FIXED_NUMERIC_ENCODING);
         String stringValue;
         if (encoding != null) {
             switch (encoding) {
@@ -110,7 +110,7 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
                     throw new RuntimeException("Unsupported fixed length numeric encoding " + encoding);
             }
         } else {
-            encoding = getAttribute(FinancialAttributes.VAR_NUMERIC_ENCODING);
+            encoding = getAttribute(FinancialAttribute.VAR_NUMERIC_ENCODING);
             switch (encoding) {
                 case CHAR:
                     // for now we make sure to trim all spaces if spaces are the padding
@@ -131,10 +131,10 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
 
     @Override
     protected byte[] decodeRawValue(ByteBuffer buffer) {
-        Integer length = getAttribute(FinancialAttributes.LENGTH);
+        Integer length = getAttribute(FinancialAttribute.LENGTH);
         byte[] bytes;
         if (length != null) {
-            Encoding encoding = getAttribute(FinancialAttributes.FIXED_NUMERIC_ENCODING);
+            Encoding encoding = getAttribute(FinancialAttribute.FIXED_NUMERIC_ENCODING);
             int dataBytesCount;
             switch (encoding) {
                 case CHAR:
@@ -166,7 +166,7 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
     @Override
     public int determineDataBytesCount(int dataLength) {
         int dataByteCount;
-        Encoding encoding = getAttribute(FinancialAttributes.VAR_NUMERIC_ENCODING);
+        Encoding encoding = getAttribute(FinancialAttribute.VAR_NUMERIC_ENCODING);
         switch (encoding) {
             case CHAR:
                 dataByteCount = dataLength;

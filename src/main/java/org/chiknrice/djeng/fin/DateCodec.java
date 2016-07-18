@@ -31,11 +31,11 @@ public class DateCodec extends ElementCodec<Date> {
 
     @Override
     protected byte[] encodeValue(Date value) {
-        String pattern = getAttribute(FinancialAttributes.PATTERN);
+        String pattern = getAttribute(FinancialAttribute.PATTERN);
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         format.setLenient(false);
         String dateString = format.format(value);
-        Encoding encoding = getAttribute(FinancialAttributes.DATE_ENCODING);
+        Encoding encoding = getAttribute(FinancialAttribute.DATE_ENCODING);
         byte[] bytes;
         switch (encoding) {
             case CHAR:
@@ -52,8 +52,8 @@ public class DateCodec extends ElementCodec<Date> {
 
     @Override
     protected byte[] decodeRawValue(ByteBuffer buffer) {
-        String pattern = getAttribute(FinancialAttributes.PATTERN);
-        Encoding encoding = getAttribute(FinancialAttributes.DATE_ENCODING);
+        String pattern = getAttribute(FinancialAttribute.PATTERN);
+        Encoding encoding = getAttribute(FinancialAttribute.DATE_ENCODING);
         int length = pattern.length();
         switch (encoding) {
             case CHAR:
@@ -73,8 +73,8 @@ public class DateCodec extends ElementCodec<Date> {
 
     @Override
     protected Date decodeValue(byte[] rawValue) {
-        String pattern = getAttribute(FinancialAttributes.PATTERN);
-        Encoding encoding = getAttribute(FinancialAttributes.DATE_ENCODING);
+        String pattern = getAttribute(FinancialAttribute.PATTERN);
+        Encoding encoding = getAttribute(FinancialAttribute.DATE_ENCODING);
         String dateString;
         switch (encoding) {
             case CHAR:

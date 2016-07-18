@@ -20,7 +20,7 @@ import org.chiknrice.djeng.Attribute;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public enum FinancialAttributes implements Attribute {
+public enum FinancialAttribute implements Attribute {
 
     LENGTH("length"),
     LVAR_LENGTH("lvar-length"),
@@ -39,7 +39,7 @@ public enum FinancialAttributes implements Attribute {
     private final String name;
     private final String nameSpace;
 
-    FinancialAttributes(String name) {
+    FinancialAttribute(String name) {
         this.name = name;
         this.nameSpace = "http://www.chiknrice.org/djeng/financial";
     }

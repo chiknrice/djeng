@@ -23,8 +23,8 @@ import org.chiknrice.djeng.MessageElement;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import static org.chiknrice.djeng.fin.FinancialAttributes.LVAR_ENCODING;
-import static org.chiknrice.djeng.fin.FinancialAttributes.LVAR_LENGTH;
+import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_ENCODING;
+import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_LENGTH;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>

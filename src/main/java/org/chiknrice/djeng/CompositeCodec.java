@@ -51,7 +51,7 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
     @Override
     public final void encode(ByteBuffer buffer, MessageElement<CompositeMap> element) {
-        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
+        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
         encodeSubElements(buffer, element.getValue(), subElementsCodecs);
     }
 
@@ -59,7 +59,7 @@ public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
     @Override
     public final MessageElement<CompositeMap> decode(ByteBuffer buffer) {
-        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttributes.SUB_ELEMENT_CODECS_MAP);
+        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
         return new MessageElement<>(decodeSubElements(buffer, subElementsCodecs));
     }
 

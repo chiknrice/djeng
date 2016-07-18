@@ -15,7 +15,7 @@
  */
 package org.chiknrice.djeng;
 
-import org.chiknrice.djeng.fin.FinancialAttributes;
+import org.chiknrice.djeng.fin.FinancialAttribute;
 
 import java.nio.ByteBuffer;
 
@@ -81,7 +81,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      * @return TODO
      */
     protected byte[] decodeRawValue(ByteBuffer buffer) {
-        Integer length = getAttribute(FinancialAttributes.LENGTH);
+        Integer length = getAttribute(FinancialAttribute.LENGTH);
         byte[] bytes;
         if (length != null) {
             bytes = new byte[length];

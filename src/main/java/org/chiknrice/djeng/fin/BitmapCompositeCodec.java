@@ -33,7 +33,7 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
             Codec codec = codecEntry.getValue();
-            if (BitmapCodec.class.equals(codec.getAttribute(CoreAttributes.CLASS))) {
+            if (BitmapCodec.class.equals(codec.getAttribute(CoreAttribute.CLASS))) {
                 Bitmap bitmap = buildBitmap(compositeMap);
                 compositeMap.put(index, new MessageElement(bitmap));
             }
@@ -67,7 +67,7 @@ public final class BitmapCompositeCodec extends CompositeCodec {
             Codec codec = codecEntry.getValue();
             MessageElement subElement = decodeSubElement(index, codec, buffer);
             compositeMap.put(index, subElement);
-            if (BitmapCodec.class.equals(codec.getAttribute(CoreAttributes.CLASS))) {
+            if (BitmapCodec.class.equals(codec.getAttribute(CoreAttribute.CLASS))) {
                 bitmap = (Bitmap) subElement.getValue();
                 break;
             }

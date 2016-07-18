@@ -18,7 +18,7 @@ package org.chiknrice.djeng.specs;
 import org.chiknrice.concordion.SetVarCommandExtension;
 import org.chiknrice.djeng.MessageCodec;
 import org.chiknrice.djeng.MessageCodecConfig;
-import org.chiknrice.djeng.fin.FinancialAttributes;
+import org.chiknrice.djeng.fin.FinancialAttribute;
 import org.concordion.api.FullOGNL;
 import org.concordion.api.extension.Extensions;
 import org.concordion.integration.junit4.ConcordionRunner;
@@ -39,7 +39,7 @@ public abstract class BaseFixture {
 
     public String buildCodecWithConfig(String configuration) {
         try {
-            messageCodec = new MessageCodec(MessageCodecConfig.fromXml(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8))).withSchemas("djeng-financial.xsd").withCustomAttributes(FinancialAttributes.values()).build());
+            messageCodec = new MessageCodec(MessageCodecConfig.fromXml(new ByteArrayInputStream(configuration.trim().getBytes(StandardCharsets.UTF_8))).withSchemas("djeng-financial.xsd").withCustomAttributes(FinancialAttribute.values()).build());
             return "successful";
         } catch (Exception e) {
             return e.getMessage();

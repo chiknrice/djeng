@@ -20,7 +20,7 @@ import static org.chiknrice.djeng.XmlConfig.NAMESPACE;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public enum CoreAttributes implements Attribute {
+public enum CoreAttribute implements Attribute {
     ID("id", NAMESPACE),
     CODEC("codec", NAMESPACE),
     CLASS("class", NAMESPACE),
@@ -33,7 +33,7 @@ public enum CoreAttributes implements Attribute {
     private final String name;
     private final String nameSpace;
 
-    CoreAttributes(String name, String nameSpace) {
+    CoreAttribute(String name, String nameSpace) {
         this.name = name;
         this.nameSpace = nameSpace;
     }

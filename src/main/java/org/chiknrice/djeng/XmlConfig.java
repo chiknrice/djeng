@@ -185,7 +185,7 @@ class XmlConfig implements Closeable {
         Attribute toAttribute(Attr xmlAttribute) {
             String absoluteName = toAbsoluteName(xmlAttribute.getLocalName(), xmlAttribute.getNamespaceURI() != null ? xmlAttribute.getNamespaceURI() : element.getNamespaceURI());
             Attribute attribute = null;
-            for (CoreAttributes coreAttribute : CoreAttributes.values()) {
+            for (CoreAttribute coreAttribute : CoreAttribute.values()) {
                 if (toAbsoluteName(coreAttribute).equals(absoluteName)) {
                     attribute = coreAttribute;
                     break;

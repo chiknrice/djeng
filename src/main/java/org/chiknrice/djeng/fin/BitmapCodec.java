@@ -28,7 +28,7 @@ public class BitmapCodec extends ElementCodec<Bitmap> {
 
     @Override
     protected byte[] encodeValue(Bitmap bitmap) {
-        Bitmap.Encoding encoding = getAttribute(FinancialAttributes.BITMAP_ENCODING);
+        Bitmap.Encoding encoding = getAttribute(FinancialAttribute.BITMAP_ENCODING);
         int offset = 0;
         byte[] bytes = new byte[encoding.primaryBitmapLength];
         // TODO: Is the bitmap up to 32 bytes (for HEX) only? how about data set bitmap?
@@ -62,7 +62,7 @@ public class BitmapCodec extends ElementCodec<Bitmap> {
 
     @Override
     protected Bitmap decodeValue(byte[] rawValue) {
-        Bitmap.Encoding encoding = getAttribute(FinancialAttributes.BITMAP_ENCODING);
+        Bitmap.Encoding encoding = getAttribute(FinancialAttribute.BITMAP_ENCODING);
         Bitmap bitmap = new Bitmap();
         for (int bit = 1; bit < 129; bit++) {
             int byteIndex = (bit - 1) / 8;
@@ -89,7 +89,7 @@ public class BitmapCodec extends ElementCodec<Bitmap> {
 
     @Override
     protected byte[] decodeRawValue(ByteBuffer buffer) {
-        Bitmap.Encoding encoding = getAttribute(FinancialAttributes.BITMAP_ENCODING);
+        Bitmap.Encoding encoding = getAttribute(FinancialAttribute.BITMAP_ENCODING);
         byte[] bytes;
         switch (encoding) {
             case BINARY:

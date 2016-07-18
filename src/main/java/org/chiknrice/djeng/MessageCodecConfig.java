@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import static java.lang.String.format;
-import static org.chiknrice.djeng.CoreAttributes.*;
+import static org.chiknrice.djeng.CoreAttribute.*;
 import static org.chiknrice.djeng.XmlConfig.ElementName.CODECS;
 import static org.chiknrice.djeng.XmlConfig.ElementName.CODEC_FILTER;
 import static org.chiknrice.djeng.XmlConfig.ElementName.MESSAGE_ELEMENTS;
@@ -220,7 +220,7 @@ public class MessageCodecConfig {
             Attribute key = attributeEntry.getKey();
             Object value = attributeEntry.getValue();
             // Filters should not override id and class attributes
-            if (CODEC_FILTER.equals(element.getName()) && (CoreAttributes.ID.equals(key) || CoreAttributes.CLASS.equals(key))) {
+            if (CODEC_FILTER.equals(element.getName()) && (CoreAttribute.ID.equals(key) || CoreAttribute.CLASS.equals(key))) {
                 continue;
             }
             codec.setAttribute(key, value);
