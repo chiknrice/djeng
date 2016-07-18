@@ -20,8 +20,6 @@ import org.chiknrice.djeng.ElementCodec;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>

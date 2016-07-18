@@ -31,7 +31,7 @@ public final class Bitmap implements Iterable<Integer>{
 
     public enum Encoding {
         BINARY(8, 8),
-        HEX(16, 16),
+        HEX(8, 8),
         DATA_SET(2, 1);
 
         int primaryBitmapLength;
