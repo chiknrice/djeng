@@ -160,7 +160,6 @@ public class MessageCodecConfig {
     private void configureComposite(XmlConfig.XmlElement compositeConfig, Codec codec) {
         // LinkedHashMap ensures the ordering of the elements in the config is maintained
         Map<String, Codec> subElementCodecMap = new LinkedHashMap<>();
-        codec.setAttribute(SUB_ELEMENT_CODECS_MAP, subElementCodecMap);
         for (XmlConfig.XmlElement subElementConfig : compositeConfig.getChildren()) {
             Codec subElementCodec = buildCodec(subElementConfig);
             String index = subElementConfig.getAttribute(INDEX);
@@ -176,6 +175,7 @@ public class MessageCodecConfig {
             }
             subElementCodecMap.put(index, subElementCodec);
         }
+        codec.setAttribute(SUB_ELEMENT_CODECS_MAP, subElementCodecMap);
     }
 
     private Codec buildCodec(XmlConfig.XmlElement elementConfig) {
