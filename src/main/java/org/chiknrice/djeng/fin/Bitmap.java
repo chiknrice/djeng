@@ -15,19 +15,18 @@
  */
 package org.chiknrice.djeng.fin;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Represents a bitmap as defined by ISO8583/AS2805.  Provides methods to test if a bit is set or not and encapsulates
- * properties specific to different bitmap types like primary and secondary bitmap sizes and which bits are control
- * bit.
+ * The {@code Bitmap} class represents a bitmap as defined by ISO8583/AS2805.  It provides methods to set and test a bit
+ * and encapsulates primary and secondary bitmap sizes of different bitmap types.  It is {@code Iterable} and will
+ * iterate through the bits in the natural order of numbers.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class Bitmap implements Iterable<Integer>{
+public final class Bitmap implements Iterable<Integer> {
 
     public enum Encoding {
         BINARY(8, 8),
