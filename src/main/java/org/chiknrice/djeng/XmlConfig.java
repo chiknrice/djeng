@@ -47,7 +47,7 @@ class XmlConfig implements Closeable {
 
     final List<InputStream> inputStreams;
 
-    XmlConfig(InputStream configSource, List<String> customSchemas, List<Attribute> customAttributes) {
+    XmlConfig(InputStream xmlInputStream, List<String> customSchemas, List<Attribute> customAttributes) {
         try {
             this.customAttributes = customAttributes;
             Source[] schemaSources = new Source[customSchemas.size() + 1];
@@ -66,7 +66,7 @@ class XmlConfig implements Closeable {
             dbFactory.setNamespaceAware(true);
             dbFactory.setSchema(schema);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            document = dBuilder.parse(configSource);
+            document = dBuilder.parse(xmlInputStream);
             document.getDocumentElement().normalize();
             Validator validator = schema.newValidator();
             validator.validate(new DOMSource(document));
