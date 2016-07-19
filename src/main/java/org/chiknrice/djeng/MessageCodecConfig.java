@@ -27,7 +27,8 @@ import static org.chiknrice.djeng.XmlConfig.ElementName.*;
 
 /**
  * A {@code MessageCodecConfig} is the configuration required when creating a {@link MessageCodec}.  The configuration
- * requires at least a configuration xml and optional custom schemas and {@link Attribute}s.
+ * requires at least a configuration xml and optional custom schemas and {@link Attribute}s.  The config can also be
+ * built with an encode buffer size (defaults to 0xFFFF) and to enable debugging.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -71,13 +72,19 @@ public class MessageCodecConfig {
         private final List<String> customSchemas = new ArrayList<>();
         private final List<Attribute> customAttributes = new ArrayList<>();
         private int encodeBufferSize = 0x7FFF;
+        private boolean debugEnabled = false;
 
         private MessageCodecConfigBuilder(InputStream xmlConfig) {
             this.xmlConfig = xmlConfig;
         }
 
         public MessageCodecConfigBuilder withEncodeBufferSize(int bufferSize) {
-            this.encodeBufferSize = bufferSize;
+            encodeBufferSize = bufferSize;
+            return this;
+        }
+
+        public MessageCodecConfigBuilder withDebugEnabled() {
+            debugEnabled = true;
             return this;
         }
 
@@ -94,26 +101,28 @@ public class MessageCodecConfig {
         }
 
         public MessageCodecConfig build() {
-            return new MessageCodecConfig(xmlConfig, customSchemas, customAttributes, encodeBufferSize);
+            return new MessageCodecConfig(xmlConfig, customSchemas, customAttributes, encodeBufferSize, debugEnabled);
         }
     }
 
     private final XmlConfig xmlConfig;
-    private final Map<String, XmlConfig.XmlElement> codecMap;
+    private final Map<String, XmlConfig.XmlElement> codecConfigMap;
     private final Codec<CompositeMap> rootCodec;
     private final int encodeBufferSize;
+    private final boolean debugEnabled;
 
-    private MessageCodecConfig(InputStream xmlConfigStream, List<String> customSchemas, List<Attribute> customAttributes, int encodeBufferSize) {
+    private MessageCodecConfig(InputStream xmlConfigStream, List<String> customSchemas, List<Attribute> customAttributes, int encodeBufferSize, boolean debugEnabled) {
         // XmlConfig only closes the input streams that it creates, the xmlConfigStream is required to be closed by the caller if needed
         try (XmlConfig xmlConfig = new XmlConfig(xmlConfigStream, customSchemas, customAttributes)) {
             this.xmlConfig = xmlConfig;
-            codecMap = buildCodecMap();
+            codecConfigMap = buildCodecConfigMap();
             final XmlConfig.XmlElement messageElementsConfig = this.xmlConfig.getElement(MESSAGE_ELEMENTS);
             rootCodec = (Codec<CompositeMap>) buildCodec(messageElementsConfig);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
         this.encodeBufferSize = encodeBufferSize;
+        this.debugEnabled = debugEnabled;
     }
 
     public Codec<CompositeMap> getRootCodec() {
@@ -125,11 +134,11 @@ public class MessageCodecConfig {
     }
 
     public boolean isDebugEnabled() {
-        return false; // TODO include in config
+        return debugEnabled;
     }
 
-    private Map<String, XmlConfig.XmlElement> buildCodecMap() throws Exception {
-        Map<String, XmlConfig.XmlElement> codecMap = new HashMap<>();
+    private Map<String, XmlConfig.XmlElement> buildCodecConfigMap() throws Exception {
+        Map<String, XmlConfig.XmlElement> codecConfigMap = new HashMap<>();
         XmlConfig.XmlElement codecsElement = xmlConfig.getElement(CODECS);
         for (XmlConfig.XmlElement codecElement : codecsElement.getChildren()) {
             String id = codecElement.getAttribute(ID);
@@ -147,9 +156,9 @@ public class MessageCodecConfig {
                 default:
                     throw new RuntimeException("Unexpected element " + codecElement.getName().asString());
             }
-            codecMap.put(id, codecElement);
+            codecConfigMap.put(id, codecElement);
         }
-        return codecMap;
+        return codecConfigMap;
     }
 
     private void validateImplementation(Class expected, Class actual) {
@@ -171,7 +180,7 @@ public class MessageCodecConfig {
 
     private Codec buildCodec(XmlConfig.XmlElement elementConfig) throws Exception {
         String codecRef = elementConfig.getAttribute(CODEC);
-        XmlConfig.XmlElement codecConfig = codecMap.get(codecRef);
+        XmlConfig.XmlElement codecConfig = codecConfigMap.get(codecRef);
         Codec codec = buildObject(codecConfig.<Class>getAttribute(CLASS));
         BaseCodec baseCodec = (BaseCodec) codec;
         Map<Attribute, Object> codecAttributes = new HashMap<>();
@@ -186,7 +195,7 @@ public class MessageCodecConfig {
         setAttributes(codecConfig, codecAttributes);
         List<XmlConfig.XmlElement> filters = codecConfig.getChildren();
         for (XmlConfig.XmlElement filter : filters) {
-            XmlConfig.XmlElement globalFilterConfig = codecMap.get(filter.getAttribute(CODEC));
+            XmlConfig.XmlElement globalFilterConfig = codecConfigMap.get(filter.getAttribute(CODEC));
             codec = wrap(codec, globalFilterConfig.<Class>getAttribute(CLASS));
             // Main filter attributes override codec attributes
             setAttributes(globalFilterConfig, codecAttributes);
@@ -208,14 +217,10 @@ public class MessageCodecConfig {
     }
 
     private <T> T buildObject(Class clazz) {
-        if (clazz != null) {
-            try {
-                return (T) clazz.newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to create instance of " + clazz.getSimpleName(), e);
-            }
-        } else {
-            return null;
+        try {
+            return (T) clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create instance of " + clazz.getSimpleName(), e);
         }
     }
 
