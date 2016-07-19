@@ -19,6 +19,8 @@ import org.chiknrice.djeng.fin.FinancialAttribute;
 
 import java.nio.ByteBuffer;
 
+import static org.chiknrice.djeng.CodecContext.*;
+
 /**
  * TODO: document this for elements (as opposed to composites)
  *
@@ -30,10 +32,17 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      * @param buffer  the ByteBuffer where the element would be encoded
      * @param element the element to be encoded
      */
-    public final void encode(ByteBuffer buffer, MessageElement<T> element) {
-        T value = element.getValue();
-        byte[] rawValue = encodeValue(value);
+    public final void encode(ByteBuffer buffer, T element) {
+        byte[] rawValue = encodeValue(element);
         encodeRawValue(buffer, rawValue);
+        if (isDebugEnabled()) {
+            String indexPath = getCurrentIndexPath();
+            int leftPad = 5 - (indexPath.contains(".") ? indexPath.indexOf(".") : indexPath.length());
+            int rightPad = 20 - leftPad - indexPath.length();
+            String hex = ByteUtil.encodeHex(rawValue);
+            String value = String.format("\"%s\"", element);
+            System.err.printf("E|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", "", indexPath, "", value, hex);
+        }
     }
 
     /**
@@ -45,13 +54,13 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
     protected abstract byte[] encodeValue(T value);
 
     /**
-     * Encode the raw value to the buffer.
+     * Puts the bytes to the buffer.
      *
-     * @param buffer   the ByteBuffer to which the value would be encoded
-     * @param value TODO
+     * @param buffer the ByteBuffer to which the bytes would be encoded
+     * @param bytes  TODO
      */
-    protected void encodeRawValue(ByteBuffer buffer, byte[] value) {
-        buffer.put(value);
+    protected void encodeRawValue(ByteBuffer buffer, byte[] bytes) {
+        buffer.put(bytes);
     }
 
 
@@ -60,10 +69,18 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      * @return TODO
      */
     @Override
-    public MessageElement<T> decode(ByteBuffer buffer) {
+    public T decode(ByteBuffer buffer) {
         byte[] rawValue = decodeRawValue(buffer);
-        T value = decodeValue(rawValue);
-        return new MessageElement<>(value);
+        T element = decodeValue(rawValue);
+        if (isDebugEnabled()) {
+            String indexPath = getCurrentIndexPath();
+            int leftPad = 5 - (indexPath.contains(".") ? indexPath.indexOf(".") : indexPath.length());
+            int rightPad = 20 - leftPad - indexPath.length();
+            String hex = ByteUtil.encodeHex(rawValue);
+            String value = String.format("\"%s\"", element);
+            System.err.printf("D|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", "", indexPath, "", value, hex);
+        }
+        return element;
     }
 
     /**

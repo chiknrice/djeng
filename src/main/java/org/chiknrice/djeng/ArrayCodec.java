@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.chiknrice.djeng.CodecContext.*;
+
 /**
  * The {@code ArrayCodec} defines the encoding and decoding of array elements.  It is implemented as a filter which just
  * delegates encoding and decoding of the elements to the filtered codec.  Elements can then be any type of value (even
@@ -36,21 +38,23 @@ public class ArrayCodec<W> extends CodecFilter<CompositeMap, W> {
      * @param chain   TODO
      */
     @Override
-    protected void encode(ByteBuffer buffer, MessageElement<CompositeMap> element, Codec<W> chain) {
-        int pos = buffer.arrayOffset() + buffer.position();
-        CompositeMap compositeMap = element.getValue();
+    protected void encode(ByteBuffer buffer, CompositeMap element, Codec<W> chain) {
+        CompositeMap compositeMap = element;
         Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
         int index = 0;
-        MessageElement<W> arrayElement;
-        //noinspection unchecked
-        while ((arrayElement = (MessageElement<W>) compositeMap.get(Integer.toString(index))) != null) {
-            chain.encode(buffer, arrayElement);
-            elementsLeft.remove(Integer.toString(index++));
+        W arrayElement;
+        while ((arrayElement = (W) compositeMap.get(Integer.toString(index))) != null) {
+            try {
+                pushIndex(Integer.toString(index));
+                chain.encode(buffer, arrayElement);
+                elementsLeft.remove(Integer.toString(index++));
+            } finally {
+                popIndex();
+            }
         }
         if (elementsLeft.size() > 0) {
             throw new RuntimeException("Unexpected array elements: " + elementsLeft);
         }
-        element.addSection(pos, buffer.arrayOffset() + buffer.position(), compositeMap);
     }
 
     /**
@@ -61,15 +65,18 @@ public class ArrayCodec<W> extends CodecFilter<CompositeMap, W> {
      * @return TODO
      */
     @Override
-    protected MessageElement<CompositeMap> decode(ByteBuffer buffer, Codec<W> chain) {
-        int pos = buffer.arrayOffset() + buffer.position();
+    protected CompositeMap decode(ByteBuffer buffer, Codec<W> chain) {
         CompositeMap compositeMap = new CompositeMap();
         int index = 0;
         while (buffer.hasRemaining()) {
-            compositeMap.put(Integer.toString(index++), chain.decode(buffer));
+            try {
+                pushIndex(Integer.toString(index));
+                compositeMap.put(Integer.toString(index++), chain.decode(buffer));
+            } finally {
+                popIndex();
+            }
         }
-        MessageElement<CompositeMap> element = new MessageElement<>(compositeMap);
-        element.addSection(pos, buffer.arrayOffset() + buffer.position(), compositeMap);
+        CompositeMap element = compositeMap;
         return element;
     }
 }

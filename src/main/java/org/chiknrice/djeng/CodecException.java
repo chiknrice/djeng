@@ -20,24 +20,21 @@ package org.chiknrice.djeng;
  */
 public final class CodecException extends RuntimeException {
 
-    private final StringBuilder msgElementIndex;
+    private final String elementIndex;
 
     public CodecException(Throwable cause, String elementIndex) {
         super(cause);
-        msgElementIndex = new StringBuilder(elementIndex);
+        this.elementIndex = elementIndex;
     }
 
     public CodecException(String message, String elementIndex) {
         super(message);
-        msgElementIndex = new StringBuilder(elementIndex);
-    }
-
-    public void addParentIndex(String elementIndex) {
-        msgElementIndex.insert(0, elementIndex.concat("."));
+        this.elementIndex = elementIndex;
     }
 
     @Override
     public String getMessage() {
-        return String.format("element[%s] %s", msgElementIndex.toString(), super.getMessage());
+        return String.format("element[%s] %s", elementIndex, super.getMessage());
     }
+
 }

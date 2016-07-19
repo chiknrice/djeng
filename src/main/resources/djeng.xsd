@@ -96,9 +96,16 @@
         </restriction>
     </simpleType>
 
+    <!-- Simple type restricting to a valid java class name -->
+    <simpleType name="fully-qualified-class-name">
+        <restriction base="token">
+            <pattern value="([a-zA-Z_$][a-zA-Z\d_$]*\.)*[a-zA-Z_$][a-zA-Z\d_$]*"/>
+        </restriction>
+    </simpleType>
+
     <complexType name="filter-type">
         <attribute name="id" type="tns:non-empty-no-space-token" use="required"/>
-        <attribute name="class" type="tns:non-empty-no-space-token" use="required"/>
+        <attribute name="class" type="tns:fully-qualified-class-name" use="required"/>
         <attribute name="description" type="tns:non-empty-token" use="optional"/>
         <anyAttribute/>
     </complexType>

@@ -23,9 +23,7 @@ import java.util.*;
 
 import static java.lang.String.format;
 import static org.chiknrice.djeng.CoreAttribute.*;
-import static org.chiknrice.djeng.XmlConfig.ElementName.CODECS;
-import static org.chiknrice.djeng.XmlConfig.ElementName.CODEC_FILTER;
-import static org.chiknrice.djeng.XmlConfig.ElementName.MESSAGE_ELEMENTS;
+import static org.chiknrice.djeng.XmlConfig.ElementName.*;
 
 /**
  * A {@code MessageCodecConfig} is the configuration required when creating a {@link MessageCodec}.  The configuration
@@ -110,9 +108,8 @@ public class MessageCodecConfig {
         try (XmlConfig xmlConfig = new XmlConfig(xmlConfigStream, customSchemas, customAttributes)) {
             this.xmlConfig = xmlConfig;
             codecMap = buildCodecMap();
-            final XmlConfig.XmlElement element = this.xmlConfig.getElement(MESSAGE_ELEMENTS);
-            rootCodec = (Codec<CompositeMap>) buildCodec(element);
-            configureComposite(element, rootCodec);
+            final XmlConfig.XmlElement messageElementsConfig = this.xmlConfig.getElement(MESSAGE_ELEMENTS);
+            rootCodec = (Codec<CompositeMap>) buildCodec(messageElementsConfig);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -127,7 +124,11 @@ public class MessageCodecConfig {
         return encodeBufferSize;
     }
 
-    private Map<String, XmlConfig.XmlElement> buildCodecMap() {
+    public boolean isDebugEnabled() {
+        return false; // TODO include in config
+    }
+
+    private Map<String, XmlConfig.XmlElement> buildCodecMap() throws Exception {
         Map<String, XmlConfig.XmlElement> codecMap = new HashMap<>();
         XmlConfig.XmlElement codecsElement = xmlConfig.getElement(CODECS);
         for (XmlConfig.XmlElement codecElement : codecsElement.getChildren()) {
@@ -157,45 +158,46 @@ public class MessageCodecConfig {
         }
     }
 
-    private void configureComposite(XmlConfig.XmlElement compositeConfig, Codec codec) {
+    private Map<String, Codec> buildSubElementCodecMap(XmlConfig.XmlElement compositeConfig) throws Exception {
         // LinkedHashMap ensures the ordering of the elements in the config is maintained
         Map<String, Codec> subElementCodecMap = new LinkedHashMap<>();
         for (XmlConfig.XmlElement subElementConfig : compositeConfig.getChildren()) {
             Codec subElementCodec = buildCodec(subElementConfig);
             String index = subElementConfig.getAttribute(INDEX);
-            switch (subElementConfig.getName()) {
-                case ELEMENT:
-                    break;
-                case COMPOSITE:
-                case MESSAGE_ELEMENTS:
-                    configureComposite(subElementConfig, subElementCodec);
-                    break;
-                default:
-                    throw new RuntimeException("Unexpected element " + subElementConfig.getName().asString());
-            }
             subElementCodecMap.put(index, subElementCodec);
         }
-        codec.setAttribute(SUB_ELEMENT_CODECS_MAP, subElementCodecMap);
+        return subElementCodecMap;
     }
 
-    private Codec buildCodec(XmlConfig.XmlElement elementConfig) {
-        String elementCodec = elementConfig.getAttribute(CODEC);
-        XmlConfig.XmlElement codecConfig = codecMap.get(elementCodec);
+    private Codec buildCodec(XmlConfig.XmlElement elementConfig) throws Exception {
+        String codecRef = elementConfig.getAttribute(CODEC);
+        XmlConfig.XmlElement codecConfig = codecMap.get(codecRef);
         Codec codec = buildObject(codecConfig.<Class>getAttribute(CLASS));
+        BaseCodec baseCodec = (BaseCodec) codec;
+        Map<Attribute, Object> codecAttributes = new HashMap<>();
+
+        final XmlConfig.ElementName name = elementConfig.getName();
+        if (MESSAGE_ELEMENTS.equals(name) || COMPOSITE.equals(name)) {
+            Map<String, Codec> subElementCodecMap = buildSubElementCodecMap(elementConfig);
+            codecAttributes.put(SUB_ELEMENT_CODECS_MAP, subElementCodecMap);
+        }
+
         // Codec attributes first
-        setAttributes(codecConfig, codec);
-        codec = wrap(codec, SectionRecordingFilter.class);
+        setAttributes(codecConfig, codecAttributes);
         List<XmlConfig.XmlElement> filters = codecConfig.getChildren();
         for (XmlConfig.XmlElement filter : filters) {
             XmlConfig.XmlElement globalFilterConfig = codecMap.get(filter.getAttribute(CODEC));
             codec = wrap(codec, globalFilterConfig.<Class>getAttribute(CLASS));
             // Main filter attributes override codec attributes
-            setAttributes(globalFilterConfig, codec);
+            setAttributes(globalFilterConfig, codecAttributes);
             // Filter reference attributes override the main one
-            setAttributes(filter, codec);
+            setAttributes(filter, codecAttributes);
         }
         // Element attributes override both filter & codec attributes
-        setAttributes(elementConfig, codec);
+        setAttributes(elementConfig, codecAttributes);
+
+        // Attributes are immutable
+        baseCodec.attributes = Collections.unmodifiableMap(codecAttributes);
         return codec;
     }
 
@@ -217,7 +219,7 @@ public class MessageCodecConfig {
         }
     }
 
-    private void setAttributes(XmlConfig.XmlElement element, Codec codec) {
+    private void setAttributes(XmlConfig.XmlElement element, Map<Attribute, Object> codecAttributes) throws Exception {
         for (Map.Entry<Attribute, Object> attributeEntry : element.getAttributes().entrySet()) {
             Attribute key = attributeEntry.getKey();
             Object value = attributeEntry.getValue();
@@ -225,7 +227,7 @@ public class MessageCodecConfig {
             if (CODEC_FILTER.equals(element.getName()) && (CoreAttribute.ID.equals(key) || CoreAttribute.CLASS.equals(key))) {
                 continue;
             }
-            codec.setAttribute(key, value);
+            codecAttributes.put(key, value);
         }
     }
 

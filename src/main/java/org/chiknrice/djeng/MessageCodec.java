@@ -17,6 +17,8 @@ package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
 
+import static org.chiknrice.djeng.CodecContext.*;
+
 /**
  * Encodes and decodes a {@link Message} to and from a {@code byte[]}
  *
@@ -24,12 +26,10 @@ import java.nio.ByteBuffer;
  */
 public class MessageCodec {
 
-    private final Codec<CompositeMap> rootCodec;
-    private final int encodeBufferSize;
+    private final MessageCodecConfig config;
 
     public MessageCodec(MessageCodecConfig config) {
-        this.rootCodec = config.getRootCodec();
-        this.encodeBufferSize = config.getEncodeBufferSize();
+        this.config = config;
     }
 
     /**
@@ -39,19 +39,19 @@ public class MessageCodec {
      * @return the encoded bytes.
      */
     public byte[] encode(Message message) {
-        ByteBuffer buffer = ByteBuffer.allocate(encodeBufferSize);
+        ByteBuffer buffer = ByteBuffer.allocate(config.getEncodeBufferSize());
         try {
             message.rwLock.writeLock().lock();
-            message.clearRawState();
-            rootCodec.encode(buffer, new MessageElement<>(message.getCompositeMap()));
+            clear();
+            setDebugEnabled(config.isDebugEnabled());
+            config.getRootCodec().encode(buffer, message.getCompositeMap());
             byte[] encoded = new byte[buffer.position()];
             buffer.rewind();
             buffer.get(encoded);
-            message.setBackingBuffer(ByteBuffer.wrap(encoded));
-            logMessage("ENCODE", message);
             return encoded;
         } finally {
             message.rwLock.writeLock().unlock();
+            dumpLogs();
         }
     }
 
@@ -62,17 +62,16 @@ public class MessageCodec {
      * @return the decoded Message.
      */
     public Message decode(byte[] messageBytes) {
-        ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
-        MessageElement<CompositeMap> element = rootCodec.decode(buffer);
-        Message message = new Message(element.getValue());
-        message.setBackingBuffer(buffer);
-        logMessage("DECODE", message);
-        return message;
-    }
-
-    private void logMessage(String operation, Message message) {
-        // TODO: beautify this log
-        // TODO: implement masking!
+        try {
+            ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
+            clear();
+            setDebugEnabled(config.isDebugEnabled());
+            CompositeMap element = config.getRootCodec().decode(buffer);
+            Message message = new Message(element);
+            return message;
+        } finally {
+            dumpLogs();
+        }
     }
 
 }

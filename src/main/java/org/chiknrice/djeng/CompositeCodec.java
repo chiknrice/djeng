@@ -18,59 +18,53 @@ package org.chiknrice.djeng;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import static org.chiknrice.djeng.CodecContext.*;
+
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
 
-    protected final void encodeSubElement(String index, Codec codec, ByteBuffer buffer, MessageElement element) {
+    protected final void encodeSubElement(String index, Codec codec, ByteBuffer buffer, Object element) {
         try {
+            pushIndex(index);
             codec.encode(buffer, element);
         } catch (CodecException ce) {
-            if (isCompositeCodec(codec)) {
-                ce.addParentIndex(index);
-            }
             throw ce;
         } catch (Exception e) {
-            throw new CodecException(e, index);
+            throw new CodecException(e, getCurrentIndexPath());
+        } finally {
+            popIndex();
         }
     }
 
-    protected final MessageElement decodeSubElement(String index, Codec codec, ByteBuffer buffer) {
+    protected final Object decodeSubElement(String index, Codec codec, ByteBuffer buffer) {
         try {
+            pushIndex(index);
             return codec.decode(buffer);
         } catch (CodecException ce) {
-            if (isCompositeCodec(codec)) {
-                ce.addParentIndex(index);
-            }
             throw ce;
         } catch (Exception e) {
-            throw new CodecException(e, index);
+            throw new CodecException(e, getCurrentIndexPath());
+        } finally {
+            popIndex();
         }
     }
 
     @Override
-    public final void encode(ByteBuffer buffer, MessageElement<CompositeMap> element) {
+    public final void encode(ByteBuffer buffer, CompositeMap element) {
         Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
-        encodeSubElements(buffer, element.getValue(), subElementsCodecs);
+        encodeSubElements(buffer, element, subElementsCodecs);
     }
 
     protected abstract void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs);
 
     @Override
-    public final MessageElement<CompositeMap> decode(ByteBuffer buffer) {
+    public final CompositeMap decode(ByteBuffer buffer) {
         Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
-        return new MessageElement<>(decodeSubElements(buffer, subElementsCodecs));
+        return decodeSubElements(buffer, subElementsCodecs);
     }
 
     protected abstract CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs);
-
-    static boolean isCompositeCodec(Codec codec) {
-        Codec elementCodec = codec;
-        while (elementCodec instanceof CodecFilter) {
-            elementCodec = ((CodecFilter) elementCodec).getChain();
-        }
-        return elementCodec instanceof CompositeCodec;
-    }
 
 }

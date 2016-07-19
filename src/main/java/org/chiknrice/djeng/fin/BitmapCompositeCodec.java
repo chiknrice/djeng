@@ -35,9 +35,9 @@ public final class BitmapCompositeCodec extends CompositeCodec {
             Codec codec = codecEntry.getValue();
             if (BitmapCodec.class.equals(codec.getAttribute(CoreAttribute.CLASS))) {
                 Bitmap bitmap = buildBitmap(compositeMap);
-                compositeMap.put(index, new MessageElement(bitmap));
+                compositeMap.put(index, bitmap);
             }
-            MessageElement messageElement = compositeMap.get(index);
+            Object messageElement = compositeMap.get(index);
             if (messageElement != null) {
                 encodeSubElement(index, codec, buffer, messageElement);
                 elementsToEncode.remove(index);
@@ -65,10 +65,10 @@ public final class BitmapCompositeCodec extends CompositeCodec {
         for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
             Codec codec = codecEntry.getValue();
-            MessageElement subElement = decodeSubElement(index, codec, buffer);
+            Object subElement = decodeSubElement(index, codec, buffer);
             compositeMap.put(index, subElement);
             if (BitmapCodec.class.equals(codec.getAttribute(CoreAttribute.CLASS))) {
-                bitmap = (Bitmap) subElement.getValue();
+                bitmap = (Bitmap) subElement;
                 break;
             }
         }
@@ -77,7 +77,7 @@ public final class BitmapCompositeCodec extends CompositeCodec {
             String index = bit.toString();
             Codec codec = subElementsCodecs.get(index);
             if (codec != null) {
-                MessageElement subElement = decodeSubElement(index, codec, buffer);
+                Object subElement = decodeSubElement(index, codec, buffer);
                 compositeMap.put(index, subElement);
             } else {
                 throw new CodecException("No codec defined", index);

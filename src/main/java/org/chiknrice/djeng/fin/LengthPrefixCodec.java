@@ -18,7 +18,6 @@ package org.chiknrice.djeng.fin;
 import org.chiknrice.djeng.ByteUtil;
 import org.chiknrice.djeng.Codec;
 import org.chiknrice.djeng.CodecFilter;
-import org.chiknrice.djeng.MessageElement;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +31,7 @@ import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_LENGTH;
 public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
 
     @Override
-    public void encode(ByteBuffer buffer, MessageElement<T> element, Codec<T> chain) {
+    public void encode(ByteBuffer buffer, T element, Codec<T> chain) {
         int lengthPrefixBytesCount = getLengthPrefixBytesCount();
         buffer.mark();
         buffer.position(buffer.position() + lengthPrefixBytesCount);
@@ -44,10 +43,10 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
         int valueLength = dataBuffer.position();
         LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
         if (delegate != null) {
-            valueLength = delegate.determineLengthPrefixValue(element.getValue());
+            valueLength = delegate.determineLengthPrefixValue(element);
         }
         encodeLengthPrefix(buffer, valueLength);
-        element.addSection(pos, limit, valueLength);
+        //element.addSection(pos, limit, valueLength);
         buffer.position(buffer.position() + dataBuffer.position());
     }
 
@@ -77,7 +76,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
     }
 
     @Override
-    public MessageElement<T> decode(ByteBuffer buffer, Codec chain) {
+    public T decode(ByteBuffer buffer, Codec<T> chain) {
         int pos = buffer.arrayOffset() + buffer.position();
         int dataLength = decodeLengthPrefix(buffer);
         int limit = buffer.arrayOffset() + buffer.position();
@@ -90,8 +89,8 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
             throw new RuntimeException(String.format("Not enough bytes in buffer for var length %d", dataByteCount));
         }
         ByteBuffer dataBuffer = ByteUtil.consumeToBuffer(buffer, dataByteCount);
-        MessageElement<T> element = chain.decode(dataBuffer);
-        element.addSection(pos, limit, dataLength);
+        T element = chain.decode(dataBuffer);
+        //element.addSection(pos, limit, dataLength);
         return element;
     }
 

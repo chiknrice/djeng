@@ -47,7 +47,7 @@ class XmlConfig implements Closeable {
 
     final List<InputStream> inputStreams;
 
-    XmlConfig(InputStream xmlInputStream, List<String> customSchemas, List<Attribute> customAttributes) {
+    XmlConfig(InputStream xmlInputStream, List<String> customSchemas, List<Attribute> customAttributes) throws Exception {
         try {
             this.customAttributes = customAttributes;
             Source[] schemaSources = new Source[customSchemas.size() + 1];
@@ -71,7 +71,7 @@ class XmlConfig implements Closeable {
             Validator validator = schema.newValidator();
             validator.validate(new DOMSource(document));
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -141,9 +141,11 @@ class XmlConfig implements Closeable {
     class XmlElement {
 
         final Element element;
+        final Map<Attribute, Object> attributes;
 
         XmlElement(Element element) {
             this.element = element;
+            this.attributes = getAttributes();
         }
 
         List<XmlElement> getChildren() {
@@ -173,13 +175,25 @@ class XmlConfig implements Closeable {
             for (int i = 0; i < length; i++) {
                 Attr xmlAttribute = (Attr) xmlAttributes.item(i);
                 Attribute attribute = toAttribute(xmlAttribute);
+                attributes.put(attribute, applyAttributeType(attribute, xmlAttribute));
+            }
+            return attributes;
+        }
+
+        Object applyAttributeType(Attribute attribute, Attr xmlAttribute) {
+            if ("fully-qualified-class-name".equals(xmlAttribute.getSchemaTypeInfo().getTypeName())) {
                 try {
-                    attributes.put(attribute, attribute.applyType(xmlAttribute.getValue()));
+                    return Class.forName(xmlAttribute.getValue());
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Class not found " + xmlAttribute.getValue());
+                }
+            } else {
+                try {
+                    return attribute.applyType(xmlAttribute.getValue());
                 } catch (Exception e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
-            return attributes;
         }
 
         Attribute toAttribute(Attr xmlAttribute) {
@@ -211,37 +225,7 @@ class XmlConfig implements Closeable {
         }
 
         <T> T getAttribute(Attribute attribute) {
-            T value = getOptionalAttribute(attribute);
-            if (value != null) {
-                return value;
-            } else {
-                throw new RuntimeException(String.format("Missing mandatory attribute %s in element %s", attribute, element.getTagName()));
-            }
-        }
-
-        <T> T getOptionalAttribute(Attribute attribute) {
-            return getOptionalAttribute(attribute, null);
-        }
-
-        <T> T getOptionalAttribute(Attribute attribute, String defaultValue) {
-            String stringValue;
-            if (element.getNamespaceURI().equals(attribute.getNamespace())) {
-                stringValue = element.getAttribute(attribute.getName());
-            } else {
-                stringValue = element.getAttributeNS(attribute.getNamespace(), attribute.getName());
-            }
-            if (stringValue == null || stringValue.trim().length() == 0) {
-                stringValue = defaultValue;
-            }
-            if (stringValue == null || stringValue.trim().length() == 0) {
-                return null;
-            } else {
-                try {
-                    return (T) attribute.applyType(stringValue);
-                } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage(), e);
-                }
-            }
+            return (T) attributes.get(attribute);
         }
 
         @Override

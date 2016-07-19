@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class PlainCompositeCodec extends CompositeCodec {
+public class PlainCompositeCodec extends CompositeCodec {
 
     /**
      * TODO
@@ -40,7 +40,7 @@ public final class PlainCompositeCodec extends CompositeCodec {
         Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
         for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
             String index = codecEntry.getKey();
-            MessageElement subElement = compositeMap.get(index);
+            Object subElement = compositeMap.get(index);
             if (subElement == null) {
                 throw new CodecException("Missing required element", index);
             }
@@ -64,7 +64,7 @@ public final class PlainCompositeCodec extends CompositeCodec {
         CompositeMap compositeMap = new CompositeMap();
         for (Map.Entry<String, Codec> subElementCodec : subElementsCodecs.entrySet()) {
             String index = subElementCodec.getKey();
-            MessageElement subElement = decodeSubElement(index, subElementCodec.getValue(), buffer);
+            Object subElement = decodeSubElement(index, subElementCodec.getValue(), buffer);
             compositeMap.put(index, subElement);
         }
         return compositeMap;

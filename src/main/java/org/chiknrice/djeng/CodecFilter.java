@@ -23,35 +23,29 @@ import java.nio.ByteBuffer;
 public abstract class CodecFilter<T, W> implements Codec<T> {
 
     @Override
-    public final void encode(ByteBuffer buffer, MessageElement<T> element) {
+    public final void encode(ByteBuffer buffer, T element) {
         if (chain == null) {
             throw new RuntimeException("Missing codec chain");
         }
         encode(buffer, element, chain);
     }
 
-    protected abstract void encode(ByteBuffer buffer, MessageElement<T> element, Codec<W> chain);
+    protected abstract void encode(ByteBuffer buffer, T element, Codec<W> chain);
 
     @Override
-    public final MessageElement<T> decode(ByteBuffer buffer) {
+    public final T decode(ByteBuffer buffer) {
         if (chain == null) {
             throw new RuntimeException("Missing codec chain");
         }
-        MessageElement<T> element = decode(buffer, chain);
-        return element;
+        return decode(buffer, chain);
     }
 
-    protected abstract MessageElement<T> decode(ByteBuffer buffer, Codec<W> chain);
+    protected abstract T decode(ByteBuffer buffer, Codec<W> chain);
 
     @Override
     public final <A> A getAttribute(Attribute attribute) {
         //noinspection unchecked
         return (A) chain.getAttribute(attribute);
-    }
-
-    @Override
-    public final void setAttribute(Attribute attribute, Object value) {
-        chain.setAttribute(attribute, value);
     }
 
     private Codec<W> chain;

@@ -18,14 +18,16 @@ package org.chiknrice.djeng.fin;
 import org.chiknrice.djeng.Codec;
 import org.chiknrice.djeng.CompositeCodec;
 import org.chiknrice.djeng.CompositeMap;
-import org.chiknrice.djeng.MessageElement;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import static org.chiknrice.djeng.CodecContext.popIndex;
+import static org.chiknrice.djeng.CodecContext.pushIndex;
+
 /**
- * The {@code KeyValueCodec} is a {@code CompositeCodec} which maps the sub elements to keys and values.  The index of
- * the {@code MessageElement} being the key and the {@code MessageElement} value as the value.
+ * The {@code KeyValueCodec} is a {@code CompositeCodec} which encodes/decodes the index as the key together with the
+ * value.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -43,13 +45,24 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
         if (subElementsCodecs.size() != 2 && keyCodec == null || valueCodec == null) {
             throw new RuntimeException("Invalid " + KeyValueCodec.class.getSimpleName() + " configuration");
         }
-        for (Map.Entry<String, MessageElement> entry : compositeMap.entrySet()) {
-            Object keyValue = toKeyValue(entry.getKey());
-            MessageElement valueElement = entry.getValue();
-            MessageElement keyElement = new MessageElement(keyValue);
-            keyCodec.encode(buffer, keyElement);
-            valueCodec.encode(buffer, valueElement);
-            valueElement.addSectionsFrom(keyElement);
+        for (Map.Entry<String, Object> entry : compositeMap.entrySet()) {
+            String keyString = entry.getKey();
+            Object key = toKeyValue(keyString);
+            Object value = entry.getValue();
+
+
+            try {
+                pushIndex("key");
+                keyCodec.encode(buffer, key);
+            } finally {
+                popIndex();
+            }
+            try {
+                pushIndex(keyString);
+                valueCodec.encode(buffer, value);
+            } finally {
+                popIndex();
+            }
         }
     }
 
@@ -77,11 +90,23 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
             throw new RuntimeException("Invalid " + KeyValueCodec.class.getSimpleName() + " configuration");
         }
         CompositeMap compositeMap = new CompositeMap();
+        Object key;
         while (buffer.hasRemaining()) {
-            MessageElement keyElement = keyCodec.decode(buffer);
-            MessageElement valueElement = valueCodec.decode(buffer);
-            valueElement.addSectionsFrom(keyElement);
-            compositeMap.put(toKeyString((K) keyElement.getValue()), valueElement);
+            try {
+                pushIndex("key");
+                key = keyCodec.decode(buffer);
+            } finally {
+                popIndex();
+            }
+            String keyString = toKeyString((K) key);
+            Object value;
+            try {
+                pushIndex(keyString);
+                value = valueCodec.decode(buffer);
+            } finally {
+                popIndex();
+            }
+            compositeMap.put(keyString, value);
         }
 
         return compositeMap;
