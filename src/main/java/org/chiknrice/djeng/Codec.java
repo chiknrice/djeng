@@ -16,13 +16,17 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.TreeSet;
 
 /**
  * The {@code Codec<T>} interface defines the fundamental contract of a codec which is to encode a value {@code T} to a
  * {@code java.nio.ByteBuffer} and decode the bytes from the {@code ByteBuffer} to a value {@code T}.  The {@code
  * ByteBuffer} acts as a window to the backing byte array rather than creating and copying byte arrays when processing
  * each message element.
- * <p>
+ * <p/>
  * A codec is also capable of having attributes which can drive how the encoding/decoding are performed.  Since codecs
  * can be used in multiple parts of a message, the attributes are specific to a context in where the codec is used.  A
  * codec's documentation should mention the set of attributes supported and which are required.  The documentation
@@ -30,7 +34,7 @@ import java.nio.ByteBuffer;
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public interface Codec<T> {
+public abstract class Codec<T> {
 
     /**
      * Encodes the value {@code T} to bytes and writes it to the {@code ByteBuffer} from its current position.  Encoding
@@ -39,7 +43,7 @@ public interface Codec<T> {
      * @param buffer  where the encoded bytes are written to
      * @param element the non-null value which would be encoded
      */
-    void encode(ByteBuffer buffer, T element);
+    public abstract void encode(ByteBuffer buffer, T element);
 
     /**
      * Decodes the bytes in the {@code java.nio.ByteBuffer} (or portion of it) from the buffer's current position to a
@@ -48,7 +52,9 @@ public interface Codec<T> {
      * @param buffer the source of the bytes to decode
      * @return the decoded value
      */
-    T decode(ByteBuffer buffer);
+    public abstract T decode(ByteBuffer buffer);
+
+    Map<Attribute, Object> attributes;
 
     /**
      * Gets the codec's attribute.
@@ -57,6 +63,103 @@ public interface Codec<T> {
      * @param <A>       the expected type of the attribute value
      * @return the attribute value, or {@code null} if the attribute wasn't set
      */
-    <A> A getAttribute(Attribute attribute);
+    public <A> A getAttribute(Attribute attribute) {
+        //noinspection unchecked
+        return (A) attributes.get(attribute);
+    }
+
+    private static final ThreadLocal<Boolean> DEBUG_ENABLED = new ThreadLocal();
+    private static final ThreadLocal<Stack<String>> INDEX_STACK = new ThreadLocal();
+    private static final ThreadLocal<SortedSet<Section>> SECTIONS = new ThreadLocal<>();
+
+    protected void pushIndex(String index) {
+        Stack<String> indexStack = INDEX_STACK.get();
+        if (indexStack == null) {
+            indexStack = new Stack<>();
+            INDEX_STACK.set(indexStack);
+        }
+        indexStack.push(index);
+    }
+
+    protected void popIndex() {
+        Stack<String> indexStack = INDEX_STACK.get();
+        if (indexStack == null) {
+            throw new IllegalStateException("No existing " + INDEX_STACK);
+        }
+        indexStack.pop();
+    }
+
+    protected void recordSection(int pos, Object value, String hex) {
+        SortedSet<Section> sections = SECTIONS.get();
+        if (sections == null) {
+            sections = new TreeSet<>();
+            SECTIONS.set(sections);
+        }
+        sections.add(new Section(pos, getCurrentIndexPath(), value, hex));
+    }
+
+    String getCurrentIndexPath() {
+        Stack<String> indexStack = INDEX_STACK.get();
+        StringBuilder indexPath = new StringBuilder();
+        for (String index : indexStack) {
+            if (indexPath.length() > 0) {
+                indexPath.append(".");
+            }
+            indexPath.append(index);
+        }
+        return indexPath.toString();
+    }
+
+    protected boolean isDebugEnabled() {
+        Boolean debugEnabled = DEBUG_ENABLED.get();
+        if (debugEnabled == null) {
+            throw new IllegalStateException(DEBUG_ENABLED + " not defined");
+        }
+        return debugEnabled;
+    }
+
+    void setDebugEnabled(boolean debugEnabled) {
+        DEBUG_ENABLED.set(Boolean.valueOf(debugEnabled));
+    }
+
+    void dumpLogs() {
+        // TODO is this what we want to do with the sections?
+        for (Section section : SECTIONS.get()) {
+            System.err.println(section);
+        }
+    }
+
+    void clear() {
+        DEBUG_ENABLED.remove();
+        INDEX_STACK.remove();
+        SECTIONS.remove();
+    }
+
+    private static class Section implements Comparable<Section>{
+
+        final int pos;
+        final String indexPath;
+        final Object value;
+        final String hex;
+
+        Section(int pos, String indexPath, Object value, String hex) {
+            this.pos = pos;
+            this.indexPath = indexPath;
+            this.value = value;
+            this.hex = hex;
+        }
+
+        @Override
+        public int compareTo(Section o) {
+            return pos < o.pos ? -1 : pos > o.pos ? 1 : 0;
+        }
+
+        @Override
+        public String toString() {
+            int leftPad = 5 - (indexPath.contains(".") ? indexPath.indexOf(".") : indexPath.length());
+            int rightPad = 20 - leftPad - indexPath.length();
+            return String.format("[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s", pos, "", indexPath, "", value, hex);
+        }
+    }
 
 }

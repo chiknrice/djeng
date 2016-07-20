@@ -18,12 +18,10 @@ package org.chiknrice.djeng;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import static org.chiknrice.djeng.CodecContext.*;
-
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class CompositeCodec extends BaseCodec<CompositeMap> {
+public abstract class CompositeCodec extends Codec<CompositeMap> {
 
     protected final void encodeSubElement(String index, Codec codec, ByteBuffer buffer, Object element) {
         try {

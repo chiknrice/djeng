@@ -23,8 +23,6 @@ import org.chiknrice.djeng.ElementCodec;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import static org.chiknrice.djeng.CodecContext.popIndex;
-import static org.chiknrice.djeng.CodecContext.pushIndex;
 import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_ENCODING;
 import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_LENGTH;
 
@@ -49,7 +47,7 @@ public final class LengthPrefixCodecFilter<T> extends CodecFilter<T, T> {
         buffer.reset();
         int pos = buffer.arrayOffset() + buffer.position();
         int valueLength = dataBuffer.position();
-        LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
+        LengthPrefixDelegate delegate = getDelegate(LengthPrefixDelegate.class);
         if (delegate != null) {
             valueLength = delegate.determineLengthPrefixValue(element);
         }
@@ -72,7 +70,7 @@ public final class LengthPrefixCodecFilter<T> extends CodecFilter<T, T> {
             popIndex();
         }
         int dataByteCount = dataLength;
-        LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
+        LengthPrefixDelegate delegate = getDelegate(LengthPrefixDelegate.class);
         if (delegate != null) {
             dataByteCount = delegate.determineDataBytesCount(dataLength);
         }

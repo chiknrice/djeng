@@ -182,7 +182,7 @@ public class MessageCodecConfig {
         String codecRef = elementConfig.getAttribute(CODEC);
         XmlConfig.XmlElement codecConfig = codecConfigMap.get(codecRef);
         Codec codec = buildObject(codecConfig.<Class>getAttribute(CLASS));
-        BaseCodec baseCodec = (BaseCodec) codec;
+        Codec baseCodec = codec;
         Map<Attribute, Object> codecAttributes = new HashMap<>();
 
         final XmlConfig.ElementName name = elementConfig.getName();
@@ -212,7 +212,7 @@ public class MessageCodecConfig {
 
     private Codec wrap(Codec codec, Class filter) {
         CodecFilter codecFilter = buildObject(filter);
-        codecFilter.setChain(codec);
+        codecFilter.chain = codec;
         return codecFilter;
     }
 

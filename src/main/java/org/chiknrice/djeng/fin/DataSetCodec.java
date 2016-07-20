@@ -21,6 +21,11 @@ package org.chiknrice.djeng.fin;
 public class DataSetCodec extends KeyValueCodec<Long> {
 
     @Override
+    protected String getKeyIndex() {
+        return "did";
+    }
+
+    @Override
     protected Long toKeyValue(String stringKey) {
         return Long.valueOf(stringKey);
     }

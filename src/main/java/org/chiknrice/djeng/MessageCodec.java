@@ -17,8 +17,6 @@ package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
 
-import static org.chiknrice.djeng.CodecContext.*;
-
 /**
  * Encodes and decodes a {@link Message} to and from a {@code byte[]}
  *
@@ -40,18 +38,19 @@ public class MessageCodec {
      */
     public byte[] encode(Message message) {
         ByteBuffer buffer = ByteBuffer.allocate(config.getEncodeBufferSize());
+        Codec<CompositeMap> rootCodec = config.getRootCodec();
         try {
             message.rwLock.writeLock().lock();
-            clear();
-            setDebugEnabled(config.isDebugEnabled());
+            rootCodec.clear();
+            rootCodec.setDebugEnabled(config.isDebugEnabled());
             config.getRootCodec().encode(buffer, message.getCompositeMap());
             byte[] encoded = new byte[buffer.position()];
             buffer.rewind();
             buffer.get(encoded);
             return encoded;
         } finally {
+            rootCodec.dumpLogs();
             message.rwLock.writeLock().unlock();
-            dumpLogs();
         }
     }
 
@@ -62,15 +61,16 @@ public class MessageCodec {
      * @return the decoded Message.
      */
     public Message decode(byte[] messageBytes) {
+        Codec<CompositeMap> rootCodec = config.getRootCodec();
         try {
             ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
-            clear();
-            setDebugEnabled(config.isDebugEnabled());
-            CompositeMap element = config.getRootCodec().decode(buffer);
+            rootCodec.clear();
+            rootCodec.setDebugEnabled(config.isDebugEnabled());
+            CompositeMap element = rootCodec.decode(buffer);
             Message message = new Message(element);
             return message;
         } finally {
-            dumpLogs();
+            rootCodec.dumpLogs();
         }
     }
 

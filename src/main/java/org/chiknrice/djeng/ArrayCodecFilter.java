@@ -19,8 +19,6 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.chiknrice.djeng.CodecContext.*;
-
 /**
  * The {@code ArrayCodecFilter} defines the encoding and decoding of array elements.  It is implemented as a filter
  * which just delegates encoding and decoding of the elements to the filtered codec.  Elements can then be any type of
@@ -41,7 +39,7 @@ public class ArrayCodecFilter<W> extends CodecFilter<CompositeMap, W> {
     protected void encode(ByteBuffer buffer, CompositeMap element, Codec<W> chain) {
         CompositeMap compositeMap = element;
         Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
-        int index = 0;
+        int index = 1;
         W arrayElement;
         while ((arrayElement = (W) compositeMap.get(Integer.toString(index))) != null) {
             try {
@@ -67,7 +65,7 @@ public class ArrayCodecFilter<W> extends CodecFilter<CompositeMap, W> {
     @Override
     protected CompositeMap decode(ByteBuffer buffer, Codec<W> chain) {
         CompositeMap compositeMap = new CompositeMap();
-        int index = 0;
+        int index = 1;
         while (buffer.hasRemaining()) {
             try {
                 pushIndex(Integer.toString(index));
@@ -76,7 +74,6 @@ public class ArrayCodecFilter<W> extends CodecFilter<CompositeMap, W> {
                 popIndex();
             }
         }
-        CompositeMap element = compositeMap;
-        return element;
+        return compositeMap;
     }
 }

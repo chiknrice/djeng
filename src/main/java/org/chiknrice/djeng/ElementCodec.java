@@ -19,14 +19,12 @@ import org.chiknrice.djeng.fin.FinancialAttribute;
 
 import java.nio.ByteBuffer;
 
-import static org.chiknrice.djeng.CodecContext.*;
-
 /**
  * TODO: document this for elements (as opposed to composites)
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class ElementCodec<T> extends BaseCodec<T> {
+public abstract class ElementCodec<T> extends Codec<T> {
 
     /**
      * @param buffer  the ByteBuffer where the element would be encoded
@@ -37,12 +35,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
         byte[] rawValue = encodeValue(element);
         encodeRawValue(buffer, rawValue);
         if (isDebugEnabled()) {
-            String indexPath = getCurrentIndexPath();
-            int leftPad = 5 - (indexPath.contains(".") ? indexPath.indexOf(".") : indexPath.length());
-            int rightPad = 20 - leftPad - indexPath.length();
-            String hex = ByteUtil.encodeHex(rawValue);
-            String value = String.format("\"%s\"", element);
-            System.err.printf("E[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", pos, "", indexPath, "", value, hex);
+            recordSection(pos, element, ByteUtil.encodeHex(rawValue));
         }
     }
 
@@ -75,12 +68,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
         byte[] rawValue = decodeRawValue(buffer);
         T element = decodeValue(rawValue);
         if (isDebugEnabled()) {
-            String indexPath = getCurrentIndexPath();
-            int leftPad = 5 - (indexPath.contains(".") ? indexPath.indexOf(".") : indexPath.length());
-            int rightPad = 20 - leftPad - indexPath.length();
-            String hex = ByteUtil.encodeHex(rawValue);
-            String value = String.format("\"%s\"", element);
-            System.err.printf("D[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", pos, "", indexPath, "", value, hex);
+            recordSection(pos, element, ByteUtil.encodeHex(rawValue));
         }
         return element;
     }

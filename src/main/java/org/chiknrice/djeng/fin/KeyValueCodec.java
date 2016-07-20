@@ -22,9 +22,6 @@ import org.chiknrice.djeng.CompositeMap;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import static org.chiknrice.djeng.CodecContext.popIndex;
-import static org.chiknrice.djeng.CodecContext.pushIndex;
-
 /**
  * The {@code KeyValueCodec} is a {@code CompositeCodec} which encodes/decodes the index as the key together with the
  * value.
@@ -50,9 +47,8 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
             Object key = toKeyValue(keyString);
             Object value = entry.getValue();
 
-
             try {
-                pushIndex("key");
+                pushIndex(getKeyIndex());
                 keyCodec.encode(buffer, key);
             } finally {
                 popIndex();
@@ -64,6 +60,10 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
                 popIndex();
             }
         }
+    }
+
+    protected String getKeyIndex() {
+        return "key";
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
         Object key;
         while (buffer.hasRemaining()) {
             try {
-                pushIndex("key");
+                pushIndex(getKeyIndex());
                 key = keyCodec.decode(buffer);
             } finally {
                 popIndex();
@@ -114,6 +114,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
 
     /**
      * TODO
+     *
      * @param key TODO
      * @return TODO
      */
