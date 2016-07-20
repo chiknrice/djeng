@@ -31,17 +31,17 @@ import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_LENGTH;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
+public final class LengthPrefixCodecFilter<T> extends CodecFilter<T, T> {
 
-    private final LenCodec lenCodec;
+    private final LengthPrefixCodec lengthPrefixCodec;
 
-    public LengthPrefixCodec() {
-        lenCodec = new LenCodec();
+    public LengthPrefixCodecFilter() {
+        lengthPrefixCodec = new LengthPrefixCodec();
     }
 
     @Override
     public void encode(ByteBuffer buffer, T element, Codec<T> chain) {
-        int lengthPrefixBytesCount = lenCodec.getLengthPrefixBytesCount();
+        int lengthPrefixBytesCount = lengthPrefixCodec.getLengthPrefixBytesCount();
         buffer.mark();
         buffer.position(buffer.position() + lengthPrefixBytesCount);
         ByteBuffer dataBuffer = buffer.slice();
@@ -55,7 +55,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
         }
         try {
             pushIndex("len");
-            lenCodec.encode(buffer, valueLength);
+            lengthPrefixCodec.encode(buffer, valueLength);
         } finally {
             popIndex();
         }
@@ -67,7 +67,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
         int dataLength;
         try {
             pushIndex("len");
-            dataLength = lenCodec.decode(buffer);
+            dataLength = lengthPrefixCodec.decode(buffer);
         } finally {
             popIndex();
         }
@@ -84,12 +84,12 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
         return element;
     }
 
-    private class LenCodec extends ElementCodec<Integer> {
+    private class LengthPrefixCodec extends ElementCodec<Integer> {
 
         @Override
         protected byte[] encodeValue(Integer value) {
-            Integer lengthDigits = LengthPrefixCodec.this.getAttribute(LVAR_LENGTH);
-            Encoding encoding = LengthPrefixCodec.this.getAttribute(LVAR_ENCODING);
+            Integer lengthDigits = LengthPrefixCodecFilter.this.getAttribute(LVAR_LENGTH);
+            Encoding encoding = LengthPrefixCodecFilter.this.getAttribute(LVAR_ENCODING);
             String numericString = String.format("%0" + lengthDigits + "d", value);
             byte[] bytes;
             switch (encoding) {
@@ -110,7 +110,7 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
 
         @Override
         protected Integer decodeValue(byte[] rawValue) {
-            Encoding encoding = LengthPrefixCodec.this.getAttribute(LVAR_ENCODING);
+            Encoding encoding = LengthPrefixCodecFilter.this.getAttribute(LVAR_ENCODING);
             int dataLength;
             switch (encoding) {
                 case BCD:
@@ -137,8 +137,8 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
 
         private int getLengthPrefixBytesCount() {
             int lengthPrefixBytes;
-            Integer lengthDigits = LengthPrefixCodec.this.getAttribute(LVAR_LENGTH);
-            Encoding encoding = LengthPrefixCodec.this.getAttribute(LVAR_ENCODING);
+            Integer lengthDigits = LengthPrefixCodecFilter.this.getAttribute(LVAR_LENGTH);
+            Encoding encoding = LengthPrefixCodecFilter.this.getAttribute(LVAR_ENCODING);
             switch (encoding) {
                 case BCD:
                     lengthPrefixBytes = lengthDigits / 2 + lengthDigits % 2;

@@ -22,13 +22,13 @@ import java.util.Set;
 import static org.chiknrice.djeng.CodecContext.*;
 
 /**
- * The {@code ArrayCodec} defines the encoding and decoding of array elements.  It is implemented as a filter which just
- * delegates encoding and decoding of the elements to the filtered codec.  Elements can then be any type of value (even
- * composite).
+ * The {@code ArrayCodecFilter} defines the encoding and decoding of array elements.  It is implemented as a filter
+ * which just delegates encoding and decoding of the elements to the filtered codec.  Elements can then be any type of
+ * value (even composite).
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class ArrayCodec<W> extends CodecFilter<CompositeMap, W> {
+public class ArrayCodecFilter<W> extends CodecFilter<CompositeMap, W> {
 
     /**
      * TODO

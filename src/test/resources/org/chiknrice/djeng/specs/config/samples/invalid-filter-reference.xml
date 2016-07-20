@@ -2,7 +2,7 @@
 <config xmlns="http://www.chiknrice.org/djeng">
 
     <codecs>
-        <codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/>
+        <codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodecFilter"/>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
         <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
         <composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec">

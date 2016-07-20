@@ -33,6 +33,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      * @param element the element to be encoded
      */
     public final void encode(ByteBuffer buffer, T element) {
+        int pos = buffer.arrayOffset() + buffer.position();
         byte[] rawValue = encodeValue(element);
         encodeRawValue(buffer, rawValue);
         if (isDebugEnabled()) {
@@ -41,7 +42,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
             int rightPad = 20 - leftPad - indexPath.length();
             String hex = ByteUtil.encodeHex(rawValue);
             String value = String.format("\"%s\"", element);
-            System.err.printf("E|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", "", indexPath, "", value, hex);
+            System.err.printf("E[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", pos, "", indexPath, "", value, hex);
         }
     }
 
@@ -70,6 +71,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
      */
     @Override
     public T decode(ByteBuffer buffer) {
+        int pos = buffer.arrayOffset() + buffer.position();
         byte[] rawValue = decodeRawValue(buffer);
         T element = decodeValue(rawValue);
         if (isDebugEnabled()) {
@@ -78,7 +80,7 @@ public abstract class ElementCodec<T> extends BaseCodec<T> {
             int rightPad = 20 - leftPad - indexPath.length();
             String hex = ByteUtil.encodeHex(rawValue);
             String value = String.format("\"%s\"", element);
-            System.err.printf("D|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", "", indexPath, "", value, hex);
+            System.err.printf("D[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s\n", pos, "", indexPath, "", value, hex);
         }
         return element;
     }
