@@ -35,7 +35,7 @@
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodecFilter"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
             &lt;filter codec="f"/&gt;
         &lt;/element-codec&gt;
@@ -58,7 +58,7 @@
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
+        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodecFilter"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
         &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
         &lt;composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec"&gt;
@@ -81,8 +81,8 @@
 &lt;config xmlns="http://www.chiknrice.org/djeng"&gt;
 
     &lt;codecs&gt;
-        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodec"/&gt;
-        &lt;codec-filter id="array" class="org.chiknrice.djeng.ArrayCodec"/&gt;
+        &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodecFilter"/&gt;
+        &lt;codec-filter id="array" class="org.chiknrice.djeng.ArrayCodecFilter"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
             &lt;filter codec="lvar"/&gt;
         &lt;/element-codec&gt;
