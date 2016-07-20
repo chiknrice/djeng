@@ -16,12 +16,36 @@
 package org.chiknrice.djeng;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class CompositeCodec extends Codec<CompositeMap> {
+public class CompositeCodec extends Codec<CompositeMap> {
+
+    @Override
+    public final void encode(ByteBuffer buffer, CompositeMap element) {
+        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
+        encodeSubElements(buffer, element, subElementsCodecs);
+    }
+
+    protected void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs) {
+        Set<String> elementsLeft = new HashSet<>(compositeMap.keySet());
+        for (Map.Entry<String, Codec> codecEntry : subElementsCodecs.entrySet()) {
+            String index = codecEntry.getKey();
+            Object subElement = compositeMap.get(index);
+            if (subElement == null) {
+                throw new CodecException("Missing required element", index);
+            }
+            encodeSubElement(index, codecEntry.getValue(), buffer, subElement);
+            elementsLeft.remove(index);
+        }
+        if (elementsLeft.size() > 0) {
+            throw new RuntimeException("Unexpected sub elements: " + elementsLeft);
+        }
+    }
 
     protected final void encodeSubElement(String index, Codec codec, ByteBuffer buffer, Object element) {
         try {
@@ -36,6 +60,22 @@ public abstract class CompositeCodec extends Codec<CompositeMap> {
         }
     }
 
+    @Override
+    public final CompositeMap decode(ByteBuffer buffer) {
+        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
+        return decodeSubElements(buffer, subElementsCodecs);
+    }
+
+    protected CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs) {
+        CompositeMap compositeMap = new CompositeMap();
+        for (Map.Entry<String, Codec> subElementCodec : subElementsCodecs.entrySet()) {
+            String index = subElementCodec.getKey();
+            Object subElement = decodeSubElement(index, subElementCodec.getValue(), buffer);
+            compositeMap.put(index, subElement);
+        }
+        return compositeMap;
+    }
+
     protected final Object decodeSubElement(String index, Codec codec, ByteBuffer buffer) {
         try {
             pushIndex(index);
@@ -48,21 +88,5 @@ public abstract class CompositeCodec extends Codec<CompositeMap> {
             popIndex();
         }
     }
-
-    @Override
-    public final void encode(ByteBuffer buffer, CompositeMap element) {
-        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
-        encodeSubElements(buffer, element, subElementsCodecs);
-    }
-
-    protected abstract void encodeSubElements(ByteBuffer buffer, CompositeMap compositeMap, Map<String, Codec> subElementsCodecs);
-
-    @Override
-    public final CompositeMap decode(ByteBuffer buffer) {
-        Map<String, Codec> subElementsCodecs = getAttribute(CoreAttribute.SUB_ELEMENT_CODECS_MAP);
-        return decodeSubElements(buffer, subElementsCodecs);
-    }
-
-    protected abstract CompositeMap decodeSubElements(ByteBuffer buffer, Map<String, Codec> subElementsCodecs);
 
 }

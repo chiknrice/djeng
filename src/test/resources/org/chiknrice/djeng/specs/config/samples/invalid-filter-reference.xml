@@ -4,8 +4,8 @@
     <codecs>
         <codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodecFilter"/>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
-        <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
-        <composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec">
+        <composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/>
+        <composite-codec id="some-composite" class="org.chiknrice.djeng.CompositeCodec">
             <filter codec="string"/>
         </composite-codec>
     </codecs>

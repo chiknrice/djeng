@@ -7,8 +7,8 @@
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec">
             <filter codec="lvar"/>
         </element-codec>
-        <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
-        <composite-codec id="arr-lvar-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec">
+        <composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/>
+        <composite-codec id="arr-lvar-composite" class="org.chiknrice.djeng.CompositeCodec">
             <filter codec="lvar"/>
             <filter codec="array"/>
         </composite-codec>

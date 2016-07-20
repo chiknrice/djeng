@@ -3,7 +3,7 @@
 
     <codecs>
         <element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/>
-        <composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/>
+        <composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/>
     </codecs>
     <message-elements codec="message">
     </message-elements>
