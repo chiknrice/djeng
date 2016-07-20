@@ -21,13 +21,13 @@ public class Track2Codec extends StringCodec implements LengthPrefixDelegate<Str
     }
 
     @Override
-    protected String decodeValue(byte[] rawValue) {
+    protected String decodeValue(byte[] bytes) {
         Boolean packed = getAttribute(PACKED);
         if (packed) {
-            String packedTrack2 = ByteUtil.encodeHex(rawValue);
+            String packedTrack2 = ByteUtil.encodeHex(bytes);
             return packedTrack2.replace('D', '=');
         } else {
-            return super.decodeValue(rawValue);
+            return super.decodeValue(bytes);
         }
     }
 

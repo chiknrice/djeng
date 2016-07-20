@@ -44,8 +44,8 @@ public class StructDataCodec extends ElementCodec<Map<String, String>> {
     }
 
     @Override
-    protected Map<String, String> decodeValue(byte[] rawValue) {
-        String text = new String(rawValue, StandardCharsets.ISO_8859_1);
+    protected Map<String, String> decodeValue(byte[] bytes) {
+        String text = new String(bytes, StandardCharsets.ISO_8859_1);
         int start = 0;
         int end = 1;
         Map<String, String> map = new LinkedHashMap<>();

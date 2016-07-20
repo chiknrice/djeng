@@ -51,7 +51,7 @@ public class DateCodec extends ElementCodec<Date> {
     }
 
     @Override
-    protected byte[] decodeRawValue(ByteBuffer buffer) {
+    protected byte[] getDataBytes(ByteBuffer buffer) {
         String pattern = getAttribute(FinancialAttribute.PATTERN);
         Encoding encoding = getAttribute(FinancialAttribute.DATE_ENCODING);
         int length = pattern.length();
@@ -72,16 +72,16 @@ public class DateCodec extends ElementCodec<Date> {
     }
 
     @Override
-    protected Date decodeValue(byte[] rawValue) {
+    protected Date decodeValue(byte[] bytes) {
         String pattern = getAttribute(FinancialAttribute.PATTERN);
         Encoding encoding = getAttribute(FinancialAttribute.DATE_ENCODING);
         String dateString;
         switch (encoding) {
             case CHAR:
-                dateString = new String(rawValue, StandardCharsets.ISO_8859_1);
+                dateString = new String(bytes, StandardCharsets.ISO_8859_1);
                 break;
             case BCD:
-                dateString = ByteUtil.decodeBcd(rawValue);
+                dateString = ByteUtil.decodeBcd(bytes);
                 break;
             default:
                 throw new RuntimeException("Unsupported date encoding " + encoding);

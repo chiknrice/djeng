@@ -26,7 +26,7 @@ import java.util.TreeSet;
  * {@code java.nio.ByteBuffer} and decode the bytes from the {@code ByteBuffer} to a value {@code T}.  The {@code
  * ByteBuffer} acts as a window to the backing byte array rather than creating and copying byte arrays when processing
  * each message element.
- * <p/>
+ * <p>
  * A codec is also capable of having attributes which can drive how the encoding/decoding are performed.  Since codecs
  * can be used in multiple parts of a message, the attributes are specific to a context in where the codec is used.  A
  * codec's documentation should mention the set of attributes supported and which are required.  The documentation
@@ -89,13 +89,13 @@ public abstract class Codec<T> {
         indexStack.pop();
     }
 
-    protected void recordSection(int pos, Object value, String hex) {
+    void recordSection(int pos, int len, Object value, String hex) {
         SortedSet<Section> sections = SECTIONS.get();
         if (sections == null) {
             sections = new TreeSet<>();
             SECTIONS.set(sections);
         }
-        sections.add(new Section(pos, getCurrentIndexPath(), value, hex));
+        sections.add(new Section(pos, len, getCurrentIndexPath(), value, hex));
     }
 
     String getCurrentIndexPath() {
@@ -110,7 +110,7 @@ public abstract class Codec<T> {
         return indexPath.toString();
     }
 
-    protected boolean isDebugEnabled() {
+    boolean isDebugEnabled() {
         Boolean debugEnabled = DEBUG_ENABLED.get();
         if (debugEnabled == null) {
             throw new IllegalStateException(DEBUG_ENABLED + " not defined");
@@ -124,9 +124,17 @@ public abstract class Codec<T> {
 
     void dumpLogs() {
         // TODO is this what we want to do with the sections?
+        StringBuilder sb = new StringBuilder();
+        int expectedPos = 0;
         for (Section section : SECTIONS.get()) {
+            if (expectedPos != section.pos) {
+                throw new RuntimeException("Expecting pos " + expectedPos + ", got " + section.pos);
+            }
+            expectedPos += section.len;
             System.err.println(section);
+            sb.append(section.hex);
         }
+        System.err.println("Built from sections: " + sb.toString());
     }
 
     void clear() {
@@ -138,12 +146,14 @@ public abstract class Codec<T> {
     private static class Section implements Comparable<Section>{
 
         final int pos;
+        final int len;
         final String indexPath;
         final Object value;
         final String hex;
 
-        Section(int pos, String indexPath, Object value, String hex) {
+        Section(int pos, int len, String indexPath, Object value, String hex) {
             this.pos = pos;
+            this.len = len;
             this.indexPath = indexPath;
             this.value = value;
             this.hex = hex;
@@ -158,7 +168,7 @@ public abstract class Codec<T> {
         public String toString() {
             int leftPad = 5 - (indexPath.contains(".") ? indexPath.indexOf(".") : indexPath.length());
             int rightPad = 20 - leftPad - indexPath.length();
-            return String.format("[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s", pos, "", indexPath, "", value, hex);
+            return String.format("%5d[%5d]|%" + leftPad + "s%s%" + rightPad + "s%40s | 0x%-40s", pos, len, "", indexPath, "", value, hex);
         }
     }
 

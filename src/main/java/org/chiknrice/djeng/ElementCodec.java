@@ -27,20 +27,20 @@ import java.nio.ByteBuffer;
 public abstract class ElementCodec<T> extends Codec<T> {
 
     /**
-     * @param buffer  the ByteBuffer where the element would be encoded
-     * @param element the element to be encoded
+     * {@inheritDoc}
      */
+    @Override
     public final void encode(ByteBuffer buffer, T element) {
         int pos = buffer.arrayOffset() + buffer.position();
-        byte[] rawValue = encodeValue(element);
-        encodeRawValue(buffer, rawValue);
+        byte[] bytes = encodeValue(element);
+        putDataBytes(buffer, bytes);
         if (isDebugEnabled()) {
-            recordSection(pos, element, ByteUtil.encodeHex(rawValue));
+            recordSection(pos, bytes.length, element, ByteUtil.encodeHex(bytes));
         }
     }
 
     /**
-     * Encode the value to raw value.
+     * Encodes {@code T} to bytes.
      *
      * @param value the actual value to be encoded
      * @return TODO
@@ -48,46 +48,45 @@ public abstract class ElementCodec<T> extends Codec<T> {
     protected abstract byte[] encodeValue(T value);
 
     /**
-     * Puts the bytes to the buffer.
+     * Puts the data bytes to the buffer.
      *
      * @param buffer the ByteBuffer to which the bytes would be encoded
      * @param bytes  TODO
      */
-    protected void encodeRawValue(ByteBuffer buffer, byte[] bytes) {
+    protected void putDataBytes(ByteBuffer buffer, byte[] bytes) {
         buffer.put(bytes);
     }
 
 
     /**
-     * @param buffer TODO
-     * @return TODO
+     * {@inheritDoc}
      */
     @Override
     public T decode(ByteBuffer buffer) {
         int pos = buffer.arrayOffset() + buffer.position();
-        byte[] rawValue = decodeRawValue(buffer);
-        T element = decodeValue(rawValue);
+        byte[] bytes = getDataBytes(buffer);
+        T element = decodeValue(bytes);
         if (isDebugEnabled()) {
-            recordSection(pos, element, ByteUtil.encodeHex(rawValue));
+            recordSection(pos, bytes.length, element, ByteUtil.encodeHex(bytes));
         }
         return element;
     }
 
     /**
-     * Decode the raw value to the value.
+     * Decodes the bytes to {@code T}.
      *
-     * @param rawValue TODO
+     * @param bytes TODO
      * @return TODO
      */
-    protected abstract T decodeValue(byte[] rawValue);
+    protected abstract T decodeValue(byte[] bytes);
 
     /**
-     * Decode the raw value from the buffer.
+     * Gets the data bytes from the buffer.
      *
      * @param buffer TODO
      * @return TODO
      */
-    protected byte[] decodeRawValue(ByteBuffer buffer) {
+    protected byte[] getDataBytes(ByteBuffer buffer) {
         Integer length = getAttribute(FinancialAttribute.LENGTH);
         byte[] bytes;
         if (length != null) {

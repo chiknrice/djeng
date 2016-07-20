@@ -30,8 +30,8 @@ public class StringCodec extends ElementCodec<String> {
     }
 
     @Override
-    protected String decodeValue(byte[] rawValue) {
-        return new String(rawValue, StandardCharsets.ISO_8859_1);
+    protected String decodeValue(byte[] bytes) {
+        return new String(bytes, StandardCharsets.ISO_8859_1);
     }
 
 }

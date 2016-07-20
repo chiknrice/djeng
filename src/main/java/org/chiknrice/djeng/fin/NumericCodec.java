@@ -88,23 +88,23 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
     }
 
     @Override
-    protected Long decodeValue(byte[] rawValue) {
+    protected Long decodeValue(byte[] bytes) {
         Encoding encoding = getAttribute(FinancialAttribute.FIXED_NUMERIC_ENCODING);
         String stringValue;
         if (encoding != null) {
             switch (encoding) {
                 case CHAR:
                     // for now we make sure to trim all spaces if spaces are the padding
-                    stringValue = new String(rawValue, StandardCharsets.ISO_8859_1).trim();
+                    stringValue = new String(bytes, StandardCharsets.ISO_8859_1).trim();
                     break;
                 case BCD:
-                    stringValue = ByteUtil.decodeBcd(rawValue);
+                    stringValue = ByteUtil.decodeBcd(bytes);
                     break;
                 case C_BCD:
-                    stringValue = ByteUtil.decodeCBcd(rawValue);
+                    stringValue = ByteUtil.decodeCBcd(bytes);
                     break;
                 case CC_BCD:
-                    stringValue = ByteUtil.decodeCcBcd(rawValue);
+                    stringValue = ByteUtil.decodeCcBcd(bytes);
                     break;
                 default:
                     throw new RuntimeException("Unsupported fixed length numeric encoding " + encoding);
@@ -114,13 +114,13 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
             switch (encoding) {
                 case CHAR:
                     // for now we make sure to trim all spaces if spaces are the padding
-                    stringValue = new String(rawValue, StandardCharsets.ISO_8859_1).trim();
+                    stringValue = new String(bytes, StandardCharsets.ISO_8859_1).trim();
                     break;
                 case BCD:
-                    stringValue = ByteUtil.decodeBcd(rawValue);
+                    stringValue = ByteUtil.decodeBcd(bytes);
                     break;
                 case BCD_F:
-                    stringValue = ByteUtil.decodeBcdF(rawValue);
+                    stringValue = ByteUtil.decodeBcdF(bytes);
                     break;
                 default:
                     throw new RuntimeException("Unsupported var length numeric encoding " + encoding);
@@ -130,7 +130,7 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
     }
 
     @Override
-    protected byte[] decodeRawValue(ByteBuffer buffer) {
+    protected byte[] getDataBytes(ByteBuffer buffer) {
         Integer length = getAttribute(FinancialAttribute.LENGTH);
         byte[] bytes;
         if (length != null) {

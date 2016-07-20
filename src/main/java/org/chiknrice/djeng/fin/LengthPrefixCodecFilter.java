@@ -107,18 +107,18 @@ public final class LengthPrefixCodecFilter<T> extends CodecFilter<T, T> {
         }
 
         @Override
-        protected Integer decodeValue(byte[] rawValue) {
+        protected Integer decodeValue(byte[] bytes) {
             Encoding encoding = LengthPrefixCodecFilter.this.getAttribute(LVAR_ENCODING);
             int dataLength;
             switch (encoding) {
                 case BCD:
-                    dataLength = Integer.parseInt(ByteUtil.decodeBcd(rawValue));
+                    dataLength = Integer.parseInt(ByteUtil.decodeBcd(bytes));
                     break;
                 case CHAR:
-                    dataLength = Integer.parseInt(new String(rawValue, StandardCharsets.ISO_8859_1));
+                    dataLength = Integer.parseInt(new String(bytes, StandardCharsets.ISO_8859_1));
                     break;
                 case BINARY:
-                    dataLength = ByteUtil.decodeBinaryInt(rawValue);
+                    dataLength = ByteUtil.decodeBinaryInt(bytes);
                     break;
                 default:
                     throw new RuntimeException(String.format("Unsupported length prefix encoding %s", encoding));
@@ -127,7 +127,7 @@ public final class LengthPrefixCodecFilter<T> extends CodecFilter<T, T> {
         }
 
         @Override
-        protected byte[] decodeRawValue(ByteBuffer buffer) {
+        protected byte[] getDataBytes(ByteBuffer buffer) {
             byte[] lengthPrefixBytes = new byte[getLengthPrefixBytesCount()];
             buffer.get(lengthPrefixBytes);
             return lengthPrefixBytes;

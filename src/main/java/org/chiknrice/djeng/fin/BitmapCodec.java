@@ -58,13 +58,13 @@ public class BitmapCodec extends ElementCodec<Bitmap> {
     }
 
     @Override
-    protected Bitmap decodeValue(byte[] rawValue) {
+    protected Bitmap decodeValue(byte[] bytes) {
         Bitmap.Encoding encoding = getAttribute(FinancialAttribute.BITMAP_ENCODING);
         Bitmap bitmap = new Bitmap();
         for (int bit = 1; bit < 129; bit++) {
             int byteIndex = (bit - 1) / 8;
             // if set
-            if (byteIndex < rawValue.length && (rawValue[byteIndex] & (128 >> ((bit - 1) % 8))) > 0) {
+            if (byteIndex < bytes.length && (bytes[byteIndex] & (128 >> ((bit - 1) % 8))) > 0) {
                 switch (encoding) {
                     case HEX:
                     case BINARY:
@@ -85,7 +85,7 @@ public class BitmapCodec extends ElementCodec<Bitmap> {
     }
 
     @Override
-    protected byte[] decodeRawValue(ByteBuffer buffer) {
+    protected byte[] getDataBytes(ByteBuffer buffer) {
         Bitmap.Encoding encoding = getAttribute(FinancialAttribute.BITMAP_ENCODING);
         byte[] bytes;
         switch (encoding) {

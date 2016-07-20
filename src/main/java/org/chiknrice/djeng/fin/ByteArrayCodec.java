@@ -27,7 +27,7 @@ public class ByteArrayCodec extends ElementCodec<byte[]> {
     }
 
     @Override
-    protected byte[] decodeValue(byte[] rawValue) {
-        return rawValue;
+    protected byte[] decodeValue(byte[] bytes) {
+        return bytes;
     }
 }
