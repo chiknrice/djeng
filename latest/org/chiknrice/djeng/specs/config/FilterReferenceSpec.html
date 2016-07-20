@@ -39,7 +39,7 @@
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
             &lt;filter codec="f"/&gt;
         &lt;/element-codec&gt;
-        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/&gt;
     &lt;/codecs&gt;
     &lt;message-elements codec="message"&gt;
         &lt;element index="1" codec="string"/&gt;
@@ -60,8 +60,8 @@
     &lt;codecs&gt;
         &lt;codec-filter id="lvar" class="org.chiknrice.djeng.fin.LengthPrefixCodecFilter"/&gt;
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"/&gt;
-        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
-        &lt;composite-codec id="some-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec"&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/&gt;
+        &lt;composite-codec id="some-composite" class="org.chiknrice.djeng.CompositeCodec"&gt;
             &lt;filter codec="string"/&gt;
         &lt;/composite-codec&gt;
     &lt;/codecs&gt;
@@ -86,8 +86,8 @@
         &lt;element-codec id="string" class="org.chiknrice.djeng.fin.StringCodec"&gt;
             &lt;filter codec="lvar"/&gt;
         &lt;/element-codec&gt;
-        &lt;composite-codec id="message" class="org.chiknrice.djeng.fin.PlainCompositeCodec"/&gt;
-        &lt;composite-codec id="arr-lvar-composite" class="org.chiknrice.djeng.fin.PlainCompositeCodec"&gt;
+        &lt;composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/&gt;
+        &lt;composite-codec id="arr-lvar-composite" class="org.chiknrice.djeng.CompositeCodec"&gt;
             &lt;filter codec="lvar"/&gt;
             &lt;filter codec="array"/&gt;
         &lt;/composite-codec&gt;
