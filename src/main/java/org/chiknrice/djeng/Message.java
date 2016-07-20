@@ -31,13 +31,13 @@ import static java.lang.String.format;
  * using a tree-like structure similar to JSON, XML, and YAML.  Similar to these hierarchical models, this class also
  * represents message elements using a collection of sub-elements which can either be a value element (leaf) or a
  * composite-element (branch).  Each branch/composite-element is also a collection of sub-elements.
- * <p>
+ * <p/>
  * The collection of sub-elements is implemented using a {@link CompositeMap} which is a {@code HashMap} that restricts
  * keys and values to {@code String} and {@code Object}.  The key/index is the unique identifier of a sub-element within
  * that {@code CompositeMap}. This would usually correspond to the index of the element in the configuration xml but can
  * be set to a different value depending on the {@code Codec} implementation.  Valid indexes are restricted by the
  * configuration schema to alpha-numeric characters and the hyphen (-).
- * <p>
+ * <p/>
  * The message elements can be referenced when getting, setting or removing their value using an index path.  The index
  * path is similar to XPATH which is a made up of element indexes separated by a dot (.).  Similar to any path pattern
  * it a way to navigate to the hierarchical structure to reach a sub-element.  An example index path would be h1.a.b-1
@@ -69,49 +69,6 @@ public final class Message {
     }
 
     /**
-     * TODO
-     *
-     * @param indexPath TODO
-     * @param raw       TODO
-     * @param <T>       TODO
-     * @return TODO
-     */
-    private <T> T getElement(String indexPath, boolean raw) {
-        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
-        if (!m.matches()) {
-            throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
-        } else {
-            try {
-                rwLock.readLock().lock();
-                String[] indexes = indexPath.split("\\.");
-
-                if (indexes.length > 1) {
-                    CompositeMap currentCompositeMap = elements;
-                    for (int i = 0; i < indexes.length; i++) {
-                        if (currentCompositeMap != null) {
-                            if (i == indexes.length - 1) {
-                                return (T) currentCompositeMap.get(indexes[i]);
-                            } else {
-                                Object subElement = currentCompositeMap.get(indexes[i]);
-                                if (subElement instanceof CompositeMap) {
-                                    currentCompositeMap = (CompositeMap) subElement;
-                                } else {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    return null;
-                } else {
-                    return (T) elements.get(indexes[0]);
-                }
-            } finally {
-                rwLock.readLock().unlock();
-            }
-        }
-    }
-
-    /**
      * Sets or removes the value of a msg element at the position expressed by indexPath.  Null value would remove the
      * element as well as empty composite elements resulting in the operation.
      *
@@ -126,7 +83,7 @@ public final class Message {
         } else {
             try {
                 rwLock.writeLock().lock();
-                //clearRawState(); TODO
+                //clearRawState(); TODO clear raw state when implemented
                 String[] indexes = indexPath.split("\\.");
 
                 Stack<CompositeMap> compositeMapStack = new Stack<>();
@@ -231,18 +188,6 @@ public final class Message {
     public String toString() {
         try {
             rwLock.readLock().lock();
-//            StringBuilder sb = new StringBuilder();
-//            for (Entry<Section, String> entry : sections.entrySet()) {
-//                Section section = entry.getKey();
-//                sb.append(String.format("%4d -> %4d %15s %-50s\t%s\n", section.nano, 0/*section.limit*/, section.path, section.value, "0x" + entry.getValue()));
-//                if (!section.path.endsWith("?")) {
-//                    Object val = getElement(section.path);
-//                    if (!section.value.equals(val)) {
-//                        throw new RuntimeException("Not equal: " + section.path);
-//                    }
-//                }
-//            }
-//            return sb.toString();
             return "TODO Message.toString()";
         } finally {
             rwLock.readLock().unlock();
@@ -271,25 +216,46 @@ public final class Message {
      *
      * @param indexPath TODO
      * @param <T>       TODO
-     * @return the value or {@code null} if the element doesn't exist or is a composite element
+     * @return the value or {@code null} if the element doesn't exist or if it's a composite element
      * @throws IllegalArgumentException if the indexPath pattern is not valid
      */
     public <T> T getElement(String indexPath) {
-        return getElement(indexPath, false);
-    }
+        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
+        if (!m.matches()) {
+            throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
+        } else {
+            try {
+                rwLock.readLock().lock();
+                String[] indexes = indexPath.split("\\.");
 
-    /**
-     * Same as {@link #getElement} except that the value is returned as raw hex value. This would include any data
-     * related to the element like length prefix bytes.
-     *
-     * @param indexPath TODO
-     * @return TODO
-     * @throws IllegalStateException if the underlying byte[] that represents the message doesn't exist.  This could be
-     *                               due to the message not being encoded yet or if the decoded message was modified via
-     *                               set/remove element methods.
-     */
-    public byte[] getRawElement(String indexPath) {
-        return getElement(indexPath, true);
+                CompositeMap currentCompositeMap = elements;
+                for (int i = 0; i < indexes.length; i++) {
+                    if (currentCompositeMap != null) {
+                        Object element = currentCompositeMap.get(indexes[i]);
+                        boolean isLeaf = i == indexes.length - 1;
+                        if (element instanceof CompositeMap) {
+                            if (isLeaf) {
+                                // Don't return a composite
+                                return null;
+                            } else {
+                                // If there's more indexes on path then continue
+                                currentCompositeMap = (CompositeMap) element;
+                            }
+                        } else if (isLeaf) {
+                            // Return the element
+                            //noinspection unchecked
+                            return (T) element;
+                        } else {
+                            // Else return nothing
+                            break;
+                        }
+                    }
+                }
+                return null;
+            } finally {
+                rwLock.readLock().unlock();
+            }
+        }
     }
 
     /**
