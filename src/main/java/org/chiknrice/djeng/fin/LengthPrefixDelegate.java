@@ -18,9 +18,9 @@ package org.chiknrice.djeng.fin;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public interface LengthPrefixDelegate<T> {
+public interface LengthPrefixDelegate {
 
-    int determineLengthPrefixValue(T value);
+    int determineLengthPrefixValue(Object value);
 
     int determineDataBytesCount(int lengthPrefix);
 

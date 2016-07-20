@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDelegate<Long>{
+public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDelegate {
 
     @Override
     protected byte[] encodeValue(Long value) {
@@ -159,7 +159,7 @@ public class NumericCodec extends ElementCodec<Long> implements LengthPrefixDele
     }
 
     @Override
-    public int determineLengthPrefixValue(Long value) {
+    public int determineLengthPrefixValue(Object value) {
         return value.toString().length();
     }
 

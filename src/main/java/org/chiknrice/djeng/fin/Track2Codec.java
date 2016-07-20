@@ -2,12 +2,12 @@ package org.chiknrice.djeng.fin;
 
 import org.chiknrice.djeng.ByteUtil;
 
-import static org.chiknrice.djeng.fin.FinancialAttribute.*;
+import static org.chiknrice.djeng.fin.FinancialAttribute.PACKED;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class Track2Codec extends StringCodec implements LengthPrefixDelegate<String> {
+public class Track2Codec extends StringCodec implements LengthPrefixDelegate {
 
     @Override
     protected byte[] encodeValue(String value) {
@@ -32,8 +32,8 @@ public class Track2Codec extends StringCodec implements LengthPrefixDelegate<Str
     }
 
     @Override
-    public int determineLengthPrefixValue(String value) {
-        return value.length();
+    public int determineLengthPrefixValue(Object value) {
+        return value.toString().length();
     }
 
     @Override
