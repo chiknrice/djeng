@@ -18,10 +18,13 @@ package org.chiknrice.djeng.fin;
 import org.chiknrice.djeng.ByteUtil;
 import org.chiknrice.djeng.Codec;
 import org.chiknrice.djeng.CodecFilter;
+import org.chiknrice.djeng.ElementCodec;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import static org.chiknrice.djeng.CodecContext.popIndex;
+import static org.chiknrice.djeng.CodecContext.pushIndex;
 import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_ENCODING;
 import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_LENGTH;
 
@@ -30,56 +33,44 @@ import static org.chiknrice.djeng.fin.FinancialAttribute.LVAR_LENGTH;
  */
 public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
 
+    private final LenCodec lenCodec;
+
+    public LengthPrefixCodec() {
+        lenCodec = new LenCodec();
+    }
+
     @Override
     public void encode(ByteBuffer buffer, T element, Codec<T> chain) {
-        int lengthPrefixBytesCount = getLengthPrefixBytesCount();
+        int lengthPrefixBytesCount = lenCodec.getLengthPrefixBytesCount();
         buffer.mark();
         buffer.position(buffer.position() + lengthPrefixBytesCount);
         ByteBuffer dataBuffer = buffer.slice();
         chain.encode(dataBuffer, element);
         buffer.reset();
         int pos = buffer.arrayOffset() + buffer.position();
-        int limit = pos + lengthPrefixBytesCount;
         int valueLength = dataBuffer.position();
         LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
         if (delegate != null) {
             valueLength = delegate.determineLengthPrefixValue(element);
         }
-        encodeLengthPrefix(buffer, valueLength);
-        //element.addSection(pos, limit, valueLength);
-        buffer.position(buffer.position() + dataBuffer.position());
-    }
-
-    /**
-     * Encodes the length prefix of a var length data element
-     *
-     * @param buffer
-     * @param dataLength
-     */
-    private void encodeLengthPrefix(ByteBuffer buffer, int dataLength) {
-        Integer lengthDigits = getAttribute(LVAR_LENGTH);
-        Encoding encoding = getAttribute(LVAR_ENCODING);
-        String numericString = String.format("%0" + lengthDigits + "d", dataLength);
-        switch (encoding) {
-            case BCD:
-                buffer.put(ByteUtil.encodeBcd(numericString));
-                break;
-            case CHAR:
-                buffer.put(numericString.getBytes(StandardCharsets.ISO_8859_1));
-                break;
-            case BINARY:
-                buffer.put(ByteUtil.encodeBinary(dataLength, lengthDigits));
-                break;
-            default:
-                throw new RuntimeException(String.format("Unsupported length prefix encoding: %s", encoding));
+        try {
+            pushIndex("len");
+            lenCodec.encode(buffer, valueLength);
+        } finally {
+            popIndex();
         }
+        buffer.position(buffer.position() + dataBuffer.position());
     }
 
     @Override
     public T decode(ByteBuffer buffer, Codec<T> chain) {
-        int pos = buffer.arrayOffset() + buffer.position();
-        int dataLength = decodeLengthPrefix(buffer);
-        int limit = buffer.arrayOffset() + buffer.position();
+        int dataLength;
+        try {
+            pushIndex("len");
+            dataLength = lenCodec.decode(buffer);
+        } finally {
+            popIndex();
+        }
         int dataByteCount = dataLength;
         LengthPrefixDelegate delegate = getDelegate(chain, LengthPrefixDelegate.class);
         if (delegate != null) {
@@ -90,53 +81,77 @@ public final class LengthPrefixCodec<T> extends CodecFilter<T, T> {
         }
         ByteBuffer dataBuffer = ByteUtil.consumeToBuffer(buffer, dataByteCount);
         T element = chain.decode(dataBuffer);
-        //element.addSection(pos, limit, dataLength);
         return element;
     }
 
-    /**
-     * Decodes the length prefix of a var length data element
-     *
-     * @param buffer
-     * @return the length prefix value
-     */
-    private int decodeLengthPrefix(ByteBuffer buffer) {
-        Encoding encoding = getAttribute(LVAR_ENCODING);
-        byte[] lengthPrefixBytes = new byte[getLengthPrefixBytesCount()];
-        buffer.get(lengthPrefixBytes);
-        int dataLength;
-        switch (encoding) {
-            case BCD:
-                dataLength = Integer.parseInt(ByteUtil.decodeBcd(lengthPrefixBytes));
-                break;
-            case CHAR:
-                dataLength = Integer.parseInt(new String(lengthPrefixBytes, StandardCharsets.ISO_8859_1));
-                break;
-            case BINARY:
-                dataLength = ByteUtil.decodeBinaryInt(lengthPrefixBytes);
-                break;
-            default:
-                throw new RuntimeException(String.format("Unsupported length prefix encoding %s", encoding));
-        }
-        return dataLength;
-    }
+    private class LenCodec extends ElementCodec<Integer> {
 
-    private int getLengthPrefixBytesCount() {
-        int lengthPrefixBytes;
-        Integer lengthDigits = getAttribute(LVAR_LENGTH);
-        Encoding encoding = getAttribute(LVAR_ENCODING);
-        switch (encoding) {
-            case BCD:
-                lengthPrefixBytes = lengthDigits / 2 + lengthDigits % 2;
-                break;
-            case CHAR:
-            case BINARY:
-                lengthPrefixBytes = lengthDigits;
-                break;
-            default:
-                throw new RuntimeException(String.format("Unsupported length prefix encoding: %s", encoding));
+        @Override
+        protected byte[] encodeValue(Integer value) {
+            Integer lengthDigits = LengthPrefixCodec.this.getAttribute(LVAR_LENGTH);
+            Encoding encoding = LengthPrefixCodec.this.getAttribute(LVAR_ENCODING);
+            String numericString = String.format("%0" + lengthDigits + "d", value);
+            byte[] bytes;
+            switch (encoding) {
+                case BCD:
+                    bytes = ByteUtil.encodeBcd(numericString);
+                    break;
+                case CHAR:
+                    bytes = numericString.getBytes(StandardCharsets.ISO_8859_1);
+                    break;
+                case BINARY:
+                    bytes = ByteUtil.encodeBinary(value, lengthDigits);
+                    break;
+                default:
+                    throw new RuntimeException(String.format("Unsupported length prefix encoding: %s", encoding));
+            }
+            return bytes;
         }
-        return lengthPrefixBytes;
+
+        @Override
+        protected Integer decodeValue(byte[] rawValue) {
+            Encoding encoding = LengthPrefixCodec.this.getAttribute(LVAR_ENCODING);
+            int dataLength;
+            switch (encoding) {
+                case BCD:
+                    dataLength = Integer.parseInt(ByteUtil.decodeBcd(rawValue));
+                    break;
+                case CHAR:
+                    dataLength = Integer.parseInt(new String(rawValue, StandardCharsets.ISO_8859_1));
+                    break;
+                case BINARY:
+                    dataLength = ByteUtil.decodeBinaryInt(rawValue);
+                    break;
+                default:
+                    throw new RuntimeException(String.format("Unsupported length prefix encoding %s", encoding));
+            }
+            return dataLength;
+        }
+
+        @Override
+        protected byte[] decodeRawValue(ByteBuffer buffer) {
+            byte[] lengthPrefixBytes = new byte[getLengthPrefixBytesCount()];
+            buffer.get(lengthPrefixBytes);
+            return lengthPrefixBytes;
+        }
+
+        private int getLengthPrefixBytesCount() {
+            int lengthPrefixBytes;
+            Integer lengthDigits = LengthPrefixCodec.this.getAttribute(LVAR_LENGTH);
+            Encoding encoding = LengthPrefixCodec.this.getAttribute(LVAR_ENCODING);
+            switch (encoding) {
+                case BCD:
+                    lengthPrefixBytes = lengthDigits / 2 + lengthDigits % 2;
+                    break;
+                case CHAR:
+                case BINARY:
+                    lengthPrefixBytes = lengthDigits;
+                    break;
+                default:
+                    throw new RuntimeException(String.format("Unsupported length prefix encoding: %s", encoding));
+            }
+            return lengthPrefixBytes;
+        }
     }
 
 }
