@@ -22,25 +22,25 @@ import org.chiknrice.djeng.Attribute;
  */
 public enum FinancialAttribute implements Attribute {
 
-    LENGTH("length"),
-    LVAR_LENGTH("lvar-length"),
-    LVAR_ENCODING("lvar-encoding"),
-    BITMAP_ENCODING("bitmap-encoding"),
-    DATE_ENCODING("date-encoding"),
-    FIXED_NUMERIC_ENCODING("fixed-numeric-encoding"),
-    VAR_NUMERIC_ENCODING("var-numeric-encoding"),
-    PATTERN("pattern"),
-    TIMEZONE("timezone"),
-    PADDING("padding"),
-    STRIP_PADDING("strip-padding"),
-    LEFT_JUSTIFIED("left-justified"),
-    PACKED("packed");
+    LENGTH,
+    LVAR_LENGTH,
+    LVAR_ENCODING,
+    BITMAP_ENCODING,
+    DATE_ENCODING,
+    FIXED_NUMERIC_ENCODING,
+    VAR_NUMERIC_ENCODING,
+    PATTERN,
+    TIMEZONE,
+    PADDING,
+    STRIP_PADDING,
+    LEFT_JUSTIFIED,
+    PACKED;
 
     private final String name;
     private final String nameSpace;
 
-    FinancialAttribute(String name) {
-        this.name = name;
+    FinancialAttribute() {
+        this.name = this.toString().replace('_', '-').toLowerCase();
         this.nameSpace = "http://www.chiknrice.org/djeng/financial";
     }
 
