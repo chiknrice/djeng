@@ -25,16 +25,17 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDelegate {
+public class NumericCodec extends ElementCodec<Object> implements LengthPrefixDelegate {
 
     enum NumericType {
         INTEGER,
         LONG,
-        BIG_INTEGER
+        BIG_INTEGER,
+        STRING
     }
 
     @Override
-    protected byte[] encodeValue(Number value) {
+    protected byte[] encodeValue(Object value) {
         Integer length = getAttribute(FinancialAttribute.LENGTH);
         if (length != null) {
             return encodeFixedLength(length, value);
@@ -51,7 +52,7 @@ public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDe
      * @param value
      * @return
      */
-    private byte[] encodeFixedLength(int length, Number value) {
+    private byte[] encodeFixedLength(int length, Object value) {
         Encoding encoding = getAttribute(FinancialAttribute.FIXED_NUMERIC_ENCODING);
         if (Encoding.CC_BCD.equals(encoding)) {
             // additional 2 characters needs to be allotted for hex of C/D
@@ -62,12 +63,12 @@ public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDe
         switch (numericType) {
             case INTEGER:
                 if (value instanceof Integer) {
-                    stringValue = String.format("%0" + length + "d", value.intValue());
+                    stringValue = String.format("%0" + length + "d", ((Integer) value).intValue());
                     break;
                 }
             case LONG:
                 if (value instanceof Long) {
-                    stringValue = String.format("%0" + length + "d", value.longValue());
+                    stringValue = String.format("%0" + length + "d", ((Long) value).longValue());
                     break;
                 }
             case BIG_INTEGER:
@@ -77,6 +78,9 @@ public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDe
                     throw new UnsupportedOperationException("BigInteger not yet supported");
                     //break;
                 }
+            case STRING:
+                stringValue = value.toString();
+                break;
             default:
                 throw new RuntimeException("Unexpected numeric type " + value.getClass().getName());
         }
@@ -101,7 +105,7 @@ public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDe
         return bytes;
     }
 
-    private byte[] encodeVarLength(Number value) {
+    private byte[] encodeVarLength(Object value) {
         Encoding encoding = getAttribute(FinancialAttribute.VAR_NUMERIC_ENCODING);
         byte[] bytes;
         String stringValue = value.toString();
@@ -122,7 +126,7 @@ public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDe
     }
 
     @Override
-    protected Number decodeValue(byte[] bytes) {
+    protected Object decodeValue(byte[] bytes) {
         Encoding encoding = getAttribute(FinancialAttribute.FIXED_NUMERIC_ENCODING);
         String stringValue;
         if (encoding != null) {
@@ -141,6 +145,8 @@ public class NumericCodec extends ElementCodec<Number> implements LengthPrefixDe
                 return Integer.valueOf(stringValue);
             case LONG:
                 return Long.valueOf(stringValue);
+            case STRING:
+                return stringValue;
             case BIG_INTEGER:
             default:
                 throw new UnsupportedOperationException(numericType + " not yet supported");

@@ -90,6 +90,7 @@
             <enumeration value="INTEGER"/>
             <enumeration value="LONG"/>
             <enumeration value="BIG_INTEGER"/>
+            <enumeration value="STRING"/>
         </restriction>
     </simpleType>
 
