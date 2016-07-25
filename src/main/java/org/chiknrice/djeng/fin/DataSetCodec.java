@@ -18,7 +18,7 @@ package org.chiknrice.djeng.fin;
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class DataSetCodec extends KeyValueCodec<Long> {
+public class DataSetCodec extends KeyValueCodec<Integer> {
 
     @Override
     protected String getKeyIndex() {
@@ -26,12 +26,12 @@ public class DataSetCodec extends KeyValueCodec<Long> {
     }
 
     @Override
-    protected Long toKeyValue(String stringKey) {
-        return Long.valueOf(stringKey);
+    protected Integer toKeyValue(String stringKey) {
+        return Integer.valueOf(stringKey);
     }
 
     @Override
-    protected String toKeyString(Long key) {
+    protected String toKeyString(Integer key) {
         return key.toString();
     }
 

@@ -34,7 +34,8 @@ public enum FinancialAttribute implements Attribute {
     PADDING,
     STRIP_PADDING,
     LEFT_JUSTIFIED,
-    PACKED;
+    PACKED,
+    NUMERIC_TYPE;
 
     private final String name;
     private final String nameSpace;
@@ -67,6 +68,8 @@ public enum FinancialAttribute implements Attribute {
             case FIXED_NUMERIC_ENCODING:
             case VAR_NUMERIC_ENCODING:
                 return Encoding.valueOf(value);
+            case NUMERIC_TYPE:
+                return NumericCodec.NumericType.valueOf(value);
             case PATTERN:
             case TIMEZONE:
             case PADDING:

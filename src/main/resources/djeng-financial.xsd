@@ -84,6 +84,15 @@
         </restriction>
     </simpleType>
 
+    <!-- Simple type restricting allowed numeric types for NumericCodec -->
+    <simpleType name="numeric-type">
+        <restriction base="token">
+            <enumeration value="INTEGER"/>
+            <enumeration value="LONG"/>
+            <enumeration value="BIG_INTEGER"/>
+        </restriction>
+    </simpleType>
+
     <attribute name="length" type="positiveInteger"/>
     <attribute name="lvar-length" type="positiveInteger"/>
     <attribute name="lvar-encoding" type="tns:length-prefix-encoding"/>
@@ -91,6 +100,7 @@
     <attribute name="fixed-numeric-encoding" type="tns:fixed-length-numeric-data-encoding"/>
     <attribute name="var-numeric-encoding" type="tns:var-length-numeric-data-encoding"/>
     <attribute name="bitmap-encoding" type="tns:bitmap-encoding"/>
+    <attribute name="numeric-type" type="tns:numeric-type"/>
     <attribute name="pattern" type="tns:date-pattern-type"/>
     <attribute name="timezone" type="d:non-empty-token"/>
     <attribute name="padding" type="tns:hexByte"/>
