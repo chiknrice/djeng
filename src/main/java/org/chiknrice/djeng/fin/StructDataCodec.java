@@ -15,59 +15,32 @@
  */
 package org.chiknrice.djeng.fin;
 
-import org.chiknrice.djeng.ElementCodec;
-
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public class StructDataCodec extends ElementCodec<Map<String, String>> {
-
+public class StructDataCodec extends StringCodec {
     @Override
-    protected byte[] encodeValue(Map<String, String> value) {
-        Map<String, String> map = value;
+    protected void putDataBytes(ByteBuffer buffer, byte[] bytes) {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> kvPair : map.entrySet()) {
-            String length = String.valueOf(kvPair.getKey().length());
-            sb.append(length.length());
-            sb.append(length);
-            sb.append(kvPair.getKey());
-            length = String.valueOf(kvPair.getValue().length());
-            sb.append(length.length());
-            sb.append(length);
-            sb.append(kvPair.getValue());
-        }
-        return sb.toString().getBytes(StandardCharsets.ISO_8859_1);
+        String length = String.valueOf(bytes.length);
+        sb.append(length.length());
+        sb.append(length);
+        buffer.put(sb.toString().getBytes(StandardCharsets.ISO_8859_1));
+        buffer.put(bytes);
     }
 
     @Override
-    protected Map<String, String> decodeValue(byte[] bytes) {
-        String text = new String(bytes, StandardCharsets.ISO_8859_1);
-        int start = 0;
-        int end = 1;
-        Map<String, String> map = new LinkedHashMap<>();
-        int segment = 1;
-        String key = null;
-        String tmp;
-        while (start < text.length()) {
-            tmp = text.substring(start, end);
-            start = end;
-            if (segment != 3 && segment != 6) {
-                end += Integer.parseInt(tmp);
-            } else if (segment == 3) {
-                key = tmp;
-                end += 1;
-            } else {
-                map.put(key, tmp);
-                segment = 0;
-                end += 1;
-            }
-            segment++;
-        }
-        return map;
+    protected byte[] getDataBytes(ByteBuffer buffer) {
+        int lengthByteCount = Integer.parseInt(new String(new byte[]{buffer.get()}, StandardCharsets.ISO_8859_1));
+        byte[] lengthBytes = new byte[lengthByteCount];
+        buffer.get(lengthBytes);
+        int dataBytesCount = Integer.parseInt(new String(lengthBytes, StandardCharsets.ISO_8859_1));
+        byte[] dataBytes = new byte[dataBytesCount];
+        buffer.get(dataBytes);
+        return dataBytes;
     }
 
 }
