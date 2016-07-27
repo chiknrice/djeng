@@ -23,12 +23,16 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
- * The {@code KeyValueCodec} is a {@code CompositeCodec} which encodes/decodes the index as the key together with the
- * value.
+ * The {@code KeyValueCodec} is a {@code CompositeCodec} which encodes/decodes multiple key-value sub-elements.  During
+ * encoding, the index would be treated as the key and the message element as the value and during decoding the key
+ * would serve as the index of the message element.  The ordering of the elements is not guarantied when encoding.
+ * <p/>
+ * The configuration expects a sub-element {@code Codec<String>} with index="key" to be used for encoding/decoding the
+ * key and a sub-element codec with index="value" for encoding/decoding the values.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
-public abstract class KeyValueCodec<K> extends CompositeCodec {
+public class KeyValueCodec extends CompositeCodec {
 
     /**
      * @param buffer            TODO
@@ -43,8 +47,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
             throw new RuntimeException("Invalid " + KeyValueCodec.class.getSimpleName() + " configuration");
         }
         for (Map.Entry<String, Object> entry : compositeMap.entrySet()) {
-            String keyString = entry.getKey();
-            Object key = toKeyValue(keyString);
+            String key = entry.getKey();
             Object value = entry.getValue();
 
             try {
@@ -54,7 +57,7 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
                 popIndex();
             }
             try {
-                pushIndex(keyString);
+                pushIndex(key);
                 valueCodec.encode(buffer, value);
             } finally {
                 popIndex();
@@ -65,14 +68,6 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
     protected String getKeyIndex() {
         return "key";
     }
-
-    /**
-     * TODO
-     *
-     * @param stringKey TODO
-     * @return TODO
-     */
-    protected abstract K toKeyValue(String stringKey);
 
     /**
      * Decodes the sub-elements using the key and value codecs which are specified by the attributes {@code key} and
@@ -90,34 +85,25 @@ public abstract class KeyValueCodec<K> extends CompositeCodec {
             throw new RuntimeException("Invalid " + KeyValueCodec.class.getSimpleName() + " configuration");
         }
         CompositeMap compositeMap = new CompositeMap();
-        Object key;
+        String key;
         while (buffer.hasRemaining()) {
             try {
                 pushIndex(getKeyIndex());
-                key = keyCodec.decode(buffer);
+                key = (String) keyCodec.decode(buffer);
             } finally {
                 popIndex();
             }
-            String keyString = toKeyString((K) key);
             Object value;
             try {
-                pushIndex(keyString);
+                pushIndex(key);
                 value = valueCodec.decode(buffer);
             } finally {
                 popIndex();
             }
-            compositeMap.put(keyString, value);
+            compositeMap.put(key, value);
         }
 
         return compositeMap;
     }
-
-    /**
-     * TODO
-     *
-     * @param key TODO
-     * @return TODO
-     */
-    protected abstract String toKeyString(K key);
 
 }
