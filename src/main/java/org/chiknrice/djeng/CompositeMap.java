@@ -15,19 +15,97 @@
  */
 package org.chiknrice.djeng;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
+ * The {@code CompositeMap} is a tweak to the {@code java.util.HashMap} which
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class CompositeMap extends HashMap<String, Object> {
 
+    /**
+     * Restricted implementation of {@code HashMap#put} to non-null keys and values.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
     @Override
     public Object put(String key, Object value) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Composite map cannot have null keys or values");
         }
         return super.put(key, value);
+    }
+
+    /**
+     * Improved implementation to {@code HashMap#equals} which considers {@code byte[]} values.
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+
+        if (!(o instanceof Map))
+            return false;
+        Map<?, ?> m = (Map<?, ?>) o;
+        if (m.size() != size())
+            return false;
+
+        try {
+            Iterator<Entry<String, Object>> i = entrySet().iterator();
+            while (i.hasNext()) {
+                Entry<String, Object> e = i.next();
+                String key = e.getKey();
+                Object value = e.getValue();
+                if (value == null) {
+                    if (!(m.get(key) == null && m.containsKey(key)))
+                        return false;
+                } else {
+                    if (value instanceof byte[]) {
+                        if (!Arrays.equals((byte[]) value, (byte[]) m.get(key))) {
+                            return false;
+                        }
+                    } else if (!value.equals(m.get(key))) {
+                        return false;
+                    }
+                }
+            }
+        } catch (ClassCastException unused) {
+            return false;
+        } catch (NullPointerException unused) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Improved implementation to {@code HashMap#hashcode} which considers {@code byte[]} values.
+     *
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        int h = 0;
+        Iterator<Entry<String, Object>> i = entrySet().iterator();
+        while (i.hasNext()) {
+            Entry<String, Object> next = i.next();
+            if (next.getValue() instanceof byte[]) {
+                h += next.getKey().hashCode() ^ Arrays.hashCode((byte[]) next.getValue());
+            } else {
+                h += next.hashCode();
+            }
+        }
+
+        return h;
     }
 
 }
