@@ -30,9 +30,9 @@ public class CompositeMap extends HashMap<String, Object> {
     /**
      * Restricted implementation of {@code HashMap#put} to non-null keys and values.
      *
-     * @param key
-     * @param value
-     * @return
+     * @param key   TODO
+     * @param value TODO
+     * @return TODO
      */
     @Override
     public Object put(String key, Object value) {
@@ -45,8 +45,8 @@ public class CompositeMap extends HashMap<String, Object> {
     /**
      * Improved implementation to {@code HashMap#equals} which considers {@code byte[]} values.
      *
-     * @param o
-     * @return
+     * @param o TODO
+     * @return TODO
      */
     @Override
     public boolean equals(Object o) {
@@ -90,7 +90,7 @@ public class CompositeMap extends HashMap<String, Object> {
     /**
      * Improved implementation to {@code HashMap#hashcode} which considers {@code byte[]} values.
      *
-     * @return
+     * @return TODO
      */
     @Override
     public int hashCode() {
