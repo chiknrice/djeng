@@ -34,8 +34,9 @@ public abstract class ElementCodec<T> extends Codec<T> {
         int pos = buffer.arrayOffset() + buffer.position();
         byte[] bytes = encodeValue(element);
         putDataBytes(buffer, bytes);
-        if (isDebugEnabled()) {
-            recordSection(pos, bytes.length, element, ByteUtil.encodeHex(bytes));
+        int len = buffer.arrayOffset() + buffer.position() - pos;
+        if (len > 0) {
+            recordSection(pos, len, element, ByteUtil.recallToBuffer(buffer, len));
         }
     }
 
@@ -66,8 +67,9 @@ public abstract class ElementCodec<T> extends Codec<T> {
         int pos = buffer.arrayOffset() + buffer.position();
         byte[] bytes = getDataBytes(buffer);
         T element = decodeValue(bytes);
-        if (isDebugEnabled()) {
-            recordSection(pos, bytes.length, element, ByteUtil.encodeHex(bytes));
+        int len = buffer.arrayOffset() + buffer.position() - pos;
+        if (len > 0) {
+            recordSection(pos, len, element, ByteUtil.recallToBuffer(buffer, len));
         }
         return element;
     }

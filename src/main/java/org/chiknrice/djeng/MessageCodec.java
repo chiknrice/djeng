@@ -41,15 +41,18 @@ public class MessageCodec {
         Codec<CompositeMap> rootCodec = config.getRootCodec();
         try {
             message.rwLock.writeLock().lock();
-            rootCodec.clear();
-            rootCodec.setDebugEnabled(config.isDebugEnabled());
+            rootCodec.startRecordingSections();
             config.getRootCodec().encode(buffer, message.getCompositeMap());
             byte[] encoded = new byte[buffer.position()];
             buffer.rewind();
             buffer.get(encoded);
             return encoded;
         } finally {
-            rootCodec.dumpLogs();
+            if (config.isDebugEnabled()) {
+                System.err.println("ENCODED");
+            }
+            rootCodec.dumpLogs(config.isDebugEnabled());
+            rootCodec.stopRecordingSections();
             message.rwLock.writeLock().unlock();
         }
     }
@@ -64,13 +67,16 @@ public class MessageCodec {
         Codec<CompositeMap> rootCodec = config.getRootCodec();
         try {
             ByteBuffer buffer = ByteBuffer.wrap(messageBytes);
-            rootCodec.clear();
-            rootCodec.setDebugEnabled(config.isDebugEnabled());
+            rootCodec.startRecordingSections();
             CompositeMap element = rootCodec.decode(buffer);
             Message message = new Message(element);
             return message;
         } finally {
-            rootCodec.dumpLogs();
+            if (config.isDebugEnabled()) {
+                System.err.println("DECODED");
+            }
+            rootCodec.dumpLogs(config.isDebugEnabled());
+            rootCodec.stopRecordingSections();
         }
     }
 

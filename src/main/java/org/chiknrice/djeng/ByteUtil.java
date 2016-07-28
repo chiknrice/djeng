@@ -323,7 +323,7 @@ public final class ByteUtil {
      * @param length TODO
      * @return TODO
      */
-    static ByteBuffer recallToBuffer(ByteBuffer origBuffer, int length) {
+    public static ByteBuffer recallToBuffer(ByteBuffer origBuffer, int length) {
         origBuffer.position(origBuffer.position() - length);
         return consumeToBuffer(origBuffer, length);
     }
