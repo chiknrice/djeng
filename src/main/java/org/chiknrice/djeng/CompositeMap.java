@@ -60,9 +60,9 @@ public class CompositeMap extends HashMap<String, Object> {
             return false;
 
         try {
-            Iterator<Entry<String, Object>> i = entrySet().iterator();
+            Iterator<Map.Entry<String, Object>> i = entrySet().iterator();
             while (i.hasNext()) {
-                Entry<String, Object> e = i.next();
+                Map.Entry<String, Object> e = i.next();
                 String key = e.getKey();
                 Object value = e.getValue();
                 if (value == null) {
@@ -95,9 +95,9 @@ public class CompositeMap extends HashMap<String, Object> {
     @Override
     public int hashCode() {
         int h = 0;
-        Iterator<Entry<String, Object>> i = entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> i = entrySet().iterator();
         while (i.hasNext()) {
-            Entry<String, Object> next = i.next();
+            Map.Entry<String, Object> next = i.next();
             if (next.getValue() instanceof byte[]) {
                 h += next.getKey().hashCode() ^ Arrays.hashCode((byte[]) next.getValue());
             } else {
