@@ -78,7 +78,7 @@
     <!-- Simple type restricting to a format for indexes which is numbers separated with "." -->
     <simpleType name="index-type">
         <restriction base="token">
-            <pattern value="[a-z,A-F,0-9,-]+"/>
+            <pattern value="[^\s.]+"/>
         </restriction>
     </simpleType>
 

@@ -36,7 +36,7 @@ import static java.lang.String.format;
  * keys and values to {@code String} and {@code Object}.  The key/index is the unique identifier of a sub-element within
  * that {@code CompositeMap}. This would usually correspond to the index of the element in the configuration xml but can
  * be set to a different value depending on the {@code Codec} implementation.  Valid indexes are restricted by the
- * configuration schema to alpha-numeric characters and the hyphen (-).
+ * configuration schema which does not permit spaces or the dot (.) character.
  * <p/>
  * The message elements can be referenced when getting, setting or removing their value using an index path.  The index
  * path is similar to XPATH which is a made up of element indexes separated by a dot (.).  Similar to any path pattern
@@ -47,7 +47,7 @@ import static java.lang.String.format;
  */
 public final class Message {
 
-    private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[a-z,A-F,0-9,-]+(\\.[a-z,A-F,0-9,-]+)*");
+    private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[^\\s.]+(\\.[^\\s]+)*");
 
     private final CompositeMap elements;
     final ReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -267,8 +267,8 @@ public final class Message {
      * @throws IllegalArgumentException if the indexPath is not valid or if the value is {@code null}
      */
     public void setElement(String indexPath, Object value) {
-        if (value == null) {
-            throw new IllegalArgumentException("Message element value cannot be null");
+        if (indexPath == null || value == null) {
+            throw new IllegalArgumentException("Index path or value cannot be null");
         }
         setOrRemoveElement(indexPath, value);
     }

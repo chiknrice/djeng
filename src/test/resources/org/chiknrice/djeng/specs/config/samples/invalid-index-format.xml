@@ -6,7 +6,7 @@
         <composite-codec id="message" class="org.chiknrice.djeng.CompositeCodec"/>
     </codecs>
     <message-elements codec="message">
-        <element index="a$1" codec="string"/>
+        <element index="a.1" codec="string"/>
     </message-elements>
 
 </config>
