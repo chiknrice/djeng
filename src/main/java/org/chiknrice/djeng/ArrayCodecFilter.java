@@ -46,6 +46,8 @@ public class ArrayCodecFilter<W> extends CodecFilter<CompositeMap, W> {
                 pushIndex(Integer.toString(index));
                 chain.encode(buffer, arrayElement);
                 elementsLeft.remove(Integer.toString(index++));
+            } catch (Exception e) {
+                throw new CodecException(e, getCurrentIndexPath());
             } finally {
                 popIndex();
             }
@@ -70,6 +72,8 @@ public class ArrayCodecFilter<W> extends CodecFilter<CompositeMap, W> {
             try {
                 pushIndex(Integer.toString(index));
                 compositeMap.put(Integer.toString(index++), chain.decode(buffer));
+            } catch (Exception e) {
+                throw new CodecException(e, getCurrentIndexPath());
             } finally {
                 popIndex();
             }

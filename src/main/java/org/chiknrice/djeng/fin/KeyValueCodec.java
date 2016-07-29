@@ -16,6 +16,7 @@
 package org.chiknrice.djeng.fin;
 
 import org.chiknrice.djeng.Codec;
+import org.chiknrice.djeng.CodecException;
 import org.chiknrice.djeng.CompositeCodec;
 import org.chiknrice.djeng.CompositeMap;
 
@@ -53,12 +54,16 @@ public class KeyValueCodec extends CompositeCodec {
             try {
                 pushIndex(getKeyIndex());
                 keyCodec.encode(buffer, key);
+            } catch (Exception e) {
+                throw new CodecException(e, getCurrentIndexPath());
             } finally {
                 popIndex();
             }
             try {
                 pushIndex(key);
                 valueCodec.encode(buffer, value);
+            } catch (Exception e) {
+                throw new CodecException(e, getCurrentIndexPath());
             } finally {
                 popIndex();
             }
@@ -90,6 +95,8 @@ public class KeyValueCodec extends CompositeCodec {
             try {
                 pushIndex(getKeyIndex());
                 key = (String) keyCodec.decode(buffer);
+            } catch (Exception e) {
+                throw new CodecException(e, getCurrentIndexPath());
             } finally {
                 popIndex();
             }
@@ -97,6 +104,8 @@ public class KeyValueCodec extends CompositeCodec {
             try {
                 pushIndex(key);
                 value = valueCodec.decode(buffer);
+            } catch (Exception e) {
+                throw new CodecException(e, getCurrentIndexPath());
             } finally {
                 popIndex();
             }
