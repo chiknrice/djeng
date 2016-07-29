@@ -43,13 +43,9 @@ public class DelimitedStringCodec extends StringCodec {
             limit = buffer.position();
         }
         buffer.reset();
-        if (limit > -1) {
-            byte[] segment = new byte[limit - buffer.position()];
-            buffer.get(segment);
-            return segment;
-        } else {
-            throw new RuntimeException("No delimiter found");
-        }
+        byte[] segment = new byte[limit - buffer.position()];
+        buffer.get(segment);
+        return segment;
     }
 
     /**
