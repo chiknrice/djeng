@@ -108,6 +108,7 @@
     <attribute name="strip-padding" type="boolean"/>
     <attribute name="left-justified" type="boolean"/>
     <attribute name="packed" type="boolean"/>
+    <attribute name="delimiter" type="tns:hexByte"/>
     <!-- TODO: Should this be in core attributes?-->
     <attribute name="mask" type="d:non-empty-no-space-token"/>
 

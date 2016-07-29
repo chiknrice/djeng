@@ -32,6 +32,7 @@ public enum FinancialAttribute implements Attribute {
     PATTERN,
     TIMEZONE,
     PADDING,
+    DELIMITER,
     STRIP_PADDING,
     LEFT_JUSTIFIED,
     PACKED,
@@ -73,6 +74,7 @@ public enum FinancialAttribute implements Attribute {
             case PATTERN:
             case TIMEZONE:
             case PADDING:
+            case DELIMITER:
                 return value;
             case STRIP_PADDING:
             case LEFT_JUSTIFIED:
