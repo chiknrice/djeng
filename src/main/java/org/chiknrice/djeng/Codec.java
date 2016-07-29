@@ -93,7 +93,7 @@ public abstract class Codec<T> {
         }
     }
 
-    String getCurrentIndexPath() {
+    protected String getCurrentIndexPath() {
         Stack<String> indexStack = INDEX_STACK.get();
         StringBuilder indexPath = new StringBuilder();
         for (String index : indexStack) {
