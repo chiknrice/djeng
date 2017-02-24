@@ -73,10 +73,12 @@ public class NumericCodec extends ElementCodec<Object> implements LengthPrefixDe
                 }
             case BIG_INTEGER:
                 if (value instanceof BigInteger) {
-                    //BigInteger bigInteger = (BigInteger) value;
-                    // TODO implement this
-                    throw new UnsupportedOperationException("BigInteger not yet supported");
-                    //break;
+                    BigInteger bigInteger = (BigInteger) value;
+                    stringValue = bigInteger.toString();
+                    if (stringValue.length() < length) {
+                        stringValue = String.format("%0" + (length - stringValue.length()) + "d", 0).concat(stringValue);
+                    }
+                    break;
                 }
             case STRING:
                 stringValue = value.toString();
@@ -148,6 +150,7 @@ public class NumericCodec extends ElementCodec<Object> implements LengthPrefixDe
             case STRING:
                 return stringValue;
             case BIG_INTEGER:
+                return new BigInteger(stringValue);
             default:
                 throw new UnsupportedOperationException(numericType + " not yet supported");
         }
