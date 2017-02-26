@@ -21,13 +21,19 @@ import java.util.TreeSet;
 
 /**
  * The {@code Bitmap} class represents a bitmap as defined by ISO8583/AS2805.  It provides methods to set and test a bit
- * and encapsulates primary and secondary bitmap sizes of different bitmap types.  It is {@code Iterable} and will
- * iterate through the bits in the natural order of numbers.
+ * and encapsulates primary and secondary bitmap sizes of different bitmap types.  It is also used to represent the
+ * bitmap in a data set as specified in ISO8583 2003.  It is {@code Iterable} and will iterate through the bits in the
+ * natural order of numbers.
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public final class Bitmap implements Iterable<Integer> {
 
+    /**
+     * The {@code Bitmap.Encoding} represents a of bitmap.  The {@code BINARY} encoding represents 8 bytes of bitmap as
+     * 8 bytes while {@code HEX} represents a byte in a bitmap as 2 hex characters which would result in 2 bytes.  The
+     * {@code DATA_SET} on the other hand represents a bitmap used in data sets for ISO8583 2003.
+     */
     public enum Encoding {
         BINARY(8, 8),
         HEX(8, 8),

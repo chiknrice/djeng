@@ -25,6 +25,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * The {@code DateCodec} class encodes/decodes {@code Date} elements.  This codec can encode/decode a {@code Date} as
+ * {@code Encoding.CHAR} or {@code Encoding.BCD}.  The date is parsed/formatted using the pattern specified in the
+ * configuration which conforms to {@code SimpleDateFormat}.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class DateCodec extends ElementCodec<Date> {
@@ -57,7 +61,7 @@ public class DateCodec extends ElementCodec<Date> {
         int length = pattern.length();
         switch (encoding) {
             case CHAR:
-                // alread set to pattern length
+                // already set to pattern length
                 break;
             case BCD:
                 length = length / 2 + length % 2;

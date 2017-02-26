@@ -23,6 +23,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * The {@code BitmapCompositeCodec} class is a {@code CompositeCodec} which encodes a bitmap to indicate which elements
+ * were included in the encoded composite element.  This codec also expects and decodes a bitmap which indicates which
+ * elements are present as part of the composite element.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public final class BitmapCompositeCodec extends CompositeCodec {

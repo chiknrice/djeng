@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * The {@code BitmapCodec} class decodes/encodes {@link Bitmap} elements based on a {@link Bitmap.Encoding}.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class BitmapCodec extends ElementCodec<Bitmap> {

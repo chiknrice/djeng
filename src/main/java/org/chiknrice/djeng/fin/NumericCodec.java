@@ -23,6 +23,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * The {@code NumericCodec} class encodes/decodes whole numbers.  TODO: elaborate on all possible configurations
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class NumericCodec extends ElementCodec<Object> implements LengthPrefixDelegate {

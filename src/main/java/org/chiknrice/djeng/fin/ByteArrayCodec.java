@@ -18,9 +18,14 @@ package org.chiknrice.djeng.fin;
 import org.chiknrice.djeng.ElementCodec;
 
 /**
+ * The {@code ByteArrayCodec} class encodes/decodes byte array elements.
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class ByteArrayCodec extends ElementCodec<byte[]> {
+
+    // TODO: implement padding
+
     @Override
     protected byte[] encodeValue(byte[] value) {
         return value;

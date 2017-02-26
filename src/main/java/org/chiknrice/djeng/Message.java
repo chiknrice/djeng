@@ -38,10 +38,11 @@ import static java.lang.String.format;
  * be set to a different value depending on the {@code Codec} implementation.  Valid indexes are restricted by the
  * configuration schema which does not permit spaces or the dot (.) character.
  * <p/>
- * The message elements can be referenced when getting, setting or removing their value using an index path.  The index
- * path is similar to XPATH which is a made up of element indexes separated by a dot (.).  Similar to any path pattern
- * it a way to navigate to the hierarchical structure to reach a sub-element.  An example index path would be h1.a.b-1
- * or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583 message). The accessor/mutator methods are all thread-safe.
+ * Before encoding, messages can be built by setting sub-elements.  After decoding, sub-elements can be accessed from
+ * the resulting message.  The message elements and sub-elements can be referenced using an index path.  The index path
+ * is similar to XPATH which is a made up of element indexes separated by a dot (.). Similar to any path pattern it is a
+ * way to navigate the hierarchical structure to reach a sub-element.  However, the message element restricts navigation
+ * to leaf nodes only.  An example index path would be h1.a.b-1 or 63.2.1 (DE5 in DE2 in DE63 in an ISO8583 message).
  *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
@@ -50,10 +51,11 @@ public final class Message {
     private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[^\\s.]+(\\.[^\\s]+)*");
 
     private final CompositeMap elements;
+    // TODO: remove all locks - no need to be thread safe
     final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     /**
-     * The only publicly accessible constructor.
+     * The only publicly accessible constructor which creates an empty message.
      */
     public Message() {
         elements = new CompositeMap();
@@ -83,7 +85,6 @@ public final class Message {
         } else {
             try {
                 rwLock.writeLock().lock();
-                //clearRawState(); TODO clear raw state when implemented
                 String[] indexes = indexPath.split("\\.");
 
                 Stack<CompositeMap> compositeMapStack = new Stack<>();
