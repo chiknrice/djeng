@@ -32,12 +32,26 @@ public abstract class ElementCodec<T> extends Codec<T> {
     @Override
     public final void encode(ByteBuffer buffer, T element) {
         int pos = buffer.arrayOffset() + buffer.position();
+        element = padValue(element);
         byte[] bytes = encodeValue(element);
         putDataBytes(buffer, bytes);
         int len = buffer.arrayOffset() + buffer.position() - pos;
         if (len > 0) {
             recordSection(pos, len, element, ByteUtil.recallToBuffer(buffer, len));
         }
+    }
+
+    private T padValue(T element) {
+        Integer length = getAttribute(FinancialAttribute.LENGTH);
+        if (length != null) {
+            return padValue(element, length);
+        } else {
+            return element;
+        }
+    }
+
+    protected T padValue(T value, Integer length) {
+        return value;
     }
 
     /**
