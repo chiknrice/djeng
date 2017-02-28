@@ -20,18 +20,31 @@ import org.chiknrice.djeng.ElementCodec;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * TODO: describe usage and document what properties are required/optional to be set
+ *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class StringCodec extends ElementCodec<String> {
 
     @Override
     protected byte[] encodeValue(String value) {
+        Integer length = getAttribute(FinancialAttribute.LENGTH);
+        if (length != null) {
+            Boolean leftJustifiedAttr = getAttribute(FinancialAttribute.LEFT_JUSTIFIED);
+            boolean leftJustified = leftJustifiedAttr != null && leftJustifiedAttr;
+            value = String.format("%" + (leftJustified ? "-" : "") + length + "s", value);
+        }
         return value.getBytes(StandardCharsets.ISO_8859_1);
     }
 
     @Override
     protected String decodeValue(byte[] bytes) {
-        return new String(bytes, StandardCharsets.ISO_8859_1);
+        String decoded = new String(bytes, StandardCharsets.ISO_8859_1);
+        Boolean stripPadding = getAttribute(FinancialAttribute.STRIP_PADDING);
+        if (stripPadding != null && stripPadding) {
+            decoded = decoded.trim();
+        }
+        return decoded;
     }
 
 }
