@@ -66,6 +66,13 @@ public final class Message {
         this.elements = elements;
     }
 
+    private void validateIndexPath(String indexPath) {
+        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
+        if (!m.matches()) {
+            throw new IllegalArgumentException(format("%s is not a valid index path", indexPath));
+        }
+    }
+
     /**
      * Sets or removes the value of a msg element at the position expressed by indexPath.  Null value would remove the
      * element as well as empty composite elements resulting in the operation.
@@ -75,43 +82,40 @@ public final class Message {
      * @throws IllegalArgumentException if the indexPath is not in the form of a recursive index pattern
      */
     private void setOrRemoveElement(String indexPath, Object value) {
-        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
-        if (!m.matches()) {
-            throw new IllegalArgumentException(format("%s is not a valid index path", indexPath));
-        } else {
-            String[] indexes = indexPath.split("\\.");
+        validateIndexPath(indexPath);
 
-            Stack<CompositeMap> compositeMapStack = new Stack<>();
-            compositeMapStack.push(elements);
+        String[] indexes = indexPath.split("\\.");
 
-            for (int i = 0; i < indexes.length; i++) {
-                String key = indexes[i];
-                // if at target index
-                if (i == (indexes.length - 1)) {
-                    if (value == null) {
-                        compositeMapStack.peek().remove(key);
-                        // cleanup
-                        while (compositeMapStack.size() > 0 && compositeMapStack.peek().size() == 0) {
-                            compositeMapStack.pop();
-                            compositeMapStack.peek().remove(indexes[--i]);
-                        }
-                        break;
-                    } else {
-                        Object subElement = value;
-                        compositeMapStack.pop().put(key, subElement);
+        Stack<CompositeMap> compositeMapStack = new Stack<>();
+        compositeMapStack.push(elements);
+
+        for (int i = 0; i < indexes.length; i++) {
+            String key = indexes[i];
+            // if at target index
+            if (i == (indexes.length - 1)) {
+                if (value == null) {
+                    compositeMapStack.peek().remove(key);
+                    // cleanup
+                    while (compositeMapStack.size() > 0 && compositeMapStack.peek().size() == 0) {
+                        compositeMapStack.pop();
+                        compositeMapStack.peek().remove(indexes[--i]);
                     }
+                    break;
                 } else {
-                    Object subElement = compositeMapStack.peek().get(key);
-                    if (subElement instanceof CompositeMap) {
-                        compositeMapStack.push((CompositeMap) subElement);
-                    } else {
-                        subElement = new CompositeMap();
-                        Object replaced = compositeMapStack.peek().put(key, subElement);
-                        if (replaced != null) {
-                            // TODO log replaced?
-                        }
-                        compositeMapStack.push((CompositeMap) subElement);
+                    Object subElement = value;
+                    compositeMapStack.pop().put(key, subElement);
+                }
+            } else {
+                Object subElement = compositeMapStack.peek().get(key);
+                if (subElement instanceof CompositeMap) {
+                    compositeMapStack.push((CompositeMap) subElement);
+                } else {
+                    subElement = new CompositeMap();
+                    Object replaced = compositeMapStack.peek().put(key, subElement);
+                    if (replaced != null) {
+                        // TODO log replaced?
                     }
+                    compositeMapStack.push((CompositeMap) subElement);
                 }
             }
         }
@@ -197,35 +201,32 @@ public final class Message {
      * @throws IllegalArgumentException if the indexPath pattern is not valid
      */
     public <T> T getElement(String indexPath) {
-        Matcher m = INDEX_PATH_PATTERN.matcher(indexPath);
-        if (!m.matches()) {
-            throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
-        } else {
-            String[] indexes = indexPath.split("\\.");
+        validateIndexPath(indexPath);
 
-            CompositeMap currentCompositeMap = elements;
-            Object element = null;
-            for (int i = 0; i < indexes.length; i++) {
-                element = currentCompositeMap.get(indexes[i]);
-                // if at target index
-                if (i == indexes.length - 1) {
-                    // if value at target index is composite map, flatten it
-                    if (element instanceof CompositeMap) {
-                        element = getCompositeElement((CompositeMap) element);
-                    }
-                    break;
+        String[] indexes = indexPath.split("\\.");
+
+        CompositeMap currentCompositeMap = elements;
+        Object element = null;
+        for (int i = 0; i < indexes.length; i++) {
+            element = currentCompositeMap.get(indexes[i]);
+            // if at target index
+            if (i == indexes.length - 1) {
+                // if value at target index is composite map, flatten it
+                if (element instanceof CompositeMap) {
+                    element = getCompositeElement((CompositeMap) element);
+                }
+                break;
+            } else {
+                // expect a composite
+                if (element instanceof CompositeMap) {
+                    currentCompositeMap = (CompositeMap) element;
                 } else {
-                    // expect a composite
-                    if (element instanceof CompositeMap) {
-                        currentCompositeMap = (CompositeMap) element;
-                    } else {
-                        element = null;
-                        break;
-                    }
+                    element = null;
+                    break;
                 }
             }
-            return (T) element;
         }
+        return (T) element;
     }
 
     /**
@@ -251,10 +252,6 @@ public final class Message {
      */
     public void removeElement(String indexPath) {
         setOrRemoveElement(indexPath, null);
-    }
-
-    private void validateIndexPath(String indexPath) {
-
     }
 
     /**
