@@ -40,7 +40,6 @@ public class MessageCodec {
         ByteBuffer buffer = ByteBuffer.allocate(config.getEncodeBufferSize());
         Codec<CompositeMap> rootCodec = config.getRootCodec();
         try {
-            message.rwLock.writeLock().lock();
             rootCodec.startRecordingSections();
             config.getRootCodec().encode(buffer, message.getCompositeMap());
             byte[] encoded = new byte[buffer.position()];
@@ -53,7 +52,6 @@ public class MessageCodec {
             }
             rootCodec.dumpLogs(config.isDebugEnabled());
             rootCodec.stopRecordingSections();
-            message.rwLock.writeLock().unlock();
         }
     }
 

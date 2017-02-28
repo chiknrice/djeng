@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,11 +46,9 @@ import static java.lang.String.format;
  */
 public final class Message {
 
-    private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[^\\s.]+(\\.[^\\s]+)*");
+    private static final Pattern INDEX_PATH_PATTERN = Pattern.compile("[^\\s.]+(\\.[^\\s.]+)*");
 
     private final CompositeMap elements;
-    // TODO: remove all locks - no need to be thread safe
-    final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     /**
      * The only publicly accessible constructor which creates an empty message.
@@ -83,45 +79,40 @@ public final class Message {
         if (!m.matches()) {
             throw new IllegalArgumentException(format("%s is not a valid index path", indexPath));
         } else {
-            try {
-                rwLock.writeLock().lock();
-                String[] indexes = indexPath.split("\\.");
+            String[] indexes = indexPath.split("\\.");
 
-                Stack<CompositeMap> compositeMapStack = new Stack<>();
-                compositeMapStack.push(elements);
+            Stack<CompositeMap> compositeMapStack = new Stack<>();
+            compositeMapStack.push(elements);
 
-                for (int i = 0; i < indexes.length; i++) {
-                    String key = indexes[i];
-                    // if at target index
-                    if (i == (indexes.length - 1)) {
-                        if (value == null) {
-                            compositeMapStack.peek().remove(key);
-                            // cleanup
-                            while (compositeMapStack.size() > 0 && compositeMapStack.peek().size() == 0) {
-                                compositeMapStack.pop();
-                                compositeMapStack.peek().remove(indexes[--i]);
-                            }
-                            break;
-                        } else {
-                            Object subElement = value;
-                            compositeMapStack.pop().put(key, subElement);
+            for (int i = 0; i < indexes.length; i++) {
+                String key = indexes[i];
+                // if at target index
+                if (i == (indexes.length - 1)) {
+                    if (value == null) {
+                        compositeMapStack.peek().remove(key);
+                        // cleanup
+                        while (compositeMapStack.size() > 0 && compositeMapStack.peek().size() == 0) {
+                            compositeMapStack.pop();
+                            compositeMapStack.peek().remove(indexes[--i]);
                         }
+                        break;
                     } else {
-                        Object subElement = compositeMapStack.peek().get(key);
-                        if (subElement instanceof CompositeMap) {
-                            compositeMapStack.push((CompositeMap) subElement);
-                        } else {
-                            subElement = new CompositeMap();
-                            Object replaced = compositeMapStack.peek().put(key, subElement);
-                            if (replaced != null) {
-                                // TODO log replaced?
-                            }
-                            compositeMapStack.push((CompositeMap) subElement);
+                        Object subElement = value;
+                        compositeMapStack.pop().put(key, subElement);
+                    }
+                } else {
+                    Object subElement = compositeMapStack.peek().get(key);
+                    if (subElement instanceof CompositeMap) {
+                        compositeMapStack.push((CompositeMap) subElement);
+                    } else {
+                        subElement = new CompositeMap();
+                        Object replaced = compositeMapStack.peek().put(key, subElement);
+                        if (replaced != null) {
+                            // TODO log replaced?
                         }
+                        compositeMapStack.push((CompositeMap) subElement);
                     }
                 }
-            } finally {
-                rwLock.writeLock().unlock();
             }
         }
     }
@@ -168,53 +159,32 @@ public final class Message {
 
     @Override
     public int hashCode() {
-        try {
-            rwLock.readLock().lock();
-            return elements.hashCode();
-        } finally {
-            rwLock.readLock().unlock();
-        }
+        return elements.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        try {
-            rwLock.readLock().lock();
-            if (obj != null && obj instanceof Message) {
-                Message other = (Message) obj;
-                if (elements.equals(other.elements)) {
-                    return true;
-                }
+        if (obj != null && obj instanceof Message) {
+            Message other = (Message) obj;
+            if (elements.equals(other.elements)) {
+                return true;
             }
-            return false;
-        } finally {
-            rwLock.readLock().unlock();
         }
+        return false;
     }
 
     @Override
     public String toString() {
-        try {
-            rwLock.readLock().lock();
-            return "TODO Message.toString()";
-        } finally {
-            rwLock.readLock().unlock();
-        }
+        return "TODO Message.toString()";
     }
 
     /**
-     * Method to allow for getting all element values with key being the index path. TODO use the backing buffer if it
-     * exists
+     * Gets all the elements as a flat map.
      *
      * @return TODO
      */
     public Map<String, Object> getElements() {
-        try {
-            rwLock.readLock().lock();
-            return getCompositeElement(this.elements);
-        } finally {
-            rwLock.readLock().unlock();
-        }
+        return getCompositeElement(this.elements);
     }
 
     /**
@@ -231,35 +201,30 @@ public final class Message {
         if (!m.matches()) {
             throw new IllegalArgumentException(format("%s is not a valid index expression", indexPath));
         } else {
-            try {
-                rwLock.readLock().lock();
-                String[] indexes = indexPath.split("\\.");
+            String[] indexes = indexPath.split("\\.");
 
-                CompositeMap currentCompositeMap = elements;
-                Object element = null;
-                for (int i = 0; i < indexes.length; i++) {
-                    element = currentCompositeMap.get(indexes[i]);
-                    // if at target index
-                    if (i == indexes.length - 1) {
-                        // if value at target index is composite map, flatten it
-                        if (element instanceof CompositeMap) {
-                            element = getCompositeElement((CompositeMap) element);
-                        }
-                        break;
+            CompositeMap currentCompositeMap = elements;
+            Object element = null;
+            for (int i = 0; i < indexes.length; i++) {
+                element = currentCompositeMap.get(indexes[i]);
+                // if at target index
+                if (i == indexes.length - 1) {
+                    // if value at target index is composite map, flatten it
+                    if (element instanceof CompositeMap) {
+                        element = getCompositeElement((CompositeMap) element);
+                    }
+                    break;
+                } else {
+                    // expect a composite
+                    if (element instanceof CompositeMap) {
+                        currentCompositeMap = (CompositeMap) element;
                     } else {
-                        // expect a composite
-                        if (element instanceof CompositeMap) {
-                            currentCompositeMap = (CompositeMap) element;
-                        } else {
-                            element = null;
-                            break;
-                        }
+                        element = null;
+                        break;
                     }
                 }
-                return (T) element;
-            } finally {
-                rwLock.readLock().unlock();
             }
+            return (T) element;
         }
     }
 
@@ -286,6 +251,10 @@ public final class Message {
      */
     public void removeElement(String indexPath) {
         setOrRemoveElement(indexPath, null);
+    }
+
+    private void validateIndexPath(String indexPath) {
+
     }
 
     /**
