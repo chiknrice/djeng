@@ -92,6 +92,7 @@ public final class Message {
 
                 for (int i = 0; i < indexes.length; i++) {
                     String key = indexes[i];
+                    // if at target index
                     if (i == (indexes.length - 1)) {
                         if (value == null) {
                             compositeMapStack.peek().remove(key);
@@ -134,23 +135,29 @@ public final class Message {
         return elements;
     }
 
+    private Map<String, Object> getCompositeElement(CompositeMap compositeMap) {
+        Map<String, Object> resultingMap = new HashMap<>();
+        flattenCompositeMap(compositeMap, resultingMap);
+        return resultingMap;
+    }
+
     /**
      * Recursive method to get all message element values except for composite elements.
      *
      * @param compositeMap TODO
-     * @param parentMap    TODO
+     * @param targetMap    TODO
      */
-    private void findElementValues(CompositeMap compositeMap, Map<String, Object> parentMap) {
+    private void flattenCompositeMap(CompositeMap compositeMap, Map<String, Object> targetMap) {
         for (Entry<String, Object> entry : compositeMap.entrySet()) {
             Object value = entry.getValue();
             if (value instanceof CompositeMap) {
-                Map<String, Object> tmpMap = new HashMap<>();
-                findElementValues((CompositeMap) value, tmpMap);
-                for (Entry<String, Object> tmpEntry : tmpMap.entrySet()) {
-                    parentMap.put(entry.getKey().concat(".").concat(tmpEntry.getKey()), tmpEntry.getValue());
+                Map<String, Object> subMap = new HashMap<>();
+                flattenCompositeMap((CompositeMap) value, subMap);
+                for (Entry<String, Object> tmpEntry : subMap.entrySet()) {
+                    targetMap.put(entry.getKey().concat(".").concat(tmpEntry.getKey()), tmpEntry.getValue());
                 }
             } else {
-                parentMap.put(entry.getKey(), value);
+                targetMap.put(entry.getKey(), value);
             }
         }
     }
@@ -202,22 +209,21 @@ public final class Message {
      * @return TODO
      */
     public Map<String, Object> getElements() {
-        Map<String, Object> elements = new HashMap<>();
         try {
             rwLock.readLock().lock();
-            findElementValues(this.elements, elements);
-            return elements;
+            return getCompositeElement(this.elements);
         } finally {
             rwLock.readLock().unlock();
         }
     }
 
     /**
-     * Gets the value located at the indexPath. TODO: get list of elements using * wildcard?
+     * Gets the value located at the indexPath.  If the value is a {@code CompositeMap} it would be flatten to a map of
+     * value having a relative index path.
      *
      * @param indexPath TODO
      * @param <T>       TODO
-     * @return the value or {@code null} if the element doesn't exist or if it's a composite element
+     * @return the value or {@code null} if the element doesn't exist
      * @throws IllegalArgumentException if the indexPath pattern is not valid
      */
     public <T> T getElement(String indexPath) {
@@ -230,29 +236,27 @@ public final class Message {
                 String[] indexes = indexPath.split("\\.");
 
                 CompositeMap currentCompositeMap = elements;
+                Object element = null;
                 for (int i = 0; i < indexes.length; i++) {
-                    if (currentCompositeMap != null) {
-                        Object element = currentCompositeMap.get(indexes[i]);
-                        boolean isLeaf = i == indexes.length - 1;
+                    element = currentCompositeMap.get(indexes[i]);
+                    // if at target index
+                    if (i == indexes.length - 1) {
+                        // if value at target index is composite map, flatten it
                         if (element instanceof CompositeMap) {
-                            if (isLeaf) {
-                                // Don't return a composite
-                                return null;
-                            } else {
-                                // If there's more indexes on path then continue
-                                currentCompositeMap = (CompositeMap) element;
-                            }
-                        } else if (isLeaf) {
-                            // Return the element
-                            //noinspection unchecked
-                            return (T) element;
+                            element = getCompositeElement((CompositeMap) element);
+                        }
+                        break;
+                    } else {
+                        // expect a composite
+                        if (element instanceof CompositeMap) {
+                            currentCompositeMap = (CompositeMap) element;
                         } else {
-                            // Else return nothing
+                            element = null;
                             break;
                         }
                     }
                 }
-                return null;
+                return (T) element;
             } finally {
                 rwLock.readLock().unlock();
             }
