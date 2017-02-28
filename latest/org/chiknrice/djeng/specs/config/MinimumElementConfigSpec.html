@@ -20,9 +20,10 @@
 <div id="header"><nav><li class="fork"><a href="https://github.com/chiknrice/djeng">View On GitHub</a></li><li class="downloads"><a href="#">Financial XSD</a></li><li class="downloads"><a href="#">Core XSD</a></li><li class="downloads"><a href="https://bintray.com/chiknrice/maven/djeng/_latestVersion">JAR</a></li><li class="title">DOWNLOADS</li></nav></div><div class="wrapper"><section><div id="title"><span class="breadcrumbs"><a href="../Specs.html">Djeng</a> &gt; <a href="Config.html">Configuration</a> &gt;</span>
     <h1>Minimum Element Config</h1>
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
-    Every element (within message-elements) requires at least an 'index' and 'codec' attributes.
+    Every element (within <code>message-elements</code>) requires at least an <code>index</code> and <code>codec</code>
+    attributes.
 </p><h3>
-    Missing 'index'
+    Missing <code>index</code>
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.4: Attribute
@@ -42,7 +43,7 @@
 </pre>
     </p>
 </div><h3>
-    Missing 'codec'
+    Missing <code>codec</code>
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.4: Attribute

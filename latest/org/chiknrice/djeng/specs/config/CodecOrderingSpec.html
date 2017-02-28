@@ -26,12 +26,12 @@
 <hr /><span class="credits left">Project maintained by <a href="https://github.com/chiknrice">chiknrice</a></span><span class="credits right">Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span></div><p>
     The codecs should be grouped and ordered in the following manner:
 <ul>
-    <li>codec-filter</li>
-    <li>element-codec</li>
-    <li>composite-codec</li>
+    <li><code>codec-filter</code></li>
+    <li><code>element-codec</code></li>
+    <li><code>composite-codec</code></li>
 </ul>
 </p><h3>
-    codec-filter appears after element-codec
+    <code>codec-filter</code> appears after <code>element-codec</code>
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
@@ -53,7 +53,7 @@
 </pre>
     </p>
 </div><h3>
-    composite-codec appears before element-codec
+    <code>composite-codec</code> appears before <code>element-codec</code>
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
@@ -75,7 +75,7 @@
 </pre>
     </p>
 </div><h3>
-    codec-filter appears after composite-codec
+    <code>codec-filter</code> appears after <code>composite-codec</code>
 </h3><div class="example" c:execute="#result=buildCodecWithConfig(#config)">
     <p>
         The following configuration would result in <span c:assertEquals="#result" class="success">cvc-complex-type.2.4.a: Invalid
