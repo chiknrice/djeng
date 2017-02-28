@@ -20,18 +20,9 @@ import org.chiknrice.djeng.ElementCodec;
 import java.nio.charset.StandardCharsets;
 
 /**
- * TODO
- *
  * @author <a href="mailto:chiknrice@gmail.com">Ian Bondoc</a>
  */
 public class StringCodec extends ElementCodec<String> {
-
-    @Override
-    protected String padValue(String value, Integer length) {
-        Boolean leftJustifiedAttr = getAttribute(FinancialAttribute.LEFT_JUSTIFIED);
-        boolean leftJustified = leftJustifiedAttr != null && leftJustifiedAttr;
-        return String.format("%" + (leftJustified ? "-" : "") + length + "s", value);
-    }
 
     @Override
     protected byte[] encodeValue(String value) {
