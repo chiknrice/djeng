@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<html xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <title>Minimum Codec Config</title>
@@ -11,11 +11,11 @@
 </div>
 
 <p>
-    Every codec (including filters) requires at least an 'id' and 'class' attributes.
+    Every codec (including filters) requires at least an <code>id</code> and <code>class</code> attributes.
 </p>
 
 <h3>
-    Missing 'id'
+    Missing <code>id</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
@@ -27,7 +27,7 @@
 </div>
 
 <h3>
-    Missing 'class'
+    Missing <code>class</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">

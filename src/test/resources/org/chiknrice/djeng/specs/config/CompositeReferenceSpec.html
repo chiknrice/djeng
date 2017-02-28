@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<html xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <title>Composite Reference</title>
@@ -11,12 +11,11 @@
 </div>
 
 <p>
-    All composite should have its codec attribute reference an existing
-    composite-codec.
+    All composite should have its <code>codec</code> attribute reference an existing <code>composite-codec</code>.
 </p>
 
 <h3>
-    codec referencing an element-codec
+    <code>codec</code> referencing an <code>element-codec</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
@@ -28,7 +27,7 @@
 </div>
 
 <h3>
-    codec referencing a non existing composite-codec
+    <code>codec</code> referencing a non existing <code>composite-codec</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">

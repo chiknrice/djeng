@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<html xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <title>Valid Identifiers</title>
@@ -11,11 +11,11 @@
 </div>
 
 <p>
-    Values of 'id' and 'codec' attributes are based on 'non-empty-no-space-token' type which requires a value without
-    any spaces.
+    Values of <code>id</code> and <code>codec</code> attributes are based on <code>non-empty-no-space-token</code> type
+    which requires a value without any spaces.
 
-    On the other hand, the 'index' attribute is a bit more strict. Valid values does not permit spaces or the dot (.)
-    character.
+    On the other hand, the <code>index</code> attribute is a bit more strict. Valid values does not permit spaces or the
+    dot (.) character.
 </p>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">

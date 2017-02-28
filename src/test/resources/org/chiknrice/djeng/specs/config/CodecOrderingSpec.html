@@ -13,7 +13,7 @@
   ~ You should have received a copy of the GNU General Public License along with this program. If not, see
   ~ <http://www.gnu.org/licenses/>.
   -->
-<html lang="en" xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion">
+<html xmlns:c="http://www.concordion.org/2007/concordion" xmlns:i="http://www.chiknrice.org/concordion" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <title>Codec Ordering</title>
@@ -27,14 +27,14 @@
 <p>
     The codecs should be grouped and ordered in the following manner:
 <ul>
-    <li>codec-filter</li>
-    <li>element-codec</li>
-    <li>composite-codec</li>
+    <li><code>codec-filter</code></li>
+    <li><code>element-codec</code></li>
+    <li><code>composite-codec</code></li>
 </ul>
 </p>
 
 <h3>
-    codec-filter appears after element-codec
+    <code>codec-filter</code> appears after <code>element-codec</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
@@ -47,7 +47,7 @@
 </div>
 
 <h3>
-    composite-codec appears before element-codec
+    <code>composite-codec</code> appears before <code>element-codec</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
@@ -60,7 +60,7 @@
 </div>
 
 <h3>
-    codec-filter appears after composite-codec
+    <code>codec-filter</code> appears after <code>composite-codec</code>
 </h3>
 
 <div class="example" c:execute="#result=buildCodecWithConfig(#config)">
